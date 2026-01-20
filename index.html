@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sân Cầu Lông (V23 Final Robust)</title>
+    <title>Sân Cầu Lông (V24 Row Packing)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -179,7 +179,7 @@
                 <option value="month" selected>Tháng này</option>
             </select>
             <div style="display:flex; gap:5px;">
-                <button class="btn-add" style="background:#2563eb; font-size:11px;" onclick="exportCourtReport()">🏸 Excel Tiền Sân</button>
+                <button class="btn-add" style="background:#2563eb; font-size:11px;" onclick="exportCourtReport()">🏸 Excel Tiền Sân (Gộp)</button>
                 <button class="btn-add" style="background:#f59e0b; font-size:11px;" onclick="exportServiceReport()">🥤 Excel Dịch Vụ</button>
             </div>
         </div>
@@ -552,16 +552,17 @@
             return (day === 0 || day === 6); // 0=CN, 6=T7
         }
 
-        // --- 1. COMPLEX COURT EXPORT (V23 FINAL ROBUST) ---
+        // --- 1. COMPLEX COURT EXPORT (V24 ROW PACKING) ---
         function exportCourtReport() {
             const timeFilter = document.getElementById('report-filter-time').value;
-            const filteredTrans = transactions.filter(t => checkDateFilter(t.time, timeFilter));
+            // Dồn hàng thì cần xếp theo thứ tự thời gian cũ -> mới
+            const filteredTrans = [...transactions].reverse().filter(t => checkDateFilter(t.time, timeFilter));
             
             const h1 = ["Ngày", "5h30 - 8h", "", "", "", "8h - 17h", "", "", "", "17h - 24h", "", "", "", "T7 - CN - Lễ", "", "", ""];
             const h2 = ["", "VL", "", "CĐ", "", "VL", "", "CĐ", "", "VL", "", "CĐ", "", "VL", "", "CĐ", ""];
             const h3 = ["", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK"];
 
-            const dataRows = [];
+            const groupedData = {};
 
             filteredTrans.forEach(t => {
                 let dateObj = new Date(t.time);
@@ -569,6 +570,8 @@
 
                 let dateStr = dateObj.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit', year:'numeric'});
                 
+                if (!groupedData[dateStr]) groupedData[dateStr] = [];
+
                 if(t.cartDetails) {
                     t.cartDetails.forEach(item => {
                         let pGroup = item.group;
@@ -584,33 +587,25 @@
 
                         if(isCourtFee && !isRental) {
                             let baseIndex = 0; 
-
-                            // === V23: KEYWORDS FORCE WEEKEND (LỄ, T7, CN) ===
                             
-                            // 1. Check Forced Keywords (Highest Priority)
+                            // LOGIC XẾP CỘT
                             if (itemName.includes('lễ') || itemName.includes('t7') || itemName.includes('cn') || itemName.includes('cuối tuần')) {
                                 baseIndex = 13; 
                             }
-                            // 2. Check Actual Date Weekend (Next Priority)
                             else if(isWeekend(dateObj)) {
                                 baseIndex = 13; 
                             } else {
-                                // 3. Check Calculator String (HH:MM - HH:MM)
-                                const match = item.name.match(/(\d{1,2})[h:]/); // Regex cũ của V22 tốt hơn
-                                
-                                // Nếu tìm thấy số giờ trong tên (VD: "8h", "17h")
+                                const match = item.name.match(/(\d{1,2})[h:]/);
                                 if (match && match[1]) {
                                     let parsedHour = parseInt(match[1]);
                                     if(parsedHour < 8) baseIndex = 1;
                                     else if(parsedHour < 17) baseIndex = 5;
                                     else baseIndex = 9;
                                 } else {
-                                    // 4. Fallback Keywords
                                     if (itemName.includes('sáng')) baseIndex = 1;
                                     else if (itemName.includes('tối') || itemName.includes('đêm')) baseIndex = 9;
                                     else if (itemName.includes('chiều') || itemName.includes('hành chính')) baseIndex = 5;
                                     else {
-                                        // 5. Last Resort: Transaction Time
                                         let hour = dateObj.getHours();
                                         if (hour < 8) baseIndex = 1;
                                         else if (hour < 17) baseIndex = 5;
@@ -619,25 +614,40 @@
                                 }
                             }
 
-                            // Check Type (VL or CD)
-                            let typeOffset = 0; // Default VL
-                            if(itemName.includes('cố định') || itemName.includes('cđ')) {
-                                typeOffset = 2; // Move to CD
+                            let typeOffset = 0; 
+                            if(itemName.includes('cố định') || itemName.includes('cđ')) typeOffset = 2; 
+
+                            let targetColIndex = baseIndex + typeOffset;
+                            
+                            // LOGIC DỒN HÀNG (ROW PACKING)
+                            let placed = false;
+                            let rowsOfThisDate = groupedData[dateStr];
+
+                            for (let r of rowsOfThisDate) {
+                                if (r[targetColIndex] === "") {
+                                    r[targetColIndex] = item.qty;
+                                    if(t.method === 'CK') r[targetColIndex + 1] = "x";
+                                    placed = true;
+                                    break; 
+                                }
                             }
 
-                            let row = new Array(17).fill("");
-                            row[0] = dateStr;
-                            row[baseIndex + typeOffset] = item.qty; 
-                            if(t.method === 'CK') {
-                                row[baseIndex + typeOffset + 1] = "x";
+                            if (!placed) {
+                                let newRow = new Array(17).fill("");
+                                newRow[0] = dateStr;
+                                newRow[targetColIndex] = item.qty; 
+                                if(t.method === 'CK') newRow[targetColIndex + 1] = "x";
+                                rowsOfThisDate.push(newRow);
                             }
-                            dataRows.push(row);
                         }
                     });
                 }
             });
 
-            const ws = XLSX.utils.aoa_to_sheet([h1, h2, h3, ...dataRows]);
+            let finalRows = [];
+            Object.keys(groupedData).forEach(date => { finalRows = finalRows.concat(groupedData[date]); });
+
+            const ws = XLSX.utils.aoa_to_sheet([h1, h2, h3, ...finalRows]);
             const merges = [
                 {s:{r:0,c:1}, e:{r:0,c:4}}, {s:{r:0,c:5}, e:{r:0,c:8}}, {s:{r:0,c:9}, e:{r:0,c:12}}, {s:{r:0,c:13}, e:{r:0,c:16}},
                 {s:{r:1,c:1}, e:{r:1,c:2}}, {s:{r:1,c:3}, e:{r:1,c:4}}, {s:{r:1,c:5}, e:{r:1,c:6}}, {s:{r:1,c:7}, e:{r:1,c:8}}, 
@@ -645,8 +655,8 @@
             ];
             ws['!merges'] = merges;
             const wb = XLSX.utils.book_new(); 
-            XLSX.utils.book_append_sheet(wb, ws, "Tien_San");
-            XLSX.writeFile(wb, "Bao_Cao_Tien_San.xlsx");
+            XLSX.utils.book_append_sheet(wb, ws, "Tien_San_Gop");
+            XLSX.writeFile(wb, "Bao_Cao_Tien_San_Gop.xlsx");
         }
 
         // --- 2. SERVICE EXPORT (CLEANED) ---
