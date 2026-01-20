@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sân Cầu Lông (V19 Smart Logic)</title>
+    <title>Sân Cầu Lông (V23 Final Robust)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -236,6 +236,7 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbzPJ01sjJ0osa7yUjioDAVa00acUIG9RcwwDtzrd_tNRRl0Gsm78mF7bC3Ms67BzikZtw/exec"; 
         
+        // --- DATA ---
         const defaultProducts = [
             { id: 100, name: 'Sân Sáng (50k/h)', price: 50000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '☀️' },
             { id: 101, name: 'Sân Tối (70k/h)', price: 70000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🌙' },
@@ -370,7 +371,7 @@
             const hours = Math.floor(totalMin / 60); const mins = totalMin % 60; const totalMoney = Math.round((totalMin / 60) * price);
             
             document.getElementById('res-time').innerText = `Thời gian: ${hours} giờ ${mins} phút`; document.getElementById('res-total').innerText = formatMoney(totalMoney);
-            // THÊM GIỜ VÀO TÊN ĐỂ HỆ THỐNG ĐỌC ĐƯỢC
+            // SMART: Thêm giờ vào tên để hệ thống bắt
             calcResName = `${selectedText} (${start} - ${end})`; 
             calcResPrice = totalMoney;
             document.getElementById('calc-result').style.display = 'block';
@@ -551,7 +552,7 @@
             return (day === 0 || day === 6); // 0=CN, 6=T7
         }
 
-        // --- 1. COMPLEX COURT EXPORT (V19 SMART PARSING) ---
+        // --- 1. COMPLEX COURT EXPORT (V23 FINAL ROBUST) ---
         function exportCourtReport() {
             const timeFilter = document.getElementById('report-filter-time').value;
             const filteredTrans = transactions.filter(t => checkDateFilter(t.time, timeFilter));
@@ -582,30 +583,43 @@
                         let isRental = itemName.includes('thuê'); 
 
                         if(isCourtFee && !isRental) {
-                            let baseIndex = 0;
-                            
-                            // *** SMART LOGIC: Đọc giờ từ tên món hàng ***
-                            // Tìm mẫu: (HH:MM - HH:MM)
-                            let timeParsed = false;
-                            let startHour = 0;
-                            
-                            const match = item.name.match(/\((\d{1,2}):\d{2}\s*-\s*\d{1,2}:\d{2}\)/);
-                            if(match && match[1]) {
-                                startHour = parseInt(match[1]);
-                                timeParsed = true;
-                            } else {
-                                // Nếu ko có trong tên -> Dùng giờ thanh toán (fallback)
-                                startHour = dateObj.getHours();
-                            }
+                            let baseIndex = 0; 
 
-                            if(isWeekend(dateObj)) {
+                            // === V23: KEYWORDS FORCE WEEKEND (LỄ, T7, CN) ===
+                            
+                            // 1. Check Forced Keywords (Highest Priority)
+                            if (itemName.includes('lễ') || itemName.includes('t7') || itemName.includes('cn') || itemName.includes('cuối tuần')) {
+                                baseIndex = 13; 
+                            }
+                            // 2. Check Actual Date Weekend (Next Priority)
+                            else if(isWeekend(dateObj)) {
                                 baseIndex = 13; 
                             } else {
-                                if(startHour < 8) baseIndex = 1;      // 5h30-8h
-                                else if (startHour < 17) baseIndex = 5; // 8h-17h
-                                else baseIndex = 9;              // 17h-24h
+                                // 3. Check Calculator String (HH:MM - HH:MM)
+                                const match = item.name.match(/(\d{1,2})[h:]/); // Regex cũ của V22 tốt hơn
+                                
+                                // Nếu tìm thấy số giờ trong tên (VD: "8h", "17h")
+                                if (match && match[1]) {
+                                    let parsedHour = parseInt(match[1]);
+                                    if(parsedHour < 8) baseIndex = 1;
+                                    else if(parsedHour < 17) baseIndex = 5;
+                                    else baseIndex = 9;
+                                } else {
+                                    // 4. Fallback Keywords
+                                    if (itemName.includes('sáng')) baseIndex = 1;
+                                    else if (itemName.includes('tối') || itemName.includes('đêm')) baseIndex = 9;
+                                    else if (itemName.includes('chiều') || itemName.includes('hành chính')) baseIndex = 5;
+                                    else {
+                                        // 5. Last Resort: Transaction Time
+                                        let hour = dateObj.getHours();
+                                        if (hour < 8) baseIndex = 1;
+                                        else if (hour < 17) baseIndex = 5;
+                                        else baseIndex = 9;
+                                    }
+                                }
                             }
 
+                            // Check Type (VL or CD)
                             let typeOffset = 0; // Default VL
                             if(itemName.includes('cố định') || itemName.includes('cđ')) {
                                 typeOffset = 2; // Move to CD
