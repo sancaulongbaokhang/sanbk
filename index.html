@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sân Cầu Lông (V18 Final Clean)</title>
+    <title>Sân Cầu Lông (V19 Smart Logic)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -236,7 +236,6 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbzPJ01sjJ0osa7yUjioDAVa00acUIG9RcwwDtzrd_tNRRl0Gsm78mF7bC3Ms67BzikZtw/exec"; 
         
-        // --- DATA ---
         const defaultProducts = [
             { id: 100, name: 'Sân Sáng (50k/h)', price: 50000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '☀️' },
             { id: 101, name: 'Sân Tối (70k/h)', price: 70000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🌙' },
@@ -371,7 +370,9 @@
             const hours = Math.floor(totalMin / 60); const mins = totalMin % 60; const totalMoney = Math.round((totalMin / 60) * price);
             
             document.getElementById('res-time').innerText = `Thời gian: ${hours} giờ ${mins} phút`; document.getElementById('res-total').innerText = formatMoney(totalMoney);
-            calcResName = `${selectedText} (${start} - ${end})`; calcResPrice = totalMoney;
+            // THÊM GIỜ VÀO TÊN ĐỂ HỆ THỐNG ĐỌC ĐƯỢC
+            calcResName = `${selectedText} (${start} - ${end})`; 
+            calcResPrice = totalMoney;
             document.getElementById('calc-result').style.display = 'block';
         }
         function addTimeCart() {
@@ -550,17 +551,13 @@
             return (day === 0 || day === 6); // 0=CN, 6=T7
         }
 
-        // --- 1. COMPLEX COURT EXPORT (V17 - THE 3-LAYER HEADER) ---
+        // --- 1. COMPLEX COURT EXPORT (V19 SMART PARSING) ---
         function exportCourtReport() {
             const timeFilter = document.getElementById('report-filter-time').value;
             const filteredTrans = transactions.filter(t => checkDateFilter(t.time, timeFilter));
             
-            // Header Construction (3 Layers)
-            // Row 1: Time Slots
             const h1 = ["Ngày", "5h30 - 8h", "", "", "", "8h - 17h", "", "", "", "17h - 24h", "", "", "", "T7 - CN - Lễ", "", "", ""];
-            // Row 2: Type (VL vs CD)
             const h2 = ["", "VL", "", "CĐ", "", "VL", "", "CĐ", "", "VL", "", "CĐ", "", "VL", "", "CĐ", ""];
-            // Row 3: Detail (SL vs CK)
             const h3 = ["", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK"];
 
             const dataRows = [];
@@ -578,47 +575,48 @@
                         
                         if(!pGroup) { 
                              const original = products.find(p => p.id == item.id || p.name == item.name); 
-                             if(original) pGroup = original.group; 
-                             else pGroup = 'Khác';
+                             if(original) pGroup = original.group; else pGroup = 'Khác';
                         }
                         
-                        // Filter: Is Court Money? Not Rental?
                         let isCourtFee = pGroup && pGroup.includes('Tiền Giờ');
                         let isRental = itemName.includes('thuê'); 
 
                         if(isCourtFee && !isRental) {
-                            // Determine Column Index
                             let baseIndex = 0;
                             
-                            // 1. Check Weekend
-                            if(isWeekend(dateObj)) {
-                                baseIndex = 13; // T7-CN group starts at col 13 (0-indexed)
+                            // *** SMART LOGIC: Đọc giờ từ tên món hàng ***
+                            // Tìm mẫu: (HH:MM - HH:MM)
+                            let timeParsed = false;
+                            let startHour = 0;
+                            
+                            const match = item.name.match(/\((\d{1,2}):\d{2}\s*-\s*\d{1,2}:\d{2}\)/);
+                            if(match && match[1]) {
+                                startHour = parseInt(match[1]);
+                                timeParsed = true;
                             } else {
-                                // 2. Check Time Slot
-                                let hour = dateObj.getHours();
-                                if(hour < 8) baseIndex = 1;      // 5h30-8h
-                                else if (hour < 17) baseIndex = 5; // 8h-17h
+                                // Nếu ko có trong tên -> Dùng giờ thanh toán (fallback)
+                                startHour = dateObj.getHours();
+                            }
+
+                            if(isWeekend(dateObj)) {
+                                baseIndex = 13; 
+                            } else {
+                                if(startHour < 8) baseIndex = 1;      // 5h30-8h
+                                else if (startHour < 17) baseIndex = 5; // 8h-17h
                                 else baseIndex = 9;              // 17h-24h
                             }
 
-                            // 3. Check Type (VL or CD)
                             let typeOffset = 0; // Default VL
                             if(itemName.includes('cố định') || itemName.includes('cđ')) {
-                                typeOffset = 2; // Move to CD columns
+                                typeOffset = 2; // Move to CD
                             }
 
-                            // 4. Fill Data
                             let row = new Array(17).fill("");
-                            row[0] = dateStr; // Set Date
-                            
-                            // Set Qty
+                            row[0] = dateStr;
                             row[baseIndex + typeOffset] = item.qty; 
-                            
-                            // Set CK
                             if(t.method === 'CK') {
                                 row[baseIndex + typeOffset + 1] = "x";
                             }
-
                             dataRows.push(row);
                         }
                     });
@@ -626,25 +624,12 @@
             });
 
             const ws = XLSX.utils.aoa_to_sheet([h1, h2, h3, ...dataRows]);
-            
-            // Merge Cells Logic
             const merges = [
-                {s:{r:0,c:1}, e:{r:0,c:4}}, // 5h30-8h
-                {s:{r:0,c:5}, e:{r:0,c:8}}, // 8h-17h
-                {s:{r:0,c:9}, e:{r:0,c:12}}, // 17h-24h
-                {s:{r:0,c:13}, e:{r:0,c:16}}, // T7-CN
-                // Sub headers merge VL / CD
-                {s:{r:1,c:1}, e:{r:1,c:2}}, // VL 1
-                {s:{r:1,c:3}, e:{r:1,c:4}}, // CD 1
-                {s:{r:1,c:5}, e:{r:1,c:6}}, // VL 2
-                {s:{r:1,c:7}, e:{r:1,c:8}}, // CD 2
-                {s:{r:1,c:9}, e:{r:1,c:10}}, // VL 3
-                {s:{r:1,c:11}, e:{r:1,c:12}}, // CD 3
-                {s:{r:1,c:13}, e:{r:1,c:14}}, // VL 4
-                {s:{r:1,c:15}, e:{r:1,c:16}}, // CD 4
+                {s:{r:0,c:1}, e:{r:0,c:4}}, {s:{r:0,c:5}, e:{r:0,c:8}}, {s:{r:0,c:9}, e:{r:0,c:12}}, {s:{r:0,c:13}, e:{r:0,c:16}},
+                {s:{r:1,c:1}, e:{r:1,c:2}}, {s:{r:1,c:3}, e:{r:1,c:4}}, {s:{r:1,c:5}, e:{r:1,c:6}}, {s:{r:1,c:7}, e:{r:1,c:8}}, 
+                {s:{r:1,c:9}, e:{r:1,c:10}}, {s:{r:1,c:11}, e:{r:1,c:12}}, {s:{r:1,c:13}, e:{r:1,c:14}}, {s:{r:1,c:15}, e:{r:1,c:16}}, 
             ];
             ws['!merges'] = merges;
-
             const wb = XLSX.utils.book_new(); 
             XLSX.utils.book_append_sheet(wb, ws, "Tien_San");
             XLSX.writeFile(wb, "Bao_Cao_Tien_San.xlsx");
@@ -652,9 +637,7 @@
 
         // --- 2. SERVICE EXPORT (CLEANED) ---
         function exportServiceReport() {
-            // Lọc BỎ hoàn toàn nhóm Tiền Giờ
             const serviceProds = products.filter(p => p.group !== '🏸 Tiền Giờ & Thuê Sân');
-
             const timeFilter = document.getElementById('report-filter-time').value;
             const filteredTrans = transactions.filter(t => checkDateFilter(t.time, timeFilter));
 
