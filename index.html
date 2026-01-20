@@ -614,6 +614,27 @@
 
         setInterval(() => { document.getElementById('current-time').innerText = new Date().toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}); }, 1000);
         checkResponsive(); renderPOS(); renderReport(); loadUsersForLogin(); 
+// --- XỬ LÝ PHÍM ENTER ĐỂ ĐĂNG NHẬP ---
+        // Khi đang gõ ở ô Mật khẩu mà bấm Enter -> Gọi hàm login()
+        document.getElementById("password").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Chặn hành động mặc định
+                login(); // Gọi hàm đăng nhập
+            }
+        });
+
+        // Khi đang gõ ở ô Tên đăng nhập mà bấm Enter -> Chuyển xuống ô Mật khẩu
+        document.getElementById("username").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                document.getElementById("password").focus();
+            }
+        });
+        
+        // Tự động đặt con trỏ vào ô Username khi mở web
+        window.onload = function() {
+            document.getElementById("username").focus();
+        };
         setInterval(syncData, 30000); 
     </script>
 </body>
