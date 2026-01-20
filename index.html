@@ -241,7 +241,7 @@
 
     <script>
         // --- CẤU HÌNH API ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbzYW5cKRNtAItkYOpErNTB-mAkBdlE_KNO9Yypy5wneTUc5f7h5NqkzfucO5g-Hah6kdQ/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbxBJbDfkFy4zZrD9xeP4wkI0dwI6bxwNQRzP7Zg0UWhSSW-N6Bqb7qKDkHXuwADddxB5g/exec"; 
         
         // --- DATA ---
         const defaultProducts = [
@@ -267,12 +267,35 @@
         }
 
         async function loadUsersForLogin() {
-            if(API_URL.includes("THAY_LINK")) return;
+            if(API_URL.includes("THAY_LINK")) {
+                console.error("⛔ CHƯA CẤU HÌNH LINK API!");
+                document.getElementById('login-msg').innerText = "Lỗi: Chưa dán Link Web App!";
+                return;
+            }
+
+            document.getElementById('login-msg').innerText = "Đang tải dữ liệu...";
+            
             try {
+                // Thêm tham số t=... để tránh cache cũ
                 const response = await fetch(API_URL + "?action=get_users&t=" + new Date().getTime());
-                allUsers = await response.json();
-                console.log("Users loaded:", allUsers);
-            } catch (e) { console.error("Error loading users", e); }
+                
+                // Kiểm tra xem phản hồi có ok không
+                if (!response.ok) throw new Error("HTTP Error " + response.status);
+
+                const data = await response.json();
+                
+                if (Array.isArray(data) && data.length > 0) {
+                    allUsers = data;
+                    console.log("✅ Đã tải được " + allUsers.length + " user.");
+                    document.getElementById('login-msg').innerText = ""; // Xóa thông báo lỗi nếu thành công
+                } else {
+                    console.warn("⚠️ Data tải về rỗng hoặc sai định dạng", data);
+                    document.getElementById('login-msg').innerText = "Lỗi dữ liệu trống!";
+                }
+            } catch (e) { 
+                console.error("❌ Lỗi tải user:", e);
+                document.getElementById('login-msg').innerText = "Lỗi kết nối Server! Thử F5 lại.";
+            }
         }
 
         function login() {
