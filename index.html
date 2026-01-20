@@ -243,15 +243,52 @@
         // --- CẤU HÌNH API ---
         const API_URL = "https://script.google.com/macros/s/AKfycbz2jrWmOSzKmdD6WNCkNsE850iKnCfx2FHsm0MvukzW-lrtFhe7qhgkdI26HPRG0o4Yeg/exec"; 
         
-        // --- DATA ---
+        // --- DATA (ĐÃ CẬP NHẬT THEO HÌNH ẢNH) ---
         const defaultProducts = [
-            { id: 100, name: 'Sân Sáng (50k/h)', price: 50000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '☀️' },
-            { id: 101, name: 'Sân Tối (70k/h)', price: 70000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🌙' },
-            { id: 102, name: 'Thuê Vợt', price: 20000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🏸' },
-            { id: 1, name: 'Suối nhỏ 510ml', price: 10000, group: 'Nước Giải Khát', icon: '💧' }, { id: 2, name: 'Suối lớn 1,5l', price: 15000, group: 'Nước Giải Khát', icon: '🍶' }, { id: 3, name: 'Nutri dâu', price: 12000, group: 'Nước Giải Khát', icon: '🍓' }, { id: 4, name: 'Nutri cam', price: 12000, group: 'Nước Giải Khát', icon: '🍊' }, { id: 5, name: 'Revive pro', price: 15000, group: 'Nước Giải Khát', icon: '🧂' }, { id: 6, name: 'Revive TT', price: 15000, group: 'Nước Giải Khát', icon: '🧂' }, { id: 7, name: 'Revive CM', price: 15000, group: 'Nước Giải Khát', icon: '🧂' }, { id: 8, name: 'Pocari lớn', price: 20000, group: 'Nước Giải Khát', icon: '🔵' }, { id: 9, name: 'Pocari nhỏ', price: 15000, group: 'Nước Giải Khát', icon: '🔵' }, { id: 10, name: 'Aquarius', price: 15000, group: 'Nước Giải Khát', icon: '🥤' }, { id: 11, name: 'Coca TT', price: 15000, group: 'Nước Giải Khát', icon: '🥤' }, { id: 12, name: 'Coca (zr calo)', price: 15000, group: 'Nước Giải Khát', icon: '🥤' }, { id: 13, name: 'Fanta', price: 15000, group: 'Nước Giải Khát', icon: '🍊' }, { id: 14, name: 'Red bull', price: 20000, group: 'Nước Giải Khát', icon: '🐂' }, { id: 15, name: 'C2 chanh', price: 12000, group: 'Nước Giải Khát', icon: '🍋' }, { id: 16, name: 'Sting', price: 15000, group: 'Nước Giải Khát', icon: '🍓' }, { id: 17, name: 'Trà đá 2', price: 2000, group: 'Trà Đá & Pha Chế', icon: '🧊' }, { id: 18, name: 'Trà đá 3', price: 3000, group: 'Trà Đá & Pha Chế', icon: '🧊' }, { id: 19, name: 'Trà đá 5', price: 5000, group: 'Trà Đá & Pha Chế', icon: '🧊' }, { id: 20, name: 'Trà đá 10', price: 10000, group: 'Trà Đá & Pha Chế', icon: '🧊' }, { id: 21, name: 'Trà đá 20', price: 20000, group: 'Trà Đá & Pha Chế', icon: '🧊' }, { id: 22, name: 'Soda lon', price: 15000, group: 'Trà Đá & Pha Chế', icon: '🫧' }, { id: 23, name: 'Soda chanh dây', price: 20000, group: 'Trà Đá & Pha Chế', icon: '🍹' }, { id: 24, name: 'Cầu mới', price: 280000, group: 'Cầu Lông', icon: '🏸' }, { id: 25, name: 'Cầu cũ', price: 5000, group: 'Cầu Lông', icon: '🏸' }, { id: 26, name: 'Cầu ống PH', price: 200000, group: 'Cầu Lông', icon: '🏸' }, { id: 27, name: 'Mì', price: 15000, group: 'Đồ Ăn & Dịch Vụ', icon: '🍜' }, { id: 28, name: 'Quấn cán (25)', price: 25000, group: 'Đồ Ăn & Dịch Vụ', icon: '🎗️' }, { id: 29, name: 'Quấn cán (45)', price: 45000, group: 'Đồ Ăn & Dịch Vụ', icon: '🎗️' }
+            { id: 101, name: '5h30 - 8h (Vãng Lai)', price: 70000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🌅' },
+            { id: 102, name: '5h30 - 8h (Cố Định)', price: 60000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🌅' },
+            { id: 103, name: '8h - 17h (Vãng Lai)', price: 60000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '☀️' },
+            { id: 104, name: '8h - 17h (Cố Định)', price: 50000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '☀️' },
+            { id: 105, name: '17h - 24h (Vãng Lai)', price: 110000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🌙' },
+            { id: 106, name: '17h - 24h (Cố Định)', price: 100000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🌙' },
+            { id: 107, name: 'T7-CN-Lễ (Vãng Lai)', price: 100000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '📅' },
+            { id: 108, name: 'T7-CN-Lễ (Cố Định)', price: 90000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '📅' },
+            { id: 109, name: 'Thuê Vợt', price: 20000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🏸' },
+
+            // CÁC MÓN KHÁC GIỮ NGUYÊN
+            { id: 1, name: 'Suối nhỏ 510ml', price: 10000, group: 'Nước Giải Khát', icon: '💧' }, 
+            { id: 2, name: 'Suối lớn 1,5l', price: 15000, group: 'Nước Giải Khát', icon: '🍶' }, 
+            { id: 3, name: 'Nutri dâu', price: 12000, group: 'Nước Giải Khát', icon: '🍓' }, 
+            { id: 4, name: 'Nutri cam', price: 12000, group: 'Nước Giải Khát', icon: '🍊' }, 
+            { id: 5, name: 'Revive pro', price: 15000, group: 'Nước Giải Khát', icon: '🧂' }, 
+            { id: 6, name: 'Revive TT', price: 15000, group: 'Nước Giải Khát', icon: '🧂' }, 
+            { id: 7, name: 'Revive CM', price: 15000, group: 'Nước Giải Khát', icon: '🧂' }, 
+            { id: 8, name: 'Pocari lớn', price: 20000, group: 'Nước Giải Khát', icon: '🔵' }, 
+            { id: 9, name: 'Pocari nhỏ', price: 15000, group: 'Nước Giải Khát', icon: '🔵' }, 
+            { id: 10, name: 'Aquarius', price: 15000, group: 'Nước Giải Khát', icon: '🥤' }, 
+            { id: 11, name: 'Coca TT', price: 15000, group: 'Nước Giải Khát', icon: '🥤' }, 
+            { id: 12, name: 'Coca (zr calo)', price: 15000, group: 'Nước Giải Khát', icon: '🥤' }, 
+            { id: 13, name: 'Fanta', price: 15000, group: 'Nước Giải Khát', icon: '🍊' }, 
+            { id: 14, name: 'Red bull', price: 20000, group: 'Nước Giải Khát', icon: '🐂' }, 
+            { id: 15, name: 'C2 chanh', price: 12000, group: 'Nước Giải Khát', icon: '🍋' }, 
+            { id: 16, name: 'Sting', price: 15000, group: 'Nước Giải Khát', icon: '🍓' }, 
+            { id: 17, name: 'Trà đá 2', price: 2000, group: 'Trà Đá & Pha Chế', icon: '🧊' }, 
+            { id: 18, name: 'Trà đá 3', price: 3000, group: 'Trà Đá & Pha Chế', icon: '🧊' }, 
+            { id: 19, name: 'Trà đá 5', price: 5000, group: 'Trà Đá & Pha Chế', icon: '🧊' }, 
+            { id: 20, name: 'Trà đá 10', price: 10000, group: 'Trà Đá & Pha Chế', icon: '🧊' }, 
+            { id: 21, name: 'Trà đá 20', price: 20000, group: 'Trà Đá & Pha Chế', icon: '🧊' }, 
+            { id: 22, name: 'Soda lon', price: 15000, group: 'Trà Đá & Pha Chế', icon: '🫧' }, 
+            { id: 23, name: 'Soda chanh dây', price: 20000, group: 'Trà Đá & Pha Chế', icon: '🍹' }, 
+            { id: 24, name: 'Cầu mới', price: 280000, group: 'Cầu Lông', icon: '🏸' }, 
+            { id: 25, name: 'Cầu cũ', price: 5000, group: 'Cầu Lông', icon: '🏸' }, 
+            { id: 26, name: 'Cầu ống PH', price: 200000, group: 'Cầu Lông', icon: '🏸' }, 
+            { id: 27, name: 'Mì', price: 15000, group: 'Đồ Ăn & Dịch Vụ', icon: '🍜' }, 
+            { id: 28, name: 'Quấn cán (25)', price: 25000, group: 'Đồ Ăn & Dịch Vụ', icon: '🎗️' }, 
+            { id: 29, name: 'Quấn cán (45)', price: 45000, group: 'Đồ Ăn & Dịch Vụ', icon: '🎗️' }
         ];
 
-        let savedProds = localStorage.getItem('bd_products_grouped_v1');
+        // --- ĐỔI KEY ĐỂ CẬP NHẬT MỚI ---
+        let savedProds = localStorage.getItem('bd_products_final_update');
         let products = savedProds ? JSON.parse(savedProds) : defaultProducts;
         let savedTx = localStorage.getItem('bd_transactions_backup');
         let transactions = savedTx ? JSON.parse(savedTx) : [];
@@ -518,9 +555,9 @@
             if (!name || !price) return alert("Thiếu thông tin");
             if(id) { const index = products.findIndex(p => p.id == id); if(index !== -1) products[index] = { ...products[index], name, price, group }; } 
             else { products.push({ id: Date.now(), name, price, group, icon: '📦' }); }
-            localStorage.setItem('bd_products_grouped_v1', JSON.stringify(products)); closeModal(); renderProductTable(); renderPOS();
+            localStorage.setItem('bd_products_final_update', JSON.stringify(products)); closeModal(); renderProductTable(); renderPOS();
         }
-        function deleteProduct(id) { if(confirm("Xóa?")) { products = products.filter(p => p.id != id); localStorage.setItem('bd_products_grouped_v1', JSON.stringify(products)); renderProductTable(); renderPOS(); } }
+        function deleteProduct(id) { if(confirm("Xóa?")) { products = products.filter(p => p.id != id); localStorage.setItem('bd_products_final_update', JSON.stringify(products)); renderProductTable(); renderPOS(); } }
 
         // --- FILTER ---
         function checkDateFilter(dateStr, filter) {
