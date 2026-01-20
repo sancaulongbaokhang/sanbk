@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sân Cầu Lông (V-FINAL)</title>
+    <title>Sân Cầu Lông (Cloud Sync)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -243,7 +243,7 @@
         // --- CẤU HÌNH API ---
         const API_URL = "https://script.google.com/macros/s/AKfycbz2jrWmOSzKmdD6WNCkNsE850iKnCfx2FHsm0MvukzW-lrtFhe7qhgkdI26HPRG0o4Yeg/exec"; 
         
-        // --- DATA (ĐÃ CẬP NHẬT THEO HÌNH ẢNH) ---
+        // --- DATA ---
         const defaultProducts = [
             { id: 101, name: '5h30 - 8h (Vãng Lai)', price: 70000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🌅' },
             { id: 102, name: '5h30 - 8h (Cố Định)', price: 60000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🌅' },
@@ -254,8 +254,6 @@
             { id: 107, name: 'T7-CN-Lễ (Vãng Lai)', price: 100000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '📅' },
             { id: 108, name: 'T7-CN-Lễ (Cố Định)', price: 90000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '📅' },
             { id: 109, name: 'Thuê Vợt', price: 20000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🏸' },
-
-            // CÁC MÓN KHÁC GIỮ NGUYÊN
             { id: 1, name: 'Suối nhỏ 510ml', price: 10000, group: 'Nước Giải Khát', icon: '💧' }, 
             { id: 2, name: 'Suối lớn 1,5l', price: 15000, group: 'Nước Giải Khát', icon: '🍶' }, 
             { id: 3, name: 'Nutri dâu', price: 12000, group: 'Nước Giải Khát', icon: '🍓' }, 
@@ -287,8 +285,8 @@
             { id: 29, name: 'Quấn cán (45)', price: 45000, group: 'Đồ Ăn & Dịch Vụ', icon: '🎗️' }
         ];
 
-        // --- ĐỔI KEY ĐỂ CẬP NHẬT MỚI ---
-        let savedProds = localStorage.getItem('bd_products_final_update');
+        // Dùng localStorage làm bộ nhớ đệm, nhưng Server là gốc
+        let savedProds = localStorage.getItem('bd_products_cloud_v1');
         let products = savedProds ? JSON.parse(savedProds) : defaultProducts;
         let savedTx = localStorage.getItem('bd_transactions_backup');
         let transactions = savedTx ? JSON.parse(savedTx) : [];
@@ -298,52 +296,55 @@
         let allUsers = [];
         let currentReportType = 'all';
 
-        function formatMoney(num) { 
-            if(isNaN(num)) return "0 ₫";
-            return num.toLocaleString('vi-VN') + ' ₫'; 
+        function formatMoney(num) { if(isNaN(num)) return "0 ₫"; return num.toLocaleString('vi-VN') + ' ₫'; }
+
+        // --- NEW: SYNC PRODUCTS FUNCTION ---
+        async function syncProductData() {
+            if(API_URL.includes("THAY_LINK")) return;
+            console.log("🛠️ Bắt đầu đồng bộ Menu...");
+            
+            try {
+                // 1. Tải menu từ server về
+                const response = await fetch(API_URL + "?action=get_products&t=" + new Date().getTime());
+                const serverProducts = await response.json();
+                
+                if (serverProducts && serverProducts.length > 0) {
+                    // CASE A: Server có dữ liệu -> Lấy về dùng (Đè lên local)
+                    console.log("📥 Đã tải Menu từ Server:", serverProducts.length, "món");
+                    products = serverProducts;
+                    localStorage.setItem('bd_products_cloud_v1', JSON.stringify(products));
+                    renderPOS(); renderProductTable();
+                } else {
+                    // CASE B: Server rỗng (Lần đầu chạy) -> Đẩy Local lên Server
+                    console.log("📤 Server rỗng. Đang đẩy Menu hiện tại lên...");
+                    await fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'save_all_products', products: products })
+                    });
+                    console.log("✅ Đã đẩy Menu gốc lên Server thành công!");
+                }
+            } catch (e) {
+                console.error("Lỗi đồng bộ Menu:", e);
+            }
         }
 
         async function loadUsersForLogin() {
-            if(API_URL.includes("THAY_LINK")) {
-                console.error("⛔ CHƯA CẤU HÌNH LINK API!");
-                document.getElementById('login-msg').innerText = "Lỗi: Chưa dán Link Web App!";
-                return;
-            }
-
+            if(API_URL.includes("THAY_LINK")) { document.getElementById('login-msg').innerText = "Lỗi: Chưa cấu hình Link API!"; return; }
             document.getElementById('login-msg').innerText = "Đang tải dữ liệu...";
-            
             try {
-                // Thêm tham số t=... để tránh cache cũ
                 const response = await fetch(API_URL + "?action=get_users&t=" + new Date().getTime());
-                
-                // Kiểm tra xem phản hồi có ok không
-                if (!response.ok) throw new Error("HTTP Error " + response.status);
-
                 const data = await response.json();
-                
-                if (Array.isArray(data) && data.length > 0) {
-                    allUsers = data;
-                    console.log("✅ Đã tải được " + allUsers.length + " user.");
-                    document.getElementById('login-msg').innerText = ""; // Xóa thông báo lỗi nếu thành công
-                } else {
-                    console.warn("⚠️ Data tải về rỗng hoặc sai định dạng", data);
-                    document.getElementById('login-msg').innerText = "Lỗi dữ liệu trống!";
-                }
-            } catch (e) { 
-                console.error("❌ Lỗi tải user:", e);
-                document.getElementById('login-msg').innerText = "Lỗi kết nối Server! Thử F5 lại.";
-            }
+                if (Array.isArray(data)) { allUsers = data; document.getElementById('login-msg').innerText = ""; }
+            } catch (e) { document.getElementById('login-msg').innerText = "Lỗi kết nối Server!"; }
         }
 
         function login() {
             const u = document.getElementById('username').value;
             const p = document.getElementById('password').value;
-            // Admin fallback
             if(u==='admin' && p==='123') { currentUser = { username: 'admin', role: 'admin', name: 'Admin Offline' }; loginSuccess(); return; }
-            
             const found = allUsers.find(user => user.username == u && user.password == p);
             if(found) { currentUser = found; loginSuccess(); } 
-            else { if(!allUsers || allUsers.length === 0) { loadUsersForLogin(); alert("Đang tải dữ liệu User... Vui lòng đợi 3s rồi thử lại"); } else { alert("Sai tên đăng nhập hoặc mật khẩu!"); } }
+            else { if(!allUsers.length) { loadUsersForLogin(); alert("Đang tải dữ liệu..."); } else alert("Sai thông tin!"); }
         }
 
         function loginSuccess() {
@@ -352,21 +353,17 @@
             document.getElementById('staff-name').innerText = `NV: ${currentUser.name}`;
             if (currentUser.role === 'staff') { document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden')); showTab('pos'); } 
             else { document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden')); renderUserTable(); }
-            syncData();
+            syncData(); 
+            syncProductData(); // <-- Gọi hàm sync menu khi đăng nhập xong
         }
         function logout() { location.reload(); }
         function renderUserTable() { document.querySelector('#user-table tbody').innerHTML = allUsers.map(u => `<tr><td>${u.username}</td><td>${u.name}</td><td>${u.role}</td><td>***</td></tr>`).join(''); }
         function openUserModal() { document.getElementById('user-modal').style.display = 'flex'; }
-        
         async function saveUser() {
             const u = document.getElementById('u-username').value; const p = document.getElementById('u-password').value; const n = document.getElementById('u-name').value; const r = document.getElementById('u-role').value;
             if(!u || !p) return alert("Thiếu thông tin!");
             document.getElementById('loading-overlay').style.display = 'flex';
-            try {
-                await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'add_user', username: u, password: p, name: n, role: r }) });
-                alert("Đã thêm User!"); document.getElementById('user-modal').style.display = 'none'; 
-                await loadUsersForLogin(); if(currentUser.role === 'admin') renderUserTable();
-            } catch (error) { alert("Lỗi kết nối!"); } finally { document.getElementById('loading-overlay').style.display = 'none'; }
+            try { await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'add_user', username: u, password: p, name: n, role: r }) }); alert("Xong!"); document.getElementById('user-modal').style.display = 'none'; await loadUsersForLogin(); if(currentUser.role === 'admin') renderUserTable(); } catch (error) { alert("Lỗi!"); } finally { document.getElementById('loading-overlay').style.display = 'none'; }
         }
 
         function checkResponsive() {
@@ -376,122 +373,59 @@
         window.addEventListener('resize', checkResponsive);
         function toggleBillPanel(show) { const panel = document.getElementById('bill-panel'); if (show) panel.classList.add('show'); else panel.classList.remove('show'); }
 
-        // --- CORE FUNCTION: SYNC DATA ---
         async function syncData() {
-            if(API_URL.includes("THAY_LINK")) { console.log("Chưa cấu hình Link API"); return; }
-            if(!navigator.onLine) {
-                document.getElementById('sync-dot').className = 'sync-dot'; 
-                document.getElementById('sync-text').innerText = 'Offline Mode';
-                return;
-            }
-
+            if(API_URL.includes("THAY_LINK") || !navigator.onLine) { document.getElementById('sync-dot').className = 'sync-dot'; document.getElementById('sync-text').innerText = 'Offline'; return; }
             try {
-                // Read data
                 const response = await fetch(API_URL + "?action=read&t=" + new Date().getTime());
                 const data = await response.json();
-                
                 if(data && Array.isArray(data)) {
-                    // Update only if different
-                    if(JSON.stringify(data) !== JSON.stringify(transactions)) {
-                         transactions = data; 
-                         localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions));
-                         renderReport();
-                    }
-                    // Visual update
-                    document.getElementById('sync-dot').className = 'sync-dot online'; 
-                    document.getElementById('sync-text').innerText = 'Online'; 
-                    document.getElementById('sync-text').style.color = '#16a34a';
+                    if(JSON.stringify(data) !== JSON.stringify(transactions)) { transactions = data; localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions)); renderReport(); }
+                    document.getElementById('sync-dot').className = 'sync-dot online'; document.getElementById('sync-text').innerText = 'Online'; document.getElementById('sync-text').style.color = '#16a34a';
                 }
-            } catch (error) { 
-                console.log("Sync Error:", error);
-                document.getElementById('sync-dot').className = 'sync-dot'; 
-                document.getElementById('sync-text').innerText = 'Offline Mode'; 
-            }
+            } catch (error) { document.getElementById('sync-dot').className = 'sync-dot'; document.getElementById('sync-text').innerText = 'Offline'; }
         }
 
         async function pushOrderToSheet(orderData) {
             document.getElementById('loading-overlay').style.display = 'flex';
-            // Optimistic UI: Lưu tạm vào máy trước
-            transactions.unshift(orderData); 
-            localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions)); 
-            renderReport();
-
+            transactions.unshift(orderData); localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions)); renderReport();
             try {
-                const response = await fetch(API_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify({ ...orderData, action: 'insert' }) 
-                });
+                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ ...orderData, action: 'insert' }) });
                 const result = await response.json();
-                if(result.status === 'success') {
-                    alert("✅ Đã lưu thành công!"); 
-                } else { throw new Error("Server error"); }
-                
-                toggleBillPanel(false); cart = []; renderCart(); 
-                setTimeout(() => { syncData(); }, 1000);
-
-            } catch (error) { 
-                console.error(error);
-                alert("⚠️ Đã lưu vào máy (Offline). Đơn sẽ được đồng bộ sau."); 
-                toggleBillPanel(false); cart = []; renderCart(); 
-            } finally { 
-                document.getElementById('loading-overlay').style.display = 'none'; 
-            }
+                if(result.status === 'success') alert("✅ Đã lưu!"); else throw new Error("Lỗi Server");
+                toggleBillPanel(false); cart = []; renderCart(); setTimeout(() => { syncData(); }, 1000);
+            } catch (error) { alert("⚠️ Đã lưu Offline!"); toggleBillPanel(false); cart = []; renderCart(); } 
+            finally { document.getElementById('loading-overlay').style.display = 'none'; }
         }
 
         function showTab(tabName) {
             document.querySelectorAll('.main').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
             document.getElementById('tab-' + tabName).classList.add('active');
-            const menus = document.querySelectorAll('.menu-item');
-            if(tabName === 'pos') menus[0].classList.add('active'); 
-            if(tabName === 'calc') { menus[1].classList.add('active'); updateCalcOptions(); } 
-            if(tabName === 'products') menus[2].classList.add('active'); 
-            if(tabName === 'reports') menus[3].classList.add('active'); 
-            if(tabName === 'users') menus[4].classList.add('active');
-            if(tabName === 'products') renderProductTable(); if(tabName === 'reports') renderReport();
+            if(tabName === 'pos') document.querySelectorAll('.menu-item')[0].classList.add('active'); 
+            if(tabName === 'calc') { document.querySelectorAll('.menu-item')[1].classList.add('active'); updateCalcOptions(); } 
+            if(tabName === 'products') { document.querySelectorAll('.menu-item')[2].classList.add('active'); renderProductTable(); } 
+            if(tabName === 'reports') { document.querySelectorAll('.menu-item')[3].classList.add('active'); renderReport(); } 
+            if(tabName === 'users') document.querySelectorAll('.menu-item')[4].classList.add('active');
         }
 
         function updateCalcOptions() {
-            const select = document.getElementById('c-price-select');
-            select.innerHTML = '';
+            const select = document.getElementById('c-price-select'); select.innerHTML = '';
             const courtItems = products.filter(p => p.group === '🏸 Tiền Giờ & Thuê Sân');
-            
-            if(courtItems.length === 0) {
-                const opt = document.createElement('option');
-                opt.text = "Chưa có gói cước"; select.add(opt); return;
-            }
-            courtItems.forEach(item => {
-                const opt = document.createElement('option');
-                opt.value = item.price;
-                opt.text = `${item.name} (${formatMoney(item.price)}/h)`;
-                select.add(opt);
-            });
+            if(courtItems.length === 0) { const opt = document.createElement('option'); opt.text = "Chưa có gói cước"; select.add(opt); return; }
+            courtItems.forEach(item => { const opt = document.createElement('option'); opt.value = item.price; opt.text = `${item.name} (${formatMoney(item.price)}/h)`; select.add(opt); });
         }
-
-        let calcResName = ""; let calcResPrice = 0;
+        let calcResName = "", calcResPrice = 0;
         function calculateTime() {
-            const start = document.getElementById('c-start').value; const end = document.getElementById('c-end').value; 
-            const price = Number(document.getElementById('c-price-select').value); 
-            const select = document.getElementById('c-price-select');
-            if(!start || !end || !price) return alert("Vui lòng nhập đủ thông tin!");
-            
+            const start = document.getElementById('c-start').value; const end = document.getElementById('c-end').value; const price = Number(document.getElementById('c-price-select').value); const select = document.getElementById('c-price-select');
+            if(!start || !end || !price) return alert("Thiếu thông tin!");
             const selectedText = select.options[select.selectedIndex].text.split('(')[0].trim();
             const [h1, m1] = start.split(':').map(Number); const [h2, m2] = end.split(':').map(Number);
             let totalMin = (h2 * 60 + m2) - (h1 * 60 + m1); if(totalMin < 0) totalMin += 24 * 60; 
             const hours = Math.floor(totalMin / 60); const mins = totalMin % 60; const totalMoney = Math.round((totalMin / 60) * price);
-            
             document.getElementById('res-time').innerText = `Thời gian: ${hours} giờ ${mins} phút`; document.getElementById('res-total').innerText = formatMoney(totalMoney);
-            calcResName = `${selectedText} (${start} - ${end})`; 
-            calcResPrice = totalMoney;
-            document.getElementById('calc-result').style.display = 'block';
+            calcResName = `${selectedText} (${start} - ${end})`; calcResPrice = totalMoney; document.getElementById('calc-result').style.display = 'block';
         }
-        function addTimeCart() {
-            if(calcResPrice > 0) {
-                cart.push({ id: Date.now(), name: calcResName, price: calcResPrice, qty: 1, group: '🏸 Tiền Giờ & Thuê Sân' });
-                renderCart(); showTab('pos');
-                document.getElementById('c-start').value = ""; document.getElementById('c-end').value = ""; document.getElementById('calc-result').style.display = 'none';
-            }
-        }
+        function addTimeCart() { if(calcResPrice > 0) { cart.push({ id: Date.now(), name: calcResName, price: calcResPrice, qty: 1, group: '🏸 Tiền Giờ & Thuê Sân' }); renderCart(); showTab('pos'); document.getElementById('c-start').value = ""; document.getElementById('c-end').value = ""; document.getElementById('calc-result').style.display = 'none'; } }
 
         function renderPOS() {
             const grid = document.getElementById('pos-grid'); grid.innerHTML = '';
@@ -502,28 +436,16 @@
                 header.innerHTML = `<i class="fas ${iconClass}"></i> ${groupName}`; grid.appendChild(header);
                 const groupContainer = document.createElement('div'); groupContainer.className = 'grid';
                 products.filter(p => p.group === groupName).forEach(p => {
-                    const card = document.createElement('div'); card.className = 'card';
-                    card.onclick = function() { addToCart(p.id); };
-                    card.innerHTML = `<div class="card-icon">${p.icon || '📦'}</div><div class="card-name" title="${p.name}">${p.name}</div><div class="card-price">${formatMoney(p.price)}</div>`;
-                    groupContainer.appendChild(card);
-                });
-                grid.appendChild(groupContainer);
+                    const card = document.createElement('div'); card.className = 'card'; card.onclick = function() { addToCart(p.id); };
+                    card.innerHTML = `<div class="card-icon">${p.icon || '📦'}</div><div class="card-name" title="${p.name}">${p.name}</div><div class="card-price">${formatMoney(p.price)}</div>`; groupContainer.appendChild(card);
+                }); grid.appendChild(groupContainer);
             });
         }
-
-        function addToCart(id) {
-            const product = products.find(p => p.id == id); const existing = cart.find(c => c.id == id);
-            if (existing) { existing.qty++; } else { cart.push({ ...product, qty: 1 }); }
-            renderCart(); if(window.innerWidth <= 1024) { const btn = document.getElementById('mobile-cart-btn'); btn.style.transform = 'scale(1.1)'; setTimeout(() => btn.style.transform = 'scale(1)', 200); }
-        }
+        function addToCart(id) { const product = products.find(p => p.id == id); const existing = cart.find(c => c.id == id); if (existing) existing.qty++; else cart.push({ ...product, qty: 1 }); renderCart(); }
         function renderCart() {
-            const container = document.getElementById('bill-items');
-            if (cart.length === 0) { container.innerHTML = `<div style="text-align:center;color:#94a3b8;margin-top:50px;font-size:12px;">Trống</div>`; document.getElementById('bill-total').innerText = '0 ₫'; document.getElementById('mobile-cart-total').innerText = '0 ₫'; return; }
+            const container = document.getElementById('bill-items'); if (cart.length === 0) { container.innerHTML = `<div style="text-align:center;color:#94a3b8;margin-top:50px;font-size:12px;">Trống</div>`; document.getElementById('bill-total').innerText = '0 ₫'; document.getElementById('mobile-cart-total').innerText = '0 ₫'; return; }
             let html = ''; let total = 0;
-            cart.forEach((item, index) => {
-                const itemTotal = item.price * item.qty; total += itemTotal;
-                html += `<div class="bill-item"><div style="flex:1"><div style="font-weight:600">${item.name}</div><div style="color:#64748b;font-size:11px">${formatMoney(item.price)}</div></div><div style="display:flex;align-items:center;gap:8px"><div class="bill-item-controls"><button onclick="changeQty(${index}, -1)">-</button><span style="font-weight:bold;margin:0 5px">${item.qty}</span><button onclick="changeQty(${index}, 1)">+</button></div><span style="font-weight:bold;min-width:60px;text-align:right">${formatMoney(itemTotal)}</span></div></div>`;
-            });
+            cart.forEach((item, index) => { const itemTotal = item.price * item.qty; total += itemTotal; html += `<div class="bill-item"><div style="flex:1"><div style="font-weight:600">${item.name}</div><div style="color:#64748b;font-size:11px">${formatMoney(item.price)}</div></div><div style="display:flex;align-items:center;gap:8px"><div class="bill-item-controls"><button onclick="changeQty(${index}, -1)">-</button><span style="font-weight:bold;margin:0 5px">${item.qty}</span><button onclick="changeQty(${index}, 1)">+</button></div><span style="font-weight:bold;min-width:60px;text-align:right">${formatMoney(itemTotal)}</span></div></div>`; });
             container.innerHTML = html; document.getElementById('bill-total').innerText = formatMoney(total); document.getElementById('mobile-cart-total').innerText = formatMoney(total);
         }
         function changeQty(index, delta) { cart[index].qty += delta; if (cart[index].qty <= 0) cart.splice(index, 1); renderCart(); }
@@ -531,193 +453,47 @@
         function payOrder() {
             if (cart.length === 0) return alert("Chưa chọn món!");
             const staffName = currentUser ? currentUser.name : "Admin";
-            const orderData = { 
-                time: new Date().toISOString(), 
-                itemsStr: cart.map(i => `${i.name} (${i.qty})`).join(', '), 
-                cartDetails: cart.map(i => ({ 
-                    id: i.id, name: i.name, qty: i.qty, price: i.price, group: i.group || 'Khác' 
-                })), 
-                total: cart.reduce((sum, item) => sum + (item.price * item.qty), 0), 
-                method: paymentMethod, staff: staffName 
-            };
+            const orderData = { time: new Date().toISOString(), itemsStr: cart.map(i => `${i.name} (${i.qty})`).join(', '), cartDetails: cart.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price, group: i.group || 'Khác' })), total: cart.reduce((sum, item) => sum + (item.price * item.qty), 0), method: paymentMethod, staff: staffName };
             pushOrderToSheet(orderData);
         }
 
-        // --- EDIT PRODUCT ---
+        // --- UPDATED EDIT PRODUCT (CLOUD SYNC) ---
         function renderProductTable() { document.querySelector('#product-table tbody').innerHTML = products.map((p) => `<tr><td>${p.name}</td><td>${formatMoney(p.price)}</td><td><button style="border:none;background:none;color:blue;margin-right:10px" onclick="editProduct(${p.id})"><i class="fas fa-edit"></i></button><button style="border:none;background:none;color:red" onclick="deleteProduct(${p.id})"><i class="fas fa-trash"></i></button></td></tr>`).join(''); }
         function openProductModal() { document.getElementById('modal-title').innerText = "Thêm sản phẩm"; document.getElementById('prod-id').value = ''; document.getElementById('prod-name').value = ''; document.getElementById('prod-price').value = ''; document.getElementById('product-modal').style.display = 'flex'; }
-        function editProduct(id) {
-            const p = products.find(x => x.id === id); if(p) { document.getElementById('modal-title').innerText = "Sửa sản phẩm"; document.getElementById('prod-id').value = p.id; document.getElementById('prod-name').value = p.name; document.getElementById('prod-price').value = p.price; document.getElementById('prod-group').value = p.group; document.getElementById('product-modal').style.display = 'flex'; }
-        }
+        function editProduct(id) { const p = products.find(x => x.id === id); if(p) { document.getElementById('modal-title').innerText = "Sửa sản phẩm"; document.getElementById('prod-id').value = p.id; document.getElementById('prod-name').value = p.name; document.getElementById('prod-price').value = p.price; document.getElementById('prod-group').value = p.group; document.getElementById('product-modal').style.display = 'flex'; } }
         function closeModal() { document.getElementById('product-modal').style.display = 'none'; }
-        function saveProduct() {
+        
+        async function saveProduct() {
             const id = document.getElementById('prod-id').value; const name = document.getElementById('prod-name').value; const price = Number(document.getElementById('prod-price').value); const group = document.getElementById('prod-group').value;
             if (!name || !price) return alert("Thiếu thông tin");
             if(id) { const index = products.findIndex(p => p.id == id); if(index !== -1) products[index] = { ...products[index], name, price, group }; } 
             else { products.push({ id: Date.now(), name, price, group, icon: '📦' }); }
-            localStorage.setItem('bd_products_final_update', JSON.stringify(products)); closeModal(); renderProductTable(); renderPOS();
-        }
-        function deleteProduct(id) { if(confirm("Xóa?")) { products = products.filter(p => p.id != id); localStorage.setItem('bd_products_final_update', JSON.stringify(products)); renderProductTable(); renderPOS(); } }
-
-        // --- FILTER ---
-        function checkDateFilter(dateStr, filter) {
-            const tDate = new Date(dateStr);
-            const now = new Date();
-            const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             
-            if (filter === 'all') return true;
-            if (filter === 'today') return tDate >= startOfDay;
-            if (filter === 'yesterday') {
-                const yesterday = new Date(startOfDay); yesterday.setDate(yesterday.getDate() - 1);
-                const endYesterday = new Date(startOfDay);
-                return tDate >= yesterday && tDate < endYesterday;
+            localStorage.setItem('bd_products_cloud_v1', JSON.stringify(products)); closeModal(); renderProductTable(); renderPOS();
+            
+            // PUSH TO CLOUD
+            if(!API_URL.includes("THAY_LINK")) {
+                const btn = document.querySelectorAll('#product-modal .btn-add')[0]; btn.innerText = "Đang lưu...";
+                try { await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'save_all_products', products: products }) }); } catch(e) { console.error(e); } finally { btn.innerText = "Lưu"; }
             }
-            if (filter === 'week') {
-                const day = now.getDay() || 7; 
-                if(day !== 1) now.setHours(-24 * (day - 1)); else now.setHours(0,0,0,0);
-                return tDate >= now;
-            }
-            if (filter === 'month') return tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear();
-            return true;
+        }
+        async function deleteProduct(id) { 
+            if(confirm("Xóa?")) { 
+                products = products.filter(p => p.id != id); 
+                localStorage.setItem('bd_products_cloud_v1', JSON.stringify(products)); renderProductTable(); renderPOS(); 
+                if(!API_URL.includes("THAY_LINK")) { await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'save_all_products', products: products }) }); }
+            } 
         }
 
-        // --- REPORT RENDER ---
+        function checkDateFilter(dateStr, filter) { const tDate = new Date(dateStr); const now = new Date(); const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()); if (filter === 'all') return true; if (filter === 'today') return tDate >= startOfDay; if (filter === 'yesterday') { const yesterday = new Date(startOfDay); yesterday.setDate(yesterday.getDate() - 1); const endYesterday = new Date(startOfDay); return tDate >= yesterday && tDate < endYesterday; } if (filter === 'week') { const day = now.getDay() || 7; if(day !== 1) now.setHours(-24 * (day - 1)); else now.setHours(0,0,0,0); return tDate >= now; } if (filter === 'month') return tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear(); return true; }
         function setReportTab(type, btn) { currentReportType = type; document.querySelectorAll('.report-tab').forEach(el => el.classList.remove('active')); btn.classList.add('active'); renderReport(); }
-        
-        function renderReport() {
-            const tbody = document.querySelector('#report-table tbody');
-            const timeFilter = document.getElementById('report-filter-time').value;
-            let totalAll = 0, courtTotal = 0, serviceTotal = 0;
-            const filteredTrans = transactions.filter(t => checkDateFilter(t.time, timeFilter));
-
-            filteredTrans.forEach(t => {
-                totalAll += t.total;
-                if(t.cartDetails) {
-                    t.cartDetails.forEach(item => {
-                        let itemPrice = item.price; let pGroup = item.group;
-                        if(!itemPrice || !pGroup) { 
-                             const original = products.find(p => p.id == item.id || p.name == item.name); 
-                             if(original) { if(!itemPrice) itemPrice = original.price; if(!pGroup) pGroup = original.group; } 
-                             else { if(!itemPrice) itemPrice = 0; if(!pGroup) pGroup = 'Khác'; }
-                        }
-                        let itemTotal = itemPrice * item.qty;
-                        if(pGroup && pGroup.includes('Tiền Giờ')) courtTotal += itemTotal; else serviceTotal += itemTotal;
-                    });
-                }
-            });
-            document.getElementById('report-total').innerText = formatMoney(totalAll); 
-            document.getElementById('report-court').innerText = formatMoney(courtTotal); 
-            document.getElementById('report-service').innerText = formatMoney(serviceTotal);
-
-            let displayData = [];
-            if(currentReportType === 'all') { displayData = filteredTrans; } else {
-                filteredTrans.forEach(t => {
-                    if(t.cartDetails) {
-                        t.cartDetails.forEach(item => {
-                            let pGroup = item.group; let itemPrice = item.price;
-                            if(!pGroup || !itemPrice) { 
-                                const original = products.find(p => p.id == item.id || p.name == item.name); 
-                                if(original) { if(!pGroup) pGroup = original.group; if(!itemPrice) itemPrice = original.price; } 
-                                else { if(!pGroup) pGroup = 'Khác'; if(!itemPrice) itemPrice = 0; }
-                            }
-                            let isCourt = pGroup && pGroup.includes('Tiền Giờ');
-                            const displayItem = { ...item, price: itemPrice, group: pGroup };
-                            if(currentReportType === 'court' && isCourt) displayData.push({ ...t, isSplit: true, splitItem: displayItem });
-                            else if (currentReportType === 'service' && !isCourt) displayData.push({ ...t, isSplit: true, splitItem: displayItem });
-                        });
-                    }
-                });
-            }
-
-            tbody.innerHTML = displayData.map((t) => {
-                let dateStr = "", timeStr = "";
-                try {
-                    let d = new Date(t.time);
-                    if(isNaN(d.getTime())) { let parts = t.time.split(' '); timeStr = parts[1] || ""; dateStr = parts[0] || t.time; } 
-                    else { dateStr = d.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit'}); timeStr = d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}); }
-                } catch(e) { dateStr = t.time; }
-
-                if(t.isSplit) {
-                    return `<tr><td style="font-size:11px">${dateStr}</td><td style="font-size:11px;font-weight:bold;color:#64748b">${timeStr}</td><td>${t.splitItem.name}</td><td style="color:blue;font-weight:bold">${t.splitItem.qty}</td><td style="font-weight:bold">${formatMoney(t.splitItem.price * t.splitItem.qty)}</td><td style="font-size:11px;color:#475569">${t.staff || "Admin"}</td>
-                    <td>${t.method === 'CK' ? '<span style="color:blue;font-weight:bold">x</span>' : ''}</td>
-                    </tr>`;
-                }
-                let itemNames = "", itemQtys = "";
-                if(t.cartDetails && Array.isArray(t.cartDetails)) {
-                    itemNames = t.cartDetails.map(i => `<div class="item-row">${i.name}</div>`).join('');
-                    itemQtys = t.cartDetails.map(i => `<div class="item-row" style="color:blue;font-weight:bold">${i.qty}</div>`).join('');
-                } else { itemNames = t.itemsStr; itemQtys = "-"; }
-                return `<tr><td style="font-size:11px">${dateStr}</td><td style="font-size:11px;font-weight:bold;color:#64748b">${timeStr}</td><td>${itemNames}</td><td>${itemQtys}</td><td style="font-weight:bold">${formatMoney(t.total)}</td><td style="font-size:11px;color:#475569">${t.staff || "Admin"}</td><td>${t.method === 'CK' ? '<span style="color:blue;font-weight:bold">x</span>' : ''}</td></tr>`;
-            }).join('');
-        }
-
-        // --- EXPORT FUNCTIONS (KEEPING AS IS) ---
+        function renderReport() { const tbody = document.querySelector('#report-table tbody'); const timeFilter = document.getElementById('report-filter-time').value; let totalAll = 0, courtTotal = 0, serviceTotal = 0; const filteredTrans = transactions.filter(t => checkDateFilter(t.time, timeFilter)); filteredTrans.forEach(t => { totalAll += t.total; if(t.cartDetails) { t.cartDetails.forEach(item => { let itemPrice = item.price; let pGroup = item.group; if(!itemPrice || !pGroup) { const original = products.find(p => p.id == item.id || p.name == item.name); if(original) { if(!itemPrice) itemPrice = original.price; if(!pGroup) pGroup = original.group; } else { if(!itemPrice) itemPrice = 0; if(!pGroup) pGroup = 'Khác'; } } let itemTotal = itemPrice * item.qty; if(pGroup && pGroup.includes('Tiền Giờ')) courtTotal += itemTotal; else serviceTotal += itemTotal; }); } }); document.getElementById('report-total').innerText = formatMoney(totalAll); document.getElementById('report-court').innerText = formatMoney(courtTotal); document.getElementById('report-service').innerText = formatMoney(serviceTotal); let displayData = []; if(currentReportType === 'all') { displayData = filteredTrans; } else { filteredTrans.forEach(t => { if(t.cartDetails) { t.cartDetails.forEach(item => { let pGroup = item.group; let itemPrice = item.price; if(!pGroup || !itemPrice) { const original = products.find(p => p.id == item.id || p.name == item.name); if(original) { if(!pGroup) pGroup = original.group; if(!itemPrice) itemPrice = original.price; } else { if(!pGroup) pGroup = 'Khác'; if(!itemPrice) itemPrice = 0; } } let isCourt = pGroup && pGroup.includes('Tiền Giờ'); const displayItem = { ...item, price: itemPrice, group: pGroup }; if(currentReportType === 'court' && isCourt) displayData.push({ ...t, isSplit: true, splitItem: displayItem }); else if (currentReportType === 'service' && !isCourt) displayData.push({ ...t, isSplit: true, splitItem: displayItem }); }); } }); } tbody.innerHTML = displayData.map((t) => { let dateStr = "", timeStr = ""; try { let d = new Date(t.time); if(isNaN(d.getTime())) { let parts = t.time.split(' '); timeStr = parts[1] || ""; dateStr = parts[0] || t.time; } else { dateStr = d.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit'}); timeStr = d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}); } } catch(e) { dateStr = t.time; } if(t.isSplit) { return `<tr><td style="font-size:11px">${dateStr}</td><td style="font-size:11px;font-weight:bold;color:#64748b">${timeStr}</td><td>${t.splitItem.name}</td><td style="color:blue;font-weight:bold">${t.splitItem.qty}</td><td style="font-weight:bold">${formatMoney(t.splitItem.price * t.splitItem.qty)}</td><td style="font-size:11px;color:#475569">${t.staff || "Admin"}</td><td>${t.method === 'CK' ? '<span style="color:blue;font-weight:bold">x</span>' : ''}</td></tr>`; } let itemNames = "", itemQtys = ""; if(t.cartDetails && Array.isArray(t.cartDetails)) { itemNames = t.cartDetails.map(i => `<div class="item-row">${i.name}</div>`).join(''); itemQtys = t.cartDetails.map(i => `<div class="item-row" style="color:blue;font-weight:bold">${i.qty}</div>`).join(''); } else { itemNames = t.itemsStr; itemQtys = "-"; } return `<tr><td style="font-size:11px">${dateStr}</td><td style="font-size:11px;font-weight:bold;color:#64748b">${timeStr}</td><td>${itemNames}</td><td>${itemQtys}</td><td style="font-weight:bold">${formatMoney(t.total)}</td><td style="font-size:11px;color:#475569">${t.staff || "Admin"}</td><td>${t.method === 'CK' ? '<span style="color:blue;font-weight:bold">x</span>' : ''}</td></tr>`; }).join(''); }
         function isWeekend(dateObj) { const day = dateObj.getDay(); return (day === 0 || day === 6); }
-        function exportCourtReport() {
-            const timeFilter = document.getElementById('report-filter-time').value;
-            const filteredTrans = [...transactions].reverse().filter(t => checkDateFilter(t.time, timeFilter));
-            const h1 = ["Ngày", "5h30 - 8h", "", "", "", "8h - 17h", "", "", "", "17h - 24h", "", "", "", "T7 - CN - Lễ", "", "", ""];
-            const h2 = ["", "VL", "", "CĐ", "", "VL", "", "CĐ", "", "VL", "", "CĐ", "", "VL", "", "CĐ", ""];
-            const h3 = ["", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK"];
-            const groupedData = {};
-            filteredTrans.forEach(t => {
-                let dateObj = new Date(t.time);
-                if(isNaN(dateObj.getTime())) return; 
-                let dateStr = dateObj.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit', year:'numeric'});
-                if (!groupedData[dateStr]) groupedData[dateStr] = [];
-                if(t.cartDetails) {
-                    t.cartDetails.forEach(item => {
-                        let pGroup = item.group; let itemName = item.name.toLowerCase();
-                        if(!pGroup) { const original = products.find(p => p.id == item.id || p.name == item.name); if(original) pGroup = original.group; else pGroup = 'Khác'; }
-                        let isCourtFee = pGroup && pGroup.includes('Tiền Giờ'); let isRental = itemName.includes('thuê'); 
-                        if(isCourtFee && !isRental) {
-                            let baseIndex = 0; 
-                            if (itemName.includes('lễ') || itemName.includes('t7') || itemName.includes('cn') || itemName.includes('cuối tuần')) { baseIndex = 13; }
-                            else if(isWeekend(dateObj)) { baseIndex = 13; } else {
-                                const match = item.name.match(/(\d{1,2})[h:]/);
-                                if (match && match[1]) { let parsedHour = parseInt(match[1]); if(parsedHour < 8) baseIndex = 1; else if(parsedHour < 17) baseIndex = 5; else baseIndex = 9; } 
-                                else { if (itemName.includes('sáng')) baseIndex = 1; else if (itemName.includes('tối') || itemName.includes('đêm')) baseIndex = 9; else if (itemName.includes('chiều') || itemName.includes('hành chính')) baseIndex = 5; else { let hour = dateObj.getHours(); if (hour < 8) baseIndex = 1; else if (hour < 17) baseIndex = 5; else baseIndex = 9; } }
-                            }
-                            let typeOffset = 0; if(itemName.includes('cố định') || itemName.includes('cđ')) typeOffset = 2; 
-                            let targetColIndex = baseIndex + typeOffset; let placed = false; let rowsOfThisDate = groupedData[dateStr];
-                            for (let r of rowsOfThisDate) { if (r[targetColIndex] === "") { r[targetColIndex] = item.qty; if(t.method === 'CK') r[targetColIndex + 1] = "x"; placed = true; break; } }
-                            if (!placed) { let newRow = new Array(17).fill(""); newRow[0] = dateStr; newRow[targetColIndex] = item.qty; if(t.method === 'CK') newRow[targetColIndex + 1] = "x"; rowsOfThisDate.push(newRow); }
-                        }
-                    });
-                }
-            });
-            let finalRows = []; Object.keys(groupedData).forEach(date => { finalRows = finalRows.concat(groupedData[date]); });
-            const ws = XLSX.utils.aoa_to_sheet([h1, h2, h3, ...finalRows]);
-            const merges = [{s:{r:0,c:1}, e:{r:0,c:4}}, {s:{r:0,c:5}, e:{r:0,c:8}}, {s:{r:0,c:9}, e:{r:0,c:12}}, {s:{r:0,c:13}, e:{r:0,c:16}}, {s:{r:1,c:1}, e:{r:1,c:2}}, {s:{r:1,c:3}, e:{r:1,c:4}}, {s:{r:1,c:5}, e:{r:1,c:6}}, {s:{r:1,c:7}, e:{r:1,c:8}}, {s:{r:1,c:9}, e:{r:1,c:10}}, {s:{r:1,c:11}, e:{r:1,c:12}}, {s:{r:1,c:13}, e:{r:1,c:14}}, {s:{r:1,c:15}, e:{r:1,c:16}}];
-            ws['!merges'] = merges; const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Tien_San_Gop"); XLSX.writeFile(wb, "Bao_Cao_Tien_San_Gop.xlsx");
-        }
-        function exportServiceReport() {
-            const serviceProds = products.filter(p => p.group !== '🏸 Tiền Giờ & Thuê Sân');
-            const timeFilter = document.getElementById('report-filter-time').value;
-            const filteredTrans = transactions.filter(t => checkDateFilter(t.time, timeFilter));
-            let headerRow1 = ["Thời gian", "Nhân Viên"]; let headerRow2 = ["", ""];
-            serviceProds.forEach(p => { headerRow1.push(p.name); headerRow1.push(""); headerRow2.push("SL"); headerRow2.push("CK"); });
-            let dataRows = filteredTrans.map(t => {
-                let dateStr = ""; try { let d = new Date(t.time); dateStr = d.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit'}) + " " + d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}); } catch(e) { dateStr = t.time; }
-                let row = [dateStr, t.staff || "Admin"];
-                serviceProds.forEach(p => { let qty = 0; if (t.cartDetails) { const found = t.cartDetails.find(item => item.id == p.id || item.name == p.name); if(found) qty = found.qty; } if (qty > 0) { row.push(qty); row.push(t.method === 'CK' ? "x" : ""); } else { row.push(""); row.push(""); } });
-                return row;
-            });
-            const ws_data = [headerRow1, headerRow2, ...dataRows]; const ws = XLSX.utils.aoa_to_sheet(ws_data);
-            const merges = [{ s: {r:0, c:0}, e: {r:1, c:0} }, { s: {r:0, c:1}, e: {r:1, c:1} }];
-            for (let i = 0; i < serviceProds.length; i++) { let startCol = 2 + (i * 2); merges.push({ s: {r:0, c:startCol}, e: {r:0, c:startCol+1} }); }
-            ws['!merges'] = merges; const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Dich_Vu"); XLSX.writeFile(wb, "Bao_Cao_Dich_Vu.xlsx");
-        }
+        function exportCourtReport() { const timeFilter = document.getElementById('report-filter-time').value; const filteredTrans = [...transactions].reverse().filter(t => checkDateFilter(t.time, timeFilter)); const h1 = ["Ngày", "5h30 - 8h", "", "", "", "8h - 17h", "", "", "", "17h - 24h", "", "", "", "T7 - CN - Lễ", "", "", ""]; const h2 = ["", "VL", "", "CĐ", "", "VL", "", "CĐ", "", "VL", "", "CĐ", "", "VL", "", "CĐ", ""]; const h3 = ["", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK"]; const groupedData = {}; filteredTrans.forEach(t => { let dateObj = new Date(t.time); if(isNaN(dateObj.getTime())) return; let dateStr = dateObj.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit', year:'numeric'}); if (!groupedData[dateStr]) groupedData[dateStr] = []; if(t.cartDetails) { t.cartDetails.forEach(item => { let pGroup = item.group; let itemName = item.name.toLowerCase(); if(!pGroup) { const original = products.find(p => p.id == item.id || p.name == item.name); if(original) pGroup = original.group; else pGroup = 'Khác'; } let isCourtFee = pGroup && pGroup.includes('Tiền Giờ'); let isRental = itemName.includes('thuê'); if(isCourtFee && !isRental) { let baseIndex = 0; if (itemName.includes('lễ') || itemName.includes('t7') || itemName.includes('cn') || itemName.includes('cuối tuần')) { baseIndex = 13; } else if(isWeekend(dateObj)) { baseIndex = 13; } else { const match = item.name.match(/(\d{1,2})[h:]/); if (match && match[1]) { let parsedHour = parseInt(match[1]); if(parsedHour < 8) baseIndex = 1; else if(parsedHour < 17) baseIndex = 5; else baseIndex = 9; } else { if (itemName.includes('sáng')) baseIndex = 1; else if (itemName.includes('tối') || itemName.includes('đêm')) baseIndex = 9; else if (itemName.includes('chiều') || itemName.includes('hành chính')) baseIndex = 5; else { let hour = dateObj.getHours(); if (hour < 8) baseIndex = 1; else if (hour < 17) baseIndex = 5; else baseIndex = 9; } } } let typeOffset = 0; if(itemName.includes('cố định') || itemName.includes('cđ')) typeOffset = 2; let targetColIndex = baseIndex + typeOffset; let placed = false; let rowsOfThisDate = groupedData[dateStr]; for (let r of rowsOfThisDate) { if (r[targetColIndex] === "") { r[targetColIndex] = item.qty; if(t.method === 'CK') r[targetColIndex + 1] = "x"; placed = true; break; } } if (!placed) { let newRow = new Array(17).fill(""); newRow[0] = dateStr; newRow[targetColIndex] = item.qty; if(t.method === 'CK') newRow[targetColIndex + 1] = "x"; rowsOfThisDate.push(newRow); } } }); } }); let finalRows = []; Object.keys(groupedData).forEach(date => { finalRows = finalRows.concat(groupedData[date]); }); const ws = XLSX.utils.aoa_to_sheet([h1, h2, h3, ...finalRows]); const merges = [{s:{r:0,c:1}, e:{r:0,c:4}}, {s:{r:0,c:5}, e:{r:0,c:8}}, {s:{r:0,c:9}, e:{r:0,c:12}}, {s:{r:0,c:13}, e:{r:0,c:16}}, {s:{r:1,c:1}, e:{r:1,c:2}}, {s:{r:1,c:3}, e:{r:1,c:4}}, {s:{r:1,c:5}, e:{r:1,c:6}}, {s:{r:1,c:7}, e:{r:1,c:8}}, {s:{r:1,c:9}, e:{r:1,c:10}}, {s:{r:1,c:11}, e:{r:1,c:12}}, {s:{r:1,c:13}, e:{r:1,c:14}}, {s:{r:1,c:15}, e:{r:1,c:16}}]; ws['!merges'] = merges; const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Tien_San_Gop"); XLSX.writeFile(wb, "Bao_Cao_Tien_San_Gop.xlsx"); }
+        function exportServiceReport() { const serviceProds = products.filter(p => p.group !== '🏸 Tiền Giờ & Thuê Sân'); const timeFilter = document.getElementById('report-filter-time').value; const filteredTrans = transactions.filter(t => checkDateFilter(t.time, timeFilter)); let headerRow1 = ["Thời gian", "Nhân Viên"]; let headerRow2 = ["", ""]; serviceProds.forEach(p => { headerRow1.push(p.name); headerRow1.push(""); headerRow2.push("SL"); headerRow2.push("CK"); }); let dataRows = filteredTrans.map(t => { let dateStr = ""; try { let d = new Date(t.time); dateStr = d.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit'}) + " " + d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}); } catch(e) { dateStr = t.time; } let row = [dateStr, t.staff || "Admin"]; serviceProds.forEach(p => { let qty = 0; if (t.cartDetails) { const found = t.cartDetails.find(item => item.id == p.id || item.name == p.name); if(found) qty = found.qty; } if (qty > 0) { row.push(qty); row.push(t.method === 'CK' ? "x" : ""); } else { row.push(""); row.push(""); } }); return row; }); const ws_data = [headerRow1, headerRow2, ...dataRows]; const ws = XLSX.utils.aoa_to_sheet(ws_data); const merges = [{ s: {r:0, c:0}, e: {r:1, c:0} }, { s: {r:0, c:1}, e: {r:1, c:1} }]; for (let i = 0; i < serviceProds.length; i++) { let startCol = 2 + (i * 2); merges.push({ s: {r:0, c:startCol}, e: {r:0, c:startCol+1} }); } ws['!merges'] = merges; const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Dich_Vu"); XLSX.writeFile(wb, "Bao_Cao_Dich_Vu.xlsx"); }
 
         setInterval(() => { document.getElementById('current-time').innerText = new Date().toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}); }, 1000);
-        
-        // --- QUAN TRỌNG: KHỞI TẠO ---
-        checkResponsive(); 
-        renderPOS(); 
-        renderReport(); 
-        loadUsersForLogin(); // Gọi hàm này để lấy user ngay khi mở app
-        
-        // AUTO SYNC TRIGGER (Nằm cuối cùng)
+        checkResponsive(); renderPOS(); renderReport(); loadUsersForLogin(); 
         setInterval(syncData, 30000); 
     </script>
 </body>
