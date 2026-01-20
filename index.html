@@ -350,18 +350,29 @@
             document.getElementById('user-display').innerText = `Chào, ${currentUser.name}`;
             document.getElementById('staff-name').innerText = `NV: ${currentUser.name}`;
             
-            // FIX LỖI ROLE: Chuyển role về chữ thường và xóa khoảng trắng thừa
+            // 1. Chuẩn hóa Role (viết thường + xóa khoảng trắng)
             const role = (currentUser.role || '').toLowerCase().trim();
+            console.log("Quyền hiện tại:", role); // Xem log để debug nếu cần
 
-            if (role === 'staff') { 
-                // Ẩn toàn bộ menu Admin đối với Staff
-                document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden')); 
-                showTab('pos'); 
+            // 2. LOGIC AN TOÀN (FAIL SAFE): Mặc định là ẩn hết, chỉ Admin mới được thấy
+            if (role === 'admin') { 
+                // === LÀ ADMIN ===
+                // Hiện các menu quản lý
+                document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden')); 
+                
+                // Nếu đang ở tab POS thì giữ nguyên, còn không thì tự về POS
+                if(!document.querySelector('.main.active')) showTab('pos');
+                
+                // Tải danh sách user (chỉ admin mới cần)
+                renderUserTable(); 
             } 
             else { 
-                // Hiện toàn bộ menu đối với Admin
-                document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden')); 
-                renderUserTable(); 
+                // === KHÔNG PHẢI ADMIN (Staff, hoặc viết sai, hoặc rỗng...) ===
+                // Ẩn sạch menu quản lý
+                document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden')); 
+                
+                // Ép chuyển ngay về màn hình Bán Hàng
+                showTab('pos'); 
             }
             
             syncData(); 
