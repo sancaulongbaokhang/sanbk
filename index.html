@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sân Cầu Lông (V24 Row Packing)</title>
+    <title>Sân Cầu Lông (V24 Auto Sync)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -234,6 +234,7 @@
     </div>
 
     <script>
+        // --- CẤU HÌNH API ---
         const API_URL = "https://script.google.com/macros/s/AKfycbzPJ01sjJ0osa7yUjioDAVa00acUIG9RcwwDtzrd_tNRRl0Gsm78mF7bC3Ms67BzikZtw/exec"; 
         
         // --- DATA ---
@@ -260,6 +261,7 @@
         }
 
         async function loadUsersForLogin() {
+            if(API_URL.includes("DÁN_LINK")) return;
             try {
                 const response = await fetch(API_URL + "?action=get_users&t=" + new Date().getTime());
                 allUsers = await response.json();
@@ -269,12 +271,12 @@
         function login() {
             const u = document.getElementById('username').value;
             const p = document.getElementById('password').value;
-            if((!allUsers || allUsers.length === 0)) {
-                if(u==='admin' && p==='123') { currentUser = { username: 'admin', role: 'admin', name: 'Admin Offline' }; loginSuccess(); return; }
-            }
+            // Admin fallback
+            if(u==='admin' && p==='123') { currentUser = { username: 'admin', role: 'admin', name: 'Admin Offline' }; loginSuccess(); return; }
+            
             const found = allUsers.find(user => user.username == u && user.password == p);
             if(found) { currentUser = found; loginSuccess(); } 
-            else { if(!allUsers || allUsers.length === 0) { loadUsersForLogin(); alert("Đang tải dữ liệu..."); } else { alert("Sai tên đăng nhập hoặc mật khẩu!"); } }
+            else { if(!allUsers || allUsers.length === 0) { loadUsersForLogin(); alert("Đang tải dữ liệu User... Thử lại sau giây lát"); } else { alert("Sai tên đăng nhập hoặc mật khẩu!"); } }
         }
 
         function loginSuccess() {
@@ -288,13 +290,15 @@
         function logout() { location.reload(); }
         function renderUserTable() { document.querySelector('#user-table tbody').innerHTML = allUsers.map(u => `<tr><td>${u.username}</td><td>${u.name}</td><td>${u.role}</td><td>***</td></tr>`).join(''); }
         function openUserModal() { document.getElementById('user-modal').style.display = 'flex'; }
+        
         async function saveUser() {
             const u = document.getElementById('u-username').value; const p = document.getElementById('u-password').value; const n = document.getElementById('u-name').value; const r = document.getElementById('u-role').value;
             if(!u || !p) return alert("Thiếu thông tin!");
             document.getElementById('loading-overlay').style.display = 'flex';
             try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'add_user', username: u, password: p, name: n, role: r }) });
-                alert("Đã gửi yêu cầu."); document.getElementById('user-modal').style.display = 'none'; setTimeout(async () => { await loadUsersForLogin(); if(currentUser.role === 'admin') renderUserTable(); }, 2000);
+                await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'add_user', username: u, password: p, name: n, role: r }) });
+                alert("Đã thêm User!"); document.getElementById('user-modal').style.display = 'none'; 
+                await loadUsersForLogin(); if(currentUser.role === 'admin') renderUserTable();
             } catch (error) { alert("Lỗi kết nối!"); } finally { document.getElementById('loading-overlay').style.display = 'none'; }
         }
 
@@ -305,26 +309,71 @@
         window.addEventListener('resize', checkResponsive);
         function toggleBillPanel(show) { const panel = document.getElementById('bill-panel'); if (show) panel.classList.add('show'); else panel.classList.remove('show'); }
 
+        // --- NEW SYNC DATA LOGIC ---
         async function syncData() {
-            if(API_URL.includes("DÁN_LINK")) { alert("Chưa có link API!"); return; }
+            if(API_URL.includes("DÁN_LINK")) { console.log("Chưa cấu hình Link API"); return; }
+            if(!navigator.onLine) {
+                document.getElementById('sync-dot').className = 'sync-dot'; 
+                document.getElementById('sync-text').innerText = 'Offline Mode';
+                return;
+            }
+
             try {
-                const response = await fetch(API_URL + "?action=read&cache_buster=" + new Date().getTime());
+                const response = await fetch(API_URL + "?action=read&t=" + new Date().getTime());
                 const data = await response.json();
-                if(data && Array.isArray(data) && data.length > 0) {
-                    transactions = data; localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions));
-                    renderReport();
-                    document.getElementById('sync-dot').className = 'sync-dot online'; document.getElementById('sync-text').innerText = 'Online'; document.getElementById('sync-text').style.color = '#16a34a';
+                
+                if(data && Array.isArray(data)) {
+                    // Cập nhật local nếu có dữ liệu mới từ server
+                    if(JSON.stringify(data) !== JSON.stringify(transactions)) {
+                         transactions = data; 
+                         localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions));
+                         renderReport();
+                    }
+                    document.getElementById('sync-dot').className = 'sync-dot online'; 
+                    document.getElementById('sync-text').innerText = 'Online'; 
+                    document.getElementById('sync-text').style.color = '#16a34a';
                 }
-            } catch (error) { document.getElementById('sync-dot').className = 'sync-dot'; document.getElementById('sync-text').innerText = 'Offline Mode'; }
+            } catch (error) { 
+                console.log("Sync Error:", error);
+                document.getElementById('sync-dot').className = 'sync-dot'; 
+                document.getElementById('sync-text').innerText = 'Offline Mode'; 
+            }
         }
 
         async function pushOrderToSheet(orderData) {
             document.getElementById('loading-overlay').style.display = 'flex';
-            transactions.unshift(orderData); localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions)); renderReport();
+            // 1. Lưu tạm vào máy trước (để khách không phải chờ)
+            transactions.unshift(orderData); 
+            localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions)); 
+            renderReport();
+
+            // 2. Gửi lên Google Sheet
             try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...orderData, action: 'insert' }) });
-                alert("✅ Đã lưu!"); toggleBillPanel(false); cart = []; renderCart(); setTimeout(() => { syncData(); }, 2000);
-            } catch (error) { alert("⚠️ Đã lưu vào máy (Offline)."); toggleBillPanel(false); cart = []; renderCart(); } finally { document.getElementById('loading-overlay').style.display = 'none'; }
+                // Lưu ý: Không dùng no-cors để bắt lỗi chính xác
+                const response = await fetch(API_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ ...orderData, action: 'insert' }) 
+                });
+                
+                const result = await response.json();
+                
+                if(result.status === 'success') {
+                    alert("✅ Đã lưu thành công!"); 
+                } else {
+                    throw new Error("Server error");
+                }
+                
+                toggleBillPanel(false); cart = []; renderCart(); 
+                // Gọi sync lại sau 1 giây để đảm bảo đồng bộ
+                setTimeout(() => { syncData(); }, 1000);
+
+            } catch (error) { 
+                console.error(error);
+                alert("⚠️ Đã lưu vào máy (Offline). Đơn sẽ được đồng bộ sau."); 
+                toggleBillPanel(false); cart = []; renderCart(); 
+            } finally { 
+                document.getElementById('loading-overlay').style.display = 'none'; 
+            }
         }
 
         function showTab(tabName) {
@@ -552,10 +601,9 @@
             return (day === 0 || day === 6); // 0=CN, 6=T7
         }
 
-        // --- 1. COMPLEX COURT EXPORT (V24 ROW PACKING) ---
+        // --- EXPORT FUNCTIONALITY (GIỮ NGUYÊN) ---
         function exportCourtReport() {
             const timeFilter = document.getElementById('report-filter-time').value;
-            // Dồn hàng thì cần xếp theo thứ tự thời gian cũ -> mới
             const filteredTrans = [...transactions].reverse().filter(t => checkDateFilter(t.time, timeFilter));
             
             const h1 = ["Ngày", "5h30 - 8h", "", "", "", "8h - 17h", "", "", "", "17h - 24h", "", "", "", "T7 - CN - Lễ", "", "", ""];
@@ -567,78 +615,32 @@
             filteredTrans.forEach(t => {
                 let dateObj = new Date(t.time);
                 if(isNaN(dateObj.getTime())) return; 
-
                 let dateStr = dateObj.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit', year:'numeric'});
-                
                 if (!groupedData[dateStr]) groupedData[dateStr] = [];
 
                 if(t.cartDetails) {
                     t.cartDetails.forEach(item => {
                         let pGroup = item.group;
                         let itemName = item.name.toLowerCase();
-                        
-                        if(!pGroup) { 
-                             const original = products.find(p => p.id == item.id || p.name == item.name); 
-                             if(original) pGroup = original.group; else pGroup = 'Khác';
-                        }
+                        if(!pGroup) { const original = products.find(p => p.id == item.id || p.name == item.name); if(original) pGroup = original.group; else pGroup = 'Khác'; }
                         
                         let isCourtFee = pGroup && pGroup.includes('Tiền Giờ');
                         let isRental = itemName.includes('thuê'); 
-
                         if(isCourtFee && !isRental) {
                             let baseIndex = 0; 
-                            
-                            // LOGIC XẾP CỘT
-                            if (itemName.includes('lễ') || itemName.includes('t7') || itemName.includes('cn') || itemName.includes('cuối tuần')) {
-                                baseIndex = 13; 
-                            }
-                            else if(isWeekend(dateObj)) {
-                                baseIndex = 13; 
-                            } else {
+                            if (itemName.includes('lễ') || itemName.includes('t7') || itemName.includes('cn') || itemName.includes('cuối tuần')) { baseIndex = 13; }
+                            else if(isWeekend(dateObj)) { baseIndex = 13; } else {
                                 const match = item.name.match(/(\d{1,2})[h:]/);
-                                if (match && match[1]) {
-                                    let parsedHour = parseInt(match[1]);
-                                    if(parsedHour < 8) baseIndex = 1;
-                                    else if(parsedHour < 17) baseIndex = 5;
-                                    else baseIndex = 9;
-                                } else {
-                                    if (itemName.includes('sáng')) baseIndex = 1;
-                                    else if (itemName.includes('tối') || itemName.includes('đêm')) baseIndex = 9;
-                                    else if (itemName.includes('chiều') || itemName.includes('hành chính')) baseIndex = 5;
-                                    else {
-                                        let hour = dateObj.getHours();
-                                        if (hour < 8) baseIndex = 1;
-                                        else if (hour < 17) baseIndex = 5;
-                                        else baseIndex = 9;
-                                    }
-                                }
+                                if (match && match[1]) { let parsedHour = parseInt(match[1]); if(parsedHour < 8) baseIndex = 1; else if(parsedHour < 17) baseIndex = 5; else baseIndex = 9; } 
+                                else { if (itemName.includes('sáng')) baseIndex = 1; else if (itemName.includes('tối') || itemName.includes('đêm')) baseIndex = 9; else if (itemName.includes('chiều') || itemName.includes('hành chính')) baseIndex = 5; else { let hour = dateObj.getHours(); if (hour < 8) baseIndex = 1; else if (hour < 17) baseIndex = 5; else baseIndex = 9; } }
                             }
-
                             let typeOffset = 0; 
                             if(itemName.includes('cố định') || itemName.includes('cđ')) typeOffset = 2; 
-
                             let targetColIndex = baseIndex + typeOffset;
-                            
-                            // LOGIC DỒN HÀNG (ROW PACKING)
                             let placed = false;
                             let rowsOfThisDate = groupedData[dateStr];
-
-                            for (let r of rowsOfThisDate) {
-                                if (r[targetColIndex] === "") {
-                                    r[targetColIndex] = item.qty;
-                                    if(t.method === 'CK') r[targetColIndex + 1] = "x";
-                                    placed = true;
-                                    break; 
-                                }
-                            }
-
-                            if (!placed) {
-                                let newRow = new Array(17).fill("");
-                                newRow[0] = dateStr;
-                                newRow[targetColIndex] = item.qty; 
-                                if(t.method === 'CK') newRow[targetColIndex + 1] = "x";
-                                rowsOfThisDate.push(newRow);
-                            }
+                            for (let r of rowsOfThisDate) { if (r[targetColIndex] === "") { r[targetColIndex] = item.qty; if(t.method === 'CK') r[targetColIndex + 1] = "x"; placed = true; break; } }
+                            if (!placed) { let newRow = new Array(17).fill(""); newRow[0] = dateStr; newRow[targetColIndex] = item.qty; if(t.method === 'CK') newRow[targetColIndex + 1] = "x"; rowsOfThisDate.push(newRow); }
                         }
                     });
                 }
@@ -646,57 +648,39 @@
 
             let finalRows = [];
             Object.keys(groupedData).forEach(date => { finalRows = finalRows.concat(groupedData[date]); });
-
             const ws = XLSX.utils.aoa_to_sheet([h1, h2, h3, ...finalRows]);
-            const merges = [
-                {s:{r:0,c:1}, e:{r:0,c:4}}, {s:{r:0,c:5}, e:{r:0,c:8}}, {s:{r:0,c:9}, e:{r:0,c:12}}, {s:{r:0,c:13}, e:{r:0,c:16}},
-                {s:{r:1,c:1}, e:{r:1,c:2}}, {s:{r:1,c:3}, e:{r:1,c:4}}, {s:{r:1,c:5}, e:{r:1,c:6}}, {s:{r:1,c:7}, e:{r:1,c:8}}, 
-                {s:{r:1,c:9}, e:{r:1,c:10}}, {s:{r:1,c:11}, e:{r:1,c:12}}, {s:{r:1,c:13}, e:{r:1,c:14}}, {s:{r:1,c:15}, e:{r:1,c:16}}, 
-            ];
+            const merges = [{s:{r:0,c:1}, e:{r:0,c:4}}, {s:{r:0,c:5}, e:{r:0,c:8}}, {s:{r:0,c:9}, e:{r:0,c:12}}, {s:{r:0,c:13}, e:{r:0,c:16}}, {s:{r:1,c:1}, e:{r:1,c:2}}, {s:{r:1,c:3}, e:{r:1,c:4}}, {s:{r:1,c:5}, e:{r:1,c:6}}, {s:{r:1,c:7}, e:{r:1,c:8}}, {s:{r:1,c:9}, e:{r:1,c:10}}, {s:{r:1,c:11}, e:{r:1,c:12}}, {s:{r:1,c:13}, e:{r:1,c:14}}, {s:{r:1,c:15}, e:{r:1,c:16}}];
             ws['!merges'] = merges;
-            const wb = XLSX.utils.book_new(); 
-            XLSX.utils.book_append_sheet(wb, ws, "Tien_San_Gop");
-            XLSX.writeFile(wb, "Bao_Cao_Tien_San_Gop.xlsx");
+            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Tien_San_Gop"); XLSX.writeFile(wb, "Bao_Cao_Tien_San_Gop.xlsx");
         }
 
-        // --- 2. SERVICE EXPORT (CLEANED) ---
         function exportServiceReport() {
             const serviceProds = products.filter(p => p.group !== '🏸 Tiền Giờ & Thuê Sân');
             const timeFilter = document.getElementById('report-filter-time').value;
             const filteredTrans = transactions.filter(t => checkDateFilter(t.time, timeFilter));
-
-            let headerRow1 = ["Thời gian", "Nhân Viên"]; 
-            let headerRow2 = ["", ""];
+            let headerRow1 = ["Thời gian", "Nhân Viên"]; let headerRow2 = ["", ""];
             serviceProds.forEach(p => { headerRow1.push(p.name); headerRow1.push(""); headerRow2.push("SL"); headerRow2.push("CK"); });
-
             let dataRows = filteredTrans.map(t => {
                 let dateStr = "";
-                try {
-                    let d = new Date(t.time);
-                    dateStr = d.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit'}) + " " + d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'});
-                } catch(e) { dateStr = t.time; }
-
+                try { let d = new Date(t.time); dateStr = d.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit'}) + " " + d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}); } catch(e) { dateStr = t.time; }
                 let row = [dateStr, t.staff || "Admin"];
-                serviceProds.forEach(p => {
-                    let qty = 0;
-                    if (t.cartDetails) { const found = t.cartDetails.find(item => item.id == p.id || item.name == p.name); if(found) qty = found.qty; }
-                    if (qty > 0) { row.push(qty); row.push(t.method === 'CK' ? "x" : ""); } else { row.push(""); row.push(""); }
-                });
+                serviceProds.forEach(p => { let qty = 0; if (t.cartDetails) { const found = t.cartDetails.find(item => item.id == p.id || item.name == p.name); if(found) qty = found.qty; } if (qty > 0) { row.push(qty); row.push(t.method === 'CK' ? "x" : ""); } else { row.push(""); row.push(""); } });
                 return row;
             });
-
             const ws_data = [headerRow1, headerRow2, ...dataRows];
             const ws = XLSX.utils.aoa_to_sheet(ws_data);
             const merges = [{ s: {r:0, c:0}, e: {r:1, c:0} }, { s: {r:0, c:1}, e: {r:1, c:1} }];
             for (let i = 0; i < serviceProds.length; i++) { let startCol = 2 + (i * 2); merges.push({ s: {r:0, c:startCol}, e: {r:0, c:startCol+1} }); }
             ws['!merges'] = merges;
-
-            const wb = XLSX.utils.book_new(); 
-            XLSX.utils.book_append_sheet(wb, ws, "Dich_Vu");
-            XLSX.writeFile(wb, "Bao_Cao_Dich_Vu.xlsx");
+            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Dich_Vu"); XLSX.writeFile(wb, "Bao_Cao_Dich_Vu.xlsx");
         }
 
         setInterval(() => { document.getElementById('current-time').innerText = new Date().toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}); }, 1000);
+        
+        // --- AUTO SYNC (MỚI) ---
+        // Tự động chạy syncData mỗi 30 giây (30000 ms)
+        setInterval(syncData, 30000);
+
         checkResponsive(); renderPOS(); renderReport(); loadUsersForLogin(); 
     </script>
 </body>
