@@ -398,7 +398,7 @@
 
     <script>
         // --- CẤU HÌNH API ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbxbLVUsQir5hEWH9s_RHEJua-hJY5Z8uZnBwzJNiXJ_wXEAGzGgEnGxIUD1TZW4-RuHnw/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbxzMf_nHDsm1fOCERISKNI6WwAQFCw2s0NUMk1FyJUIYqntT3GMgLMXFJ6T3OSJB7L5Zw/exec"; 
         
         function showToast(msg, type='success') { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}" style="color:${type==='success'?'#10b981':'#ef4444'}"></i> <span>${msg}</span>`; c.appendChild(t); setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000); }
         function getLocalYMD(dateStr) { const d = parseDate(dateStr); const offset = d.getTimezoneOffset() * 60000; const localISOTime = (new Date(d - offset)).toISOString().slice(0, 10); return localISOTime; }
@@ -548,34 +548,27 @@
             }
             
             try {
-                dot.style.background = '#eab308'; // Màu vàng đang load
+                dot.style.background = '#eab308'; // Vàng: Đang tải
+                
+                // Thêm tham số t=... để tránh trình duyệt cache dữ liệu cũ
                 const response = await fetch(API_URL + "?action=get_orders&t=" + new Date().getTime()); 
                 const serverOrders = await response.json();
                 
-                if (serverOrders && Array.isArray(serverOrders) && serverOrders.length > 0) {
-                    // 1. Tạo "Dấu vân tay" cho các đơn hàng ĐANG CÓ trên máy
-                    // Dấu vân tay = NămThángNgàyGiờPhút + Tổng tiền + Số lượng món
-                    // Cách này bỏ qua sự lệch lạc về giây (seconds) hoặc định dạng chuỗi
-                    const localFingerprints = new Set(transactions.map(t => {
-                        return createFingerprint(t);
-                    }));
-
-                    let newCount = 0;
-                    serverOrders.forEach(svOrd => {
-                        const svFingerprint = createFingerprint(svOrd);
+                if (serverOrders && Array.isArray(serverOrders)) {
+                    // --- CHIẾN THUẬT MỚI: OVERWRITE (GHI ĐÈ) ---
+                    // Server là chuẩn nhất. Xóa local cũ, lấy 100% từ server.
+                    // Cách này đảm bảo KHÔNG BAO GIỜ TRÙNG LẶP.
+                    
+                    if (serverOrders.length > 0) {
+                        transactions = serverOrders; // Gán thẳng, không push/merge gì cả
                         
-                        // 2. Chỉ thêm vào nếu dấu vân tay chưa tồn tại
-                        if (!localFingerprints.has(svFingerprint)) { 
-                            transactions.push(svOrd); 
-                            localFingerprints.add(svFingerprint); // Đánh dấu đã thêm để tránh trùng trong cùng 1 đợt
-                            newCount++; 
-                        }
-                    });
-
-                    if (newCount > 0) { 
-                        // Sắp xếp lại theo thời gian mới nhất
+                        // Sắp xếp lại
                         transactions.sort((a, b) => parseDate(a.time) - parseDate(b.time)); 
+                        
+                        // Lưu vào bộ nhớ máy
                         localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions)); 
+                        
+                        // Vẽ lại giao diện
                         renderDashboard(); 
                         renderReport(); 
                     }
@@ -700,8 +693,15 @@
         
         function payOrder() {
             if (cart.length === 0) return showToast("Chưa chọn món!", "error");
+            
+            // --- CHỐNG CLICK NHIỀU LẦN ---
+            const btn = document.querySelector('.btn-pay');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+            }
+
             const staffName = currentUser ? currentUser.name : "Admin";
-            // Create proper ISO string for date
             const now = new Date();
             const orderData = { 
                 time: now.toISOString(), 
@@ -711,7 +711,17 @@
                 method: paymentMethod, 
                 staff: staffName 
             };
+            
+            // Gửi đi xong thì mở lại nút (trong hàm pushOrder hoặc settimeout)
             pushOrderToSheet(orderData);
+            
+            // Reset nút sau 2 giây đề phòng
+            setTimeout(() => {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = 'THANH TOÁN';
+                }
+            }, 2000);
         }
 
         // --- DEBT ---
