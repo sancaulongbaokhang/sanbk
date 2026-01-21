@@ -428,7 +428,7 @@
     <div id="debt-modal" class="modal"><div class="modal-content"><h3>Ghi Nợ</h3><div class="form-group"><label>Tên Khách:</label><input type="text" id="debt-customer-name" class="login-input" style="color:#333; background:#f8fafc; border:1px solid #e2e8f0" placeholder="VD: Anh Long Sân 3"></div><div style="display:flex;gap:10px"><button class="btn-pay" onclick="confirmDebt()">Lưu Nợ</button><button class="btn-pay" style="background:#cbd5e1" onclick="document.getElementById('debt-modal').style.display='none'">Hủy</button></div></div></div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbw2O2DByZtZ9ZzSOfJkqYBSaD_nYASVut_lQo9xcb68lURLRe_BP-rZbfHMftn_kMY3/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbx-Xux9IxK6e3sqm0_8wLLCApKxbfmwErvWeG5WqwHehyf338oVP0GzINEELwtQ07Ir0w/exec"; 
         
         function showToast(msg, type='success') { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}" style="color:${type==='success'?'#10b981':'#ef4444'}"></i> <span>${msg}</span>`; c.appendChild(t); setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000); }
         function getLocalYMD(dateStr) { const d = new Date(dateStr); const offset = d.getTimezoneOffset() * 60000; const localISOTime = (new Date(d - offset)).toISOString().slice(0, 10); return localISOTime; }
