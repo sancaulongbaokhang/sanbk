@@ -398,7 +398,7 @@
 
     <script>
         // --- CẤU HÌNH API ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbw0S7jryjKJOKs6jz2hjoFhAguITJPoK2OUs1bB31PXN4mlRgx8NbBATX1FZ5SavdW-gg/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbxbLVUsQir5hEWH9s_RHEJua-hJY5Z8uZnBwzJNiXJ_wXEAGzGgEnGxIUD1TZW4-RuHnw/exec"; 
         
         function showToast(msg, type='success') { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}" style="color:${type==='success'?'#10b981':'#ef4444'}"></i> <span>${msg}</span>`; c.appendChild(t); setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000); }
         function getLocalYMD(dateStr) { const d = parseDate(dateStr); const offset = d.getTimezoneOffset() * 60000; const localISOTime = (new Date(d - offset)).toISOString().slice(0, 10); return localISOTime; }
@@ -540,23 +540,65 @@
         }
 
         async function syncData() {
-            const dot = document.getElementById('sync-dot'); const text = document.getElementById('sync-text');
-            if(!dot) return; if(API_URL.includes("THAY_LINK")) { dot.style.background = 'gray'; text.innerText = "No API"; return; }
+            const dot = document.getElementById('sync-dot'); 
+            const text = document.getElementById('sync-text');
+            if(!dot) return; 
+            if(API_URL.includes("THAY_LINK")) { 
+                dot.style.background = 'gray'; text.innerText = "No API"; return; 
+            }
             
             try {
-                dot.style.background = '#eab308';
-                const response = await fetch(API_URL + "?action=get_orders&t=" + new Date().getTime()); const serverOrders = await response.json();
+                dot.style.background = '#eab308'; // Màu vàng đang load
+                const response = await fetch(API_URL + "?action=get_orders&t=" + new Date().getTime()); 
+                const serverOrders = await response.json();
+                
                 if (serverOrders && Array.isArray(serverOrders) && serverOrders.length > 0) {
-                    const localTimes = new Set(transactions.map(t => t.time));
+                    // 1. Tạo "Dấu vân tay" cho các đơn hàng ĐANG CÓ trên máy
+                    // Dấu vân tay = NămThángNgàyGiờPhút + Tổng tiền + Số lượng món
+                    // Cách này bỏ qua sự lệch lạc về giây (seconds) hoặc định dạng chuỗi
+                    const localFingerprints = new Set(transactions.map(t => {
+                        return createFingerprint(t);
+                    }));
+
                     let newCount = 0;
                     serverOrders.forEach(svOrd => {
-                        // Sửa logic check trùng: Nếu localTimes ko có, HOẶC nếu svOrd là định dạng mới
-                        if (svOrd.time && (svOrd.itemsStr || (svOrd.cartDetails && svOrd.cartDetails.length > 0)) && !localTimes.has(svOrd.time)) { transactions.push(svOrd); newCount++; }
+                        const svFingerprint = createFingerprint(svOrd);
+                        
+                        // 2. Chỉ thêm vào nếu dấu vân tay chưa tồn tại
+                        if (!localFingerprints.has(svFingerprint)) { 
+                            transactions.push(svOrd); 
+                            localFingerprints.add(svFingerprint); // Đánh dấu đã thêm để tránh trùng trong cùng 1 đợt
+                            newCount++; 
+                        }
                     });
-                    if (newCount > 0) { transactions.sort((a, b) => parseDate(a.time) - parseDate(b.time)); localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions)); renderDashboard(); renderReport(); }
+
+                    if (newCount > 0) { 
+                        // Sắp xếp lại theo thời gian mới nhất
+                        transactions.sort((a, b) => parseDate(a.time) - parseDate(b.time)); 
+                        localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions)); 
+                        renderDashboard(); 
+                        renderReport(); 
+                    }
                 }
                 dot.style.background = '#10b981'; text.innerText = "Online"; 
-            } catch (e) { console.log(e); dot.style.background = '#ef4444'; text.innerText = "Offline"; }
+            } catch (e) { 
+                console.log(e); 
+                dot.style.background = '#ef4444'; text.innerText = "Offline"; 
+            }
+        }
+
+        // --- HÀM TẠO DẤU VÂN TAY (Tránh trùng đơn) ---
+        function createFingerprint(order) {
+            try {
+                const d = parseDate(order.time);
+                // Lấy thời gian chính xác đến PHÚT (bỏ qua giây để tránh lệch)
+                const timeKey = `${d.getFullYear()}${d.getMonth()}${d.getDate()}${d.getHours()}${d.getMinutes()}`;
+                // Kết hợp với Tổng tiền và Chuỗi món ăn để tạo mã duy nhất
+                // VD: 202601221430_50000_NuocSuoi(2)
+                return `${timeKey}_${order.total}_${order.itemsStr || ''}`;
+            } catch (e) {
+                return Math.random().toString(); // Fallback nếu lỗi
+            }
         }
 
         async function pushOrderToSheet(order) {
