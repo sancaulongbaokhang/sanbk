@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sân Cầu Lông (V-FINAL BOX HEADER)</title>
+    <title>Sân Cầu Lông (Auto Login)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -102,7 +102,7 @@
         .search-wrapper { position: relative; }
         .search-icon { position: absolute; left: 15px; top: 35%; color: #94a3b8; }
 
-        /* --- NEW: SECTION HEADER IN BOX --- */
+        /* --- SECTION HEADER IN BOX --- */
         .section-header { 
             background: white;
             padding: 15px 20px;
@@ -113,14 +113,13 @@
             margin: 20px 0 15px 0; 
             display: flex; align-items: center; gap: 10px;
             text-transform: uppercase; letter-spacing: 1px;
-            border-left: 5px solid var(--accent); /* Thêm viền trái cho nổi */
+            border-left: 5px solid var(--accent); 
         }
-        /* Loại bỏ đường gạch ngang cũ */
         .section-header::after { content: none; }
 
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
         
-        /* Card Style (Đẹp + Đầy đủ thông tin) */
+        /* Card Style */
         .card { 
             background: white; border-radius: 12px; padding: 10px; 
             text-align: center; cursor: pointer; transition: 0.2s; 
@@ -149,7 +148,7 @@
         .btn-debt { width: 100%; padding: 10px; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; font-weight: 700; border-radius: 10px; margin-top: 8px; cursor: pointer; }
 
         /* Login & Modal */
-        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 11000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 11000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.3s; }
         .login-box { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding: 40px; border-radius: 20px; width: 350px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
         .login-input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; background: rgba(0,0,0,0.3); font-size: 14px; color: white; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); z-index: 10000; justify-content: center; align-items: center; }
@@ -529,10 +528,21 @@
             const filtered = products.filter(p => p.name.toLowerCase().includes(term) || p.group.toLowerCase().includes(term));
             if (filtered.length === 0) { grid.innerHTML = '<div style="width:100%;text-align:center;color:#999;grid-column:span 3;margin-top:20px;">Không tìm thấy món</div>'; return; }
             
-            filtered.forEach(p => { 
-                const card = document.createElement('div'); card.className = 'card'; card.setAttribute('data-group', p.group); card.onclick = function() { addToCart(p.id); };
-                card.innerHTML = `<div class="card-content"><div class="card-icon">${p.icon || '📦'}</div><div class="card-name" title="${p.name}">${p.name}</div></div><div class="card-price">${formatMoney(p.price)}</div>`;
-                grid.appendChild(card);
+            // --- SECTION HEADER IN BOX ---
+            const groups = [...new Set(filtered.map(p => p.group))].sort((a,b) => a.includes('Tiền Giờ') ? -1 : 1);
+            groups.forEach(groupName => {
+                const header = document.createElement('div'); header.className = 'section-header';
+                let iconClass = 'fa-box'; if(groupName.includes('Nước')) iconClass = 'fa-wine-bottle'; if(groupName.includes('Trà')) iconClass = 'fa-mug-hot'; if(groupName.includes('Cầu')) iconClass = 'fa-feather-alt';
+                header.innerHTML = `<i class="fas ${iconClass}"></i> ${groupName}`; grid.appendChild(header);
+                
+                const groupContainer = document.createElement('div'); groupContainer.className = 'grid';
+                filtered.filter(p => p.group === groupName).forEach(p => {
+                    const card = document.createElement('div'); card.className = 'card'; card.setAttribute('data-group', p.group); 
+                    card.onclick = function(e) { addToCart(p.id); };
+                    card.innerHTML = `<div class="card-content"><div class="card-icon">${p.icon || '📦'}</div><div class="card-name" title="${p.name}">${p.name}</div></div><div class="card-price">${formatMoney(p.price)}</div>`;
+                    groupContainer.appendChild(card);
+                }); 
+                grid.appendChild(groupContainer);
             });
         }
 
@@ -544,21 +554,50 @@
             } catch (e) { console.error("Sync Menu Fail"); }
         }
 
+        // --- NEW SYNC LOGIC (Client Side) ---
         async function syncData() {
             const dot = document.getElementById('sync-dot');
             const text = document.getElementById('sync-text');
             if(!dot) return;
             if(API_URL.includes("THAY_LINK")) { dot.style.background = 'gray'; text.innerText = "No API"; return; }
-            try { 
-                dot.style.background = '#eab308'; 
+            
+            try {
+                dot.style.background = '#eab308'; // Vàng (Checking)
+                
+                // 1. Sync Orders from Server
+                const response = await fetch(API_URL + "?action=get_orders&t=" + new Date().getTime());
+                const serverOrders = await response.json();
+                
+                if (serverOrders && Array.isArray(serverOrders) && serverOrders.length > 0) {
+                    const localTimes = new Set(transactions.map(t => t.time));
+                    let newCount = 0;
+                    serverOrders.forEach(svOrd => {
+                        if (!localTimes.has(svOrd.time)) {
+                            transactions.push(svOrd);
+                            newCount++;
+                        }
+                    });
+                    
+                    if (newCount > 0) {
+                        transactions.sort((a, b) => new Date(a.time) - new Date(b.time));
+                        localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions));
+                        renderDashboard(); // Cập nhật lại biểu đồ
+                        renderReport(); // Cập nhật báo cáo
+                    }
+                }
+
                 dot.style.background = '#10b981'; text.innerText = "Online"; 
-            } catch (e) { dot.style.background = '#ef4444'; text.innerText = "Offline"; }
+            } catch (e) { 
+                console.log(e);
+                dot.style.background = '#ef4444'; text.innerText = "Offline"; 
+            }
         }
 
         async function pushOrderToSheet(order) {
             transactions.push(order);
             localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions));
             showToast("Đã lưu đơn thành công!", "success");
+            
             resetOrderState();
             renderDashboard();
 
@@ -585,11 +624,21 @@
         }
 
         function loginSuccess() {
-            document.getElementById('login-screen').style.opacity = '0'; setTimeout(() => { document.getElementById('login-screen').style.display = 'none'; }, 300);
+            // LƯU USER VÀO LOCAL STORAGE
+            localStorage.setItem('bd_current_user', JSON.stringify(currentUser));
+
+            document.getElementById('login-screen').style.opacity = '0'; 
+            setTimeout(() => { document.getElementById('login-screen').style.display = 'none'; }, 300);
+            
             document.getElementById('user-display').innerHTML = currentUser.name;
             document.getElementById('staff-name').innerText = `NV: ${currentUser.name}`;
+            
             const role = (currentUser.role || '').toLowerCase().trim();
-            if (currentUser.username === 'admin') { roleConfig['admin'] = MENU_DEF.map(m => m.id); localStorage.setItem('bd_role_config', JSON.stringify(roleConfig)); }
+            if (currentUser.username === 'admin') { 
+                roleConfig['admin'] = MENU_DEF.map(m => m.id); 
+                localStorage.setItem('bd_role_config', JSON.stringify(roleConfig)); 
+            }
+            
             applyRole();
             syncData(); syncProductData(); renderPOS(); renderReport(); renderDebtTable(); renderDashboard();
         }
@@ -617,9 +666,12 @@
             if(tabName === 'reports') renderReport();
         }
 
-        function logout() { location.reload(); }
+        function logout() { 
+            localStorage.removeItem('bd_current_user'); // XÓA USER KHỎI BỘ NHỚ
+            location.reload(); 
+        }
         
-        // --- USER MANAGEMENT (OPTIMISTIC) ---
+        // --- USER MANAGEMENT ---
         function renderUserTable() { document.querySelector('#user-table tbody').innerHTML = allUsers.map(u => `<tr><td>${u.username}</td><td><b>${u.name}</b></td><td><span style="padding:4px 8px; background:#e0e7ff; color:#6366f1; border-radius:8px; font-size:11px; font-weight:bold">${u.role}</span></td><td><button class="qty-btn" onclick="openUserModal(false, '${u.username}')" style="color:var(--primary)"><i class="fas fa-edit"></i></button>${u.username!=='admin'?`<button class="qty-btn" onclick="deleteUser('${u.username}')" style="color:#ef4444"><i class="fas fa-trash"></i></button>`:''}</td></tr>`).join(''); }
         function openUserModal(isNew, uEdit) { 
             const modal=document.getElementById('user-modal'); modal.style.display='flex'; 
@@ -674,7 +726,8 @@
                 header.innerHTML = `<i class="fas ${iconClass}"></i> ${groupName}`; grid.appendChild(header);
                 const groupContainer = document.createElement('div'); groupContainer.className = 'grid';
                 products.filter(p => p.group === groupName).forEach(p => {
-                    const card = document.createElement('div'); card.className = 'card'; card.setAttribute('data-group', p.group); card.onclick = function() { addToCart(p.id); };
+                    const card = document.createElement('div'); card.className = 'card'; card.setAttribute('data-group', p.group); 
+                    card.onclick = function(e) { addToCart(p.id); };
                     card.innerHTML = `<div class="card-content"><div class="card-icon">${p.icon || '📦'}</div><div class="card-name" title="${p.name}">${p.name}</div></div><div class="card-price">${formatMoney(p.price)}</div>`;
                     groupContainer.appendChild(card);
                 }); grid.appendChild(groupContainer);
@@ -703,7 +756,6 @@
             const tbody = document.querySelector('#debt-table tbody'); const empty = document.getElementById('debt-empty');
             if(debts.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
             empty.style.display = 'none';
-            // Logic fix: Ưu tiên dùng d.items (format mới) hoặc fallback về d.itemsStr (cũ)
             tbody.innerHTML = debts.map((d, i) => {
                 const displayItems = d.items || d.itemsStr || "Chi tiết đơn hàng";
                 return `<tr><td style="font-weight:bold">${d.customer}</td><td>${d.date}</td><td style="max-width:200px; white-space:normal; font-size:12px">${displayItems}</td><td style="color:#ef4444;font-weight:bold">${formatMoney(d.total)}</td><td><button class="qty-btn" onclick="payDebt(${i})"><i class="fas fa-check"></i></button></td></tr>`;
@@ -817,7 +869,7 @@
         }
 
         window.onload = function() { 
-            // Enter key logic for Login
+            // Enter key login
             document.getElementById("password").addEventListener("keypress", function(event) {
                 if (event.key === "Enter") {
                     event.preventDefault();
@@ -831,7 +883,15 @@
                 }
             });
 
-            document.getElementById("username").focus(); 
+            // CHECK AUTO LOGIN
+            const savedUser = localStorage.getItem('bd_current_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                loginSuccess();
+            } else {
+                document.getElementById("username").focus(); 
+            }
+
             loadUsersForLogin(); 
             renderPOS(); renderReport();
         };
