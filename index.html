@@ -3,135 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sân Cầu Lông (Auto Login)</title>
+    <title>Sân Cầu Lông (Final Fix Report)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
-        /* --- 1. THEME: Classic Blue & Green --- */
-        :root {
-            --primary: #6366f1;       /* Tím xanh hiện đại */
-            --sidebar-bg: #0f172a;    /* Xanh đen cổ điển (Menu) */
-            --bg: #f1f5f9;            /* Nền xám xanh dịu */
-            --white: #ffffff;
-            --accent: #10b981;        /* Xanh lá (Điểm nhấn) */
-            --danger: #ef4444;
-            --text-main: #334155;
-            --text-light: #94a3b8;
-            --border: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
+        /* --- THEME --- */
+        :root { --primary: #6366f1; --sidebar-bg: #0f172a; --bg: #f8fafc; --white: #ffffff; --accent: #10b981; --text-main: #334155; --text-light: #94a3b8; --border: #e2e8f0; --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        body { font-family: 'Quicksand', sans-serif; margin: 0; background: var(--bg); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; font-size: 14px; }
         
-        /* Scrollbar đẹp */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-        body { 
-            font-family: 'Quicksand', sans-serif; 
-            margin: 0; background: var(--bg); color: var(--text-main); 
-            display: flex; height: 100vh; overflow: hidden; font-size: 14px;
-        }
-
-        /* --- 2. SIDEBAR (Phong cách cũ) --- */
-        .sidebar { 
-            width: 250px; background: var(--sidebar-bg); color: white;
-            display: flex; flex-direction: column; padding: 20px 15px; 
-            z-index: 2000; box-shadow: 4px 0 24px rgba(0,0,0,0.05); flex-shrink: 0;
-        }
-        
+        .sidebar { width: 250px; background: var(--sidebar-bg); color: white; display: flex; flex-direction: column; padding: 20px 15px; z-index: 2000; flex-shrink: 0; }
         .brand { text-align: center; margin: 15px 0 30px 0; }
-        .brand-icon { 
-            font-size: 35px; color: #fff; background: var(--primary); 
-            width: 60px; height: 60px; border-radius: 50%; 
-            display: inline-flex; align-items: center; justify-content: center;
-            margin-bottom: 10px; animation: float 3s ease-in-out infinite; 
-            box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
-        }
+        .brand-icon { font-size: 35px; color: #fff; background: var(--primary); width: 60px; height: 60px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 10px; animation: float 3s ease-in-out infinite; box-shadow: 0 0 15px rgba(99, 102, 241, 0.5); }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
         .brand-text { font-size: 18px; font-weight: 700; letter-spacing: 1px; }
 
-        .menu-item { 
-            padding: 12px 15px; border-radius: 10px; cursor: pointer; 
-            display: flex; align-items: center; gap: 15px; 
-            color: #94a3b8; font-weight: 600; margin-bottom: 5px; transition: 0.2s;
-        }
+        .menu-item { padding: 12px 15px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #94a3b8; font-weight: 600; margin-bottom: 5px; transition: 0.2s; }
         .menu-item:hover { background: rgba(255,255,255,0.1); color: white; padding-left: 20px; }
         .menu-item.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4); }
         .menu-item.hidden { display: none !important; }
 
-        /* --- 3. ANIMATION (BOUNCE EFFECT) --- */
-        .main { 
-            flex: 1; padding: 20px; overflow: hidden; 
-            display: none; flex-direction: column; height: 100%;
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px); 
-            background-size: 20px 20px;
-        }
-        
-        /* Hiệu ứng nhảy (Bounce) khi hiện tab */
-        @keyframes bounceIn {
-            0% { opacity: 0; transform: scale(0.9) translateY(20px); }
-            60% { opacity: 1; transform: scale(1.02) translateY(-5px); }
-            100% { transform: scale(1) translateY(0); }
-        }
+        .main { flex: 1; padding: 20px; overflow: hidden; display: none; flex-direction: column; height: 100%; background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 20px 20px; }
         .main.active { display: flex; animation: bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        @keyframes bounceIn { 0% { opacity: 0; transform: scale(0.9) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
 
-        /* --- 4. LAYOUT CHIA ĐÔI (Split View) --- */
         .pos-container { display: flex; gap: 20px; height: 100%; overflow: hidden; }
         .left-col { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .product-list { flex: 1; overflow-y: auto; padding-right: 5px; padding-bottom: 20px; }
-        
-        .bill-panel { 
-            width: 360px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
-            border-radius: 16px; box-shadow: var(--shadow); 
-            display: flex; flex-direction: column; height: 100%; flex-shrink: 0; border: 1px solid white;
-        }
+        .bill-panel { width: 360px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 16px; box-shadow: var(--shadow); display: flex; flex-direction: column; height: 100%; flex-shrink: 0; border: 1px solid white; }
 
-        /* --- 5. COMPONENTS --- */
-        .search-bar { 
-            width: 100%; padding: 12px 20px 12px 40px; border: 1px solid transparent; 
-            border-radius: 12px; font-size: 14px; background: white; 
-            box-shadow: var(--shadow); transition: 0.3s; font-family: 'Quicksand'; margin-bottom: 20px;
-        }
-        .search-bar:focus { border-color: var(--primary); }
+        .search-bar { width: 100%; padding: 12px 20px 12px 40px; border: 1px solid transparent; border-radius: 12px; font-size: 14px; background: white; box-shadow: var(--shadow); transition: 0.3s; font-family: 'Quicksand'; margin-bottom: 20px; }
         .search-wrapper { position: relative; }
         .search-icon { position: absolute; left: 15px; top: 35%; color: #94a3b8; }
 
-        /* --- SECTION HEADER IN BOX --- */
-        .section-header { 
-            background: white;
-            padding: 15px 20px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            color: var(--primary);
-            font-size: 15px; font-weight: 800; 
-            margin: 20px 0 15px 0; 
-            display: flex; align-items: center; gap: 10px;
-            text-transform: uppercase; letter-spacing: 1px;
-            border-left: 5px solid var(--accent); 
-        }
-        .section-header::after { content: none; }
+        /* BOX HEADER */
+        .section-header { background: white; padding: 15px 20px; border-radius: 12px; box-shadow: var(--shadow); color: var(--primary); font-size: 15px; font-weight: 800; margin: 20px 0 15px 0; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px; border-left: 5px solid var(--accent); }
 
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
-        
-        /* Card Style */
-        .card { 
-            background: white; border-radius: 12px; padding: 10px; 
-            text-align: center; cursor: pointer; transition: 0.2s; 
-            display: flex; flex-direction: column; justify-content: space-between; align-items: center; 
-            height: 140px; border: 2px solid transparent; box-shadow: var(--shadow);
-        }
+        .card { background: white; border-radius: 12px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between; align-items: center; height: 140px; border: 2px solid transparent; box-shadow: var(--shadow); }
         .card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
         .card-icon { font-size: 32px; margin-bottom: 5px; }
         .card-name { font-weight: 700; font-size: 13px; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; height: 34px; display:flex; align-items:center; justify-content:center; }
         .card-price { background: #f1f5f9; color: var(--primary); font-weight: 700; font-size: 12px; padding: 4px 10px; border-radius: 20px; width: 100%; margin-top: 5px; }
+        .flying-item { position: fixed; z-index: 9999; pointer-events: none; font-size: 24px; transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1); }
 
-        /* Bill Panel */
         .bill-header { padding: 15px 20px; background: linear-gradient(to right, #6366f1, #8b5cf6); color: white; display: flex; justify-content: space-between; align-items: center; border-radius: 16px 16px 0 0; }
         .bill-info { padding: 8px 15px; background: #f8fafc; font-size: 12px; color: #64748b; display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; }
         .bill-items { flex: 1; overflow-y: auto; padding: 10px; }
@@ -141,29 +61,25 @@
         .qty-btn { width: 24px; height: 24px; border: 1px solid #e2e8f0; background: white; border-radius: 6px; cursor: pointer; color: var(--primary); font-weight: 700; display: flex; align-items: center; justify-content: center; }
         .bill-footer { padding: 15px; background: white; border-top: 1px solid #f1f5f9; border-radius: 0 0 16px 16px; }
         .total-row { display: flex; justify-content: space-between; font-size: 20px; font-weight: 800; margin-bottom: 10px; color: var(--primary); }
-        
+        .pm-btn { flex: 1; text-align: center; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; cursor: pointer; font-weight: 700; color: var(--text-light); transition: 0.2s; }
+        .pm-btn.active { border-color: var(--primary); background: #e0e7ff; color: var(--primary); }
         .btn-pay { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2); }
         .btn-pay:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(16, 185, 129, 0.3); background: #059669; }
-        
         .btn-debt { width: 100%; padding: 10px; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; font-weight: 700; border-radius: 10px; margin-top: 8px; cursor: pointer; }
 
-        /* Login & Modal */
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 11000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.3s; }
         .login-box { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding: 40px; border-radius: 20px; width: 350px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
         .login-input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; background: rgba(0,0,0,0.3); font-size: 14px; color: white; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); z-index: 10000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 25px; border-radius: 16px; width: 90%; max-width: 450px; animation: bounceIn 0.4s; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
 
-        /* Tables & Dashboard */
         .dashboard-scroll { overflow-y: auto; padding-right: 5px; height: 100%; }
         table { width: 100%; border-collapse: separate; border-spacing: 0; }
         th { text-align: left; padding: 12px; color: var(--text-light); border-bottom: 1px solid #e2e8f0; font-size: 12px; font-weight: 700; text-transform: uppercase; background: #f8fafc; }
         td { padding: 12px; border-bottom: 1px solid #f1f5f9; color: var(--text-main); background: white; }
-        
         .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
         .stat-card { background: white; padding: 20px; border-radius: 12px; box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--primary); }
 
-        /* Mobile */
         .mobile-header { display: none; }
         .mobile-cart-btn { display: none; }
         @media (max-width: 1024px) {
@@ -406,7 +322,7 @@
             </div>
 
             <div style="background:white; border-radius:16px; overflow:hidden; box-shadow:var(--shadow)">
-                <table id="report-table"><thead><tr><th>Thời gian</th><th>Chi tiết</th><th>SL</th><th>Tổng</th><th>NV</th><th>TT</th></tr></thead><tbody></tbody></table>
+                <table id="report-table"><thead><tr><th>Thời gian</th><th>Chi tiết</th><th>Tổng</th><th>NV</th></tr></thead><tbody></tbody></table>
             </div>
         </div>
     </div>
@@ -428,7 +344,7 @@
     <div id="debt-modal" class="modal"><div class="modal-content"><h3>Ghi Nợ</h3><div class="form-group"><label>Tên Khách:</label><input type="text" id="debt-customer-name" class="login-input" style="color:#333; background:#f8fafc; border:1px solid #e2e8f0" placeholder="VD: Anh Long Sân 3"></div><div style="display:flex;gap:10px"><button class="btn-pay" onclick="confirmDebt()">Lưu Nợ</button><button class="btn-pay" style="background:#cbd5e1" onclick="document.getElementById('debt-modal').style.display='none'">Hủy</button></div></div></div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbx-Xux9IxK6e3sqm0_8wLLCApKxbfmwErvWeG5WqwHehyf338oVP0GzINEELwtQ07Ir0w/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbxK8ofjXqd-ApTl09--4J78iqtF_YGWN_6GrzX2B3a1WjXoaROIWdGPMn37VG9KEiuWXw/exec"; 
         
         function showToast(msg, type='success') { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}" style="color:${type==='success'?'#10b981':'#ef4444'}"></i> <span>${msg}</span>`; c.appendChild(t); setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000); }
         function getLocalYMD(dateStr) { const d = new Date(dateStr); const offset = d.getTimezoneOffset() * 60000; const localISOTime = (new Date(d - offset)).toISOString().slice(0, 10); return localISOTime; }
@@ -440,7 +356,8 @@
 
         const defaultProducts = [{ id: 101, name: '5h30 - 8h (Vãng Lai)', price: 70000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🌅' },{ id: 102, name: '5h30 - 8h (Cố Định)', price: 60000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🌅' },{ id: 103, name: '8h - 17h (Vãng Lai)', price: 60000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '☀️' },{ id: 104, name: '8h - 17h (Cố Định)', price: 50000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '☀️' },{ id: 105, name: '17h - 24h (Vãng Lai)', price: 110000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🌙' },{ id: 106, name: '17h - 24h (Cố Định)', price: 100000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🌙' },{ id: 107, name: 'T7-CN-Lễ (Vãng Lai)', price: 100000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '📅' },{ id: 108, name: 'T7-CN-Lễ (Cố Định)', price: 90000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '📅' },{ id: 109, name: 'Thuê Vợt', price: 20000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🏸' },{ id: 1, name: 'Suối nhỏ 510ml', price: 10000, group: 'Nước Giải Khát', icon: '💧' },{ id: 2, name: 'Suối lớn 1,5l', price: 15000, group: 'Nước Giải Khát', icon: '🍶' },{ id: 3, name: 'Nutri dâu', price: 12000, group: 'Nước Giải Khát', icon: '🍓' },{ id: 4, name: 'Nutri cam', price: 12000, group: 'Nước Giải Khát', icon: '🍊' },{ id: 5, name: 'Revive pro', price: 15000, group: 'Nước Giải Khát', icon: '🧂' },{ id: 6, name: 'Revive TT', price: 15000, group: 'Nước Giải Khát', icon: '🧂' },{ id: 7, name: 'Revive CM', price: 15000, group: 'Nước Giải Khát', icon: '🧂' },{ id: 8, name: 'Pocari lớn', price: 20000, group: 'Nước Giải Khát', icon: '🔵' },{ id: 9, name: 'Pocari nhỏ', price: 15000, group: 'Nước Giải Khát', icon: '🔵' },{ id: 10, name: 'Aquarius', price: 15000, group: 'Nước Giải Khát', icon: '🥤' },{ id: 11, name: 'Coca TT', price: 15000, group: 'Nước Giải Khát', icon: '🥤' },{ id: 12, name: 'Coca (zr calo)', price: 15000, group: 'Nước Giải Khát', icon: '🥤' },{ id: 13, name: 'Fanta', price: 15000, group: 'Nước Giải Khát', icon: '🍊' },{ id: 14, name: 'Red bull', price: 20000, group: 'Nước Giải Khát', icon: '🐂' },{ id: 15, name: 'C2 chanh', price: 12000, group: 'Nước Giải Khát', icon: '🍋' },{ id: 16, name: 'Sting', price: 15000, group: 'Nước Giải Khát', icon: '🍓' },{ id: 17, name: 'Trà đá 2', price: 2000, group: 'Trà Đá & Pha Chế', icon: '🧊' },{ id: 18, name: 'Trà đá 3', price: 3000, group: 'Trà Đá & Pha Chế', icon: '🧊' },{ id: 19, name: 'Trà đá 5', price: 5000, group: 'Trà Đá & Pha Chế', icon: '🧊' },{ id: 20, name: 'Trà đá 10', price: 10000, group: 'Trà Đá & Pha Chế', icon: '🧊' },{ id: 21, name: 'Trà đá 20', price: 20000, group: 'Trà Đá & Pha Chế', icon: '🧊' },{ id: 22, name: 'Soda lon', price: 15000, group: 'Trà Đá & Pha Chế', icon: '🫧' },{ id: 23, name: 'Soda chanh dây', price: 20000, group: 'Trà Đá & Pha Chế', icon: '🍹' },{ id: 24, name: 'Cầu mới', price: 280000, group: 'Cầu Lông', icon: '🏸' },{ id: 25, name: 'Cầu cũ', price: 5000, group: 'Cầu Lông', icon: '🏸' },{ id: 26, name: 'Cầu ống PH', price: 200000, group: 'Cầu Lông', icon: '🏸' },{ id: 27, name: 'Cầu ống 88', price: 200000, group: 'Cầu Lông', icon: '🏸' },{ id: 28, name: 'Mì', price: 15000, group: 'Đồ Ăn & Dịch Vụ', icon: '🍜' },{ id: 29, name: 'Quấn cán (25)', price: 25000, group: 'Đồ Ăn & Dịch Vụ', icon: '🎗️' },{ id: 30, name: 'Quấn cán (45)', price: 45000, group: 'Đồ Ăn & Dịch Vụ', icon: '🎗️' }];
 
-        let products = JSON.parse(localStorage.getItem('bd_pro_debt_v7')) || defaultProducts;
+        // Khởi tạo products từ localStorage hoặc default
+        let products = JSON.parse(localStorage.getItem('bd_pro_debt_v7')) || [];
         let transactions = JSON.parse(localStorage.getItem('bd_transactions_backup')) || [];
         let debts = JSON.parse(localStorage.getItem('bd_debts_v1')) || []; 
         let cart = []; let paymentMethod = 'Tiền mặt'; let currentUser = null; let allUsers = []; let currentReportType = 'all';
@@ -459,7 +376,34 @@
             }
         }
 
-        function resetOrderState() { cart = []; renderCart(); toggleBillPanel(false); document.getElementById('search-pos').value = ''; renderPOS(); setPayment('Tiền mặt'); }
+        // --- RESET ORDER STATE ---
+        function resetOrderState() { 
+            try {
+                cart = []; 
+                renderCart(); 
+                toggleBillPanel(false);
+                const search = document.getElementById('search-pos');
+                if(search) search.value = ''; 
+                renderPOS(); 
+                setPayment('Tiền mặt'); 
+                const debtInput = document.getElementById('debt-customer-name');
+                if(debtInput) debtInput.value = '';
+            } catch (e) {
+                console.error("Lỗi khi reset:", e);
+                cart = []; renderCart();
+            }
+        }
+
+        function setPayment(method) {
+            paymentMethod = method;
+            const btnCash = document.getElementById('pm-cash');
+            const btnTransfer = document.getElementById('pm-transfer');
+            if(btnCash) btnCash.classList.remove('active');
+            if(btnTransfer) btnTransfer.classList.remove('active');
+            
+            if (method === 'Tiền mặt' && btnCash) btnCash.classList.add('active');
+            else if(btnTransfer) btnTransfer.classList.add('active');
+        }
 
         function renderDashboard() {
             const filter = document.getElementById('chart-filter').value; 
@@ -538,7 +482,7 @@
                 const groupContainer = document.createElement('div'); groupContainer.className = 'grid';
                 filtered.filter(p => p.group === groupName).forEach(p => {
                     const card = document.createElement('div'); card.className = 'card'; card.setAttribute('data-group', p.group); 
-                    card.onclick = function(e) { addToCart(p.id); };
+                    card.onclick = function(e) { addToCart(p.id); runFlyingEffect(e, p.icon); };
                     card.innerHTML = `<div class="card-content"><div class="card-icon">${p.icon || '📦'}</div><div class="card-name" title="${p.name}">${p.name}</div></div><div class="card-price">${formatMoney(p.price)}</div>`;
                     groupContainer.appendChild(card);
                 }); 
@@ -598,13 +542,17 @@
             localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions));
             showToast("Đã lưu đơn thành công!", "success");
             
+            // Effect: Confetti
+            try { runConfetti(); } catch(e){}
+
             resetOrderState();
             renderDashboard();
 
-            if(API_URL.includes("THAY_LINK")) return;
-            try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: 'add_order', data: order }) });
-            } catch (e) { console.error("Send Order Fail"); }
+            if(!API_URL.includes("THAY_LINK")) {
+                try {
+                    await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: 'add_order', data: order }) });
+                } catch (e) { console.error("Send Order Fail"); }
+            }
         }
 
         async function loadUsersForLogin() {
@@ -624,21 +572,12 @@
         }
 
         function loginSuccess() {
-            // LƯU USER VÀO LOCAL STORAGE
             localStorage.setItem('bd_current_user', JSON.stringify(currentUser));
-
-            document.getElementById('login-screen').style.opacity = '0'; 
-            setTimeout(() => { document.getElementById('login-screen').style.display = 'none'; }, 300);
-            
+            document.getElementById('login-screen').style.opacity = '0'; setTimeout(() => { document.getElementById('login-screen').style.display = 'none'; }, 300);
             document.getElementById('user-display').innerHTML = currentUser.name;
             document.getElementById('staff-name').innerText = `NV: ${currentUser.name}`;
-            
             const role = (currentUser.role || '').toLowerCase().trim();
-            if (currentUser.username === 'admin') { 
-                roleConfig['admin'] = MENU_DEF.map(m => m.id); 
-                localStorage.setItem('bd_role_config', JSON.stringify(roleConfig)); 
-            }
-            
+            if (currentUser.username === 'admin') { roleConfig['admin'] = MENU_DEF.map(m => m.id); localStorage.setItem('bd_role_config', JSON.stringify(roleConfig)); }
             applyRole();
             syncData(); syncProductData(); renderPOS(); renderReport(); renderDebtTable(); renderDashboard();
         }
@@ -666,12 +605,9 @@
             if(tabName === 'reports') renderReport();
         }
 
-        function logout() { 
-            localStorage.removeItem('bd_current_user'); // XÓA USER KHỎI BỘ NHỚ
-            location.reload(); 
-        }
+        function logout() { localStorage.removeItem('bd_current_user'); location.reload(); }
         
-        // --- USER MANAGEMENT ---
+        // --- USER MANAGEMENT (OPTIMISTIC) ---
         function renderUserTable() { document.querySelector('#user-table tbody').innerHTML = allUsers.map(u => `<tr><td>${u.username}</td><td><b>${u.name}</b></td><td><span style="padding:4px 8px; background:#e0e7ff; color:#6366f1; border-radius:8px; font-size:11px; font-weight:bold">${u.role}</span></td><td><button class="qty-btn" onclick="openUserModal(false, '${u.username}')" style="color:var(--primary)"><i class="fas fa-edit"></i></button>${u.username!=='admin'?`<button class="qty-btn" onclick="deleteUser('${u.username}')" style="color:#ef4444"><i class="fas fa-trash"></i></button>`:''}</td></tr>`).join(''); }
         function openUserModal(isNew, uEdit) { 
             const modal=document.getElementById('user-modal'); modal.style.display='flex'; 
@@ -687,12 +623,9 @@
             const n = document.getElementById('u-name').value; 
             const r = document.getElementById('u-role').value; 
             if(!u || !p) return showToast("Thiếu thông tin!", "error"); 
-            
             if (mode === 'add') allUsers.push({ username: u, password: p, name: n, role: r });
             else { const idx = allUsers.findIndex(user => user.username === u); if(idx !== -1) allUsers[idx] = { username: u, password: p, name: n, role: r }; }
-            
             renderUserTable(); showToast("Đã lưu (Đang đồng bộ...)"); document.getElementById('user-modal').style.display = 'none'; 
-            
             try { await fetch(API_URL + '?t=' + new Date().getTime(), { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: mode==='add'?'add_user':'edit_user', username: u, password: p, name: n, role: r }) }); } catch (error) {} 
         }
 
@@ -727,7 +660,7 @@
                 const groupContainer = document.createElement('div'); groupContainer.className = 'grid';
                 products.filter(p => p.group === groupName).forEach(p => {
                     const card = document.createElement('div'); card.className = 'card'; card.setAttribute('data-group', p.group); 
-                    card.onclick = function(e) { addToCart(p.id); };
+                    card.onclick = function(e) { addToCart(p.id); runFlyingEffect(e, p.icon); };
                     card.innerHTML = `<div class="card-content"><div class="card-icon">${p.icon || '📦'}</div><div class="card-name" title="${p.name}">${p.name}</div></div><div class="card-price">${formatMoney(p.price)}</div>`;
                     groupContainer.appendChild(card);
                 }); grid.appendChild(groupContainer);
@@ -742,7 +675,6 @@
             container.innerHTML = html; document.getElementById('bill-total').innerText = formatMoney(total); document.getElementById('mobile-cart-total').innerText = formatMoney(total);
         }
         function changeQty(index, delta) { cart[index].qty += delta; if (cart[index].qty <= 0) cart.splice(index, 1); renderCart(); }
-        function setPayment(method) { paymentMethod = method; document.getElementById('pm-cash').className = `pm-btn ${method === 'Tiền mặt' ? 'active' : ''}`; document.getElementById('pm-transfer').className = `pm-btn ${method === 'CK' ? 'active' : ''}`; }
         
         function payOrder() {
             if (cart.length === 0) return showToast("Chưa chọn món!", "error");
@@ -766,22 +698,13 @@
         async function confirmDebt() {
             const name = document.getElementById('debt-customer-name').value; if(!name) return showToast("Nhập tên khách!", "error");
             const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0); 
-            // Fix: Tạo chuỗi chi tiết rõ ràng "Món (xSL)"
             const items = cart.map(i => `${i.name} (x${i.qty})`).join(', ');
-            
             debts.push({ customer: name, date: new Date().toLocaleDateString('vi-VN'), items: items, total: total });
             localStorage.setItem('bd_debts_v1', JSON.stringify(debts));
-            
             const orderData = { time: new Date().toISOString(), itemsStr: items, total: total, method: 'Ghi Nợ (' + name + ')', staff: currentUser?currentUser.name:"Admin" };
-            transactions.push(orderData); 
-            localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions));
-            
+            pushOrderToSheet(orderData);
             document.getElementById('debt-modal').style.display = 'none'; 
-            resetOrderState(); 
-            showToast("Đã ghi nợ!");
-            try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'add_order', data: orderData }) }); } catch(e){}
         }
-        
         function payDebt(index) { if(confirm("Đã thanh toán?")) { debts.splice(index, 1); localStorage.setItem('bd_debts_v1', JSON.stringify(debts)); renderDebtTable(); showToast("Đã xóa nợ!"); } }
 
         // --- CALC ---
@@ -818,10 +741,16 @@
             
             tbody.innerHTML = displayData.map((t) => { 
                 let dateStr = ""; try { let d = new Date(t.time); dateStr = d.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit'}) + " " + d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}); } catch(e) { dateStr = t.time; } 
+                
+                // Fix: Hiển thị chi tiết từ cartDetails nếu itemsStr bị thiếu (dữ liệu cũ)
+                let detail = t.itemsStr;
+                if (!detail && t.cartDetails) {
+                    detail = t.cartDetails.map(i => `${i.name} (${i.qty})`).join(', ');
+                }
+                
                 if(t.isSplit) return `<tr><td>${dateStr}</td><td><b>${t.splitItem.name}</b></td><td>${t.splitItem.qty}</td><td><b>${formatMoney(t.splitItem.price * t.splitItem.qty)}</b></td><td>${t.staff || "Admin"}</td><td>${t.method==='CK'?'CK':''}</td></tr>`; 
-                let itemNames = t.cartDetails ? t.cartDetails.map(i => `<div>${i.name}</div>`).join('') : t.itemsStr;
-                let itemQtys = t.cartDetails ? t.cartDetails.map(i => `<div>x${i.qty}</div>`).join('') : "-";
-                return `<tr><td>${dateStr}</td><td>${itemNames}</td><td>${itemQtys}</td><td><b>${formatMoney(t.total)}</b></td><td>${t.staff || "Admin"}</td><td>${t.method==='CK'?'CK':''}</td></tr>`; 
+                
+                return `<tr><td>${dateStr}</td><td>${detail}</td><td><b>${formatMoney(t.total)}</b></td><td>${t.staff || "Admin"}</td></tr>`; 
             }).join(''); 
         }
 
@@ -869,21 +798,15 @@
         }
 
         window.onload = function() { 
-            // Enter key login
+            // 1. Enter key login
             document.getElementById("password").addEventListener("keypress", function(event) {
-                if (event.key === "Enter") {
-                    event.preventDefault();
-                    login();
-                }
+                if (event.key === "Enter") { event.preventDefault(); login(); }
             });
             document.getElementById("username").addEventListener("keypress", function(event) {
-                if (event.key === "Enter") {
-                    event.preventDefault();
-                    document.getElementById("password").focus();
-                }
+                if (event.key === "Enter") { event.preventDefault(); document.getElementById("password").focus(); }
             });
 
-            // CHECK AUTO LOGIN
+            // 2. CHECK AUTO LOGIN
             const savedUser = localStorage.getItem('bd_current_user');
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
@@ -892,8 +815,15 @@
                 document.getElementById("username").focus(); 
             }
 
+            // 3. RESTORE DEFAULT ITEMS IF EMPTY (FIX LỖI MẤT MENU)
+            if (!products || products.length === 0) {
+                products = defaultProducts;
+                localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products));
+            }
+
             loadUsersForLogin(); 
-            renderPOS(); renderReport();
+            renderPOS(); 
+            renderReport();
         };
         setInterval(syncData, 30000); 
     </script>
