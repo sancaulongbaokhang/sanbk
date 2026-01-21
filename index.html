@@ -18,9 +18,7 @@
             --accent: #10b981; 
             --text-main: #1e293b; 
             --text-light: #64748b; 
-            /* Gradient nền chính */
             --bg-gradient: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
-            /* Màu kính */
             --glass-bg: rgba(255, 255, 255, 0.75);
             --glass-border: 1px solid rgba(255, 255, 255, 0.6);
             --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
@@ -35,7 +33,6 @@
         body { 
             font-family: 'Quicksand', sans-serif; 
             margin: 0; 
-            /* Áp dụng nền Gradient */
             background-image: var(--bg-gradient);
             background-attachment: fixed;
             background-size: cover;
@@ -46,33 +43,19 @@
             font-size: 14px; 
         }
         
-        /* SIDEBAR (GLASS DARK) */
+        /* SIDEBAR */
         .sidebar { 
             width: 260px; 
             background: var(--sidebar-glass); 
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            color: white; 
-            display: flex; 
-            flex-direction: column; 
-            padding: 25px 20px; 
-            z-index: 2000; 
-            flex-shrink: 0; 
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            color: white; display: flex; flex-direction: column; padding: 25px 20px; 
+            z-index: 2000; flex-shrink: 0; 
             border-right: 1px solid rgba(255,255,255,0.1);
             box-shadow: 5px 0 25px rgba(0,0,0,0.1);
         }
         .brand { text-align: center; margin: 10px 0 40px 0; }
-        .brand-icon { 
-            font-size: 35px; color: #fff; 
-            background: linear-gradient(135deg, #6366f1, #a855f7);
-            width: 64px; height: 64px; 
-            border-radius: 20px; /* Bo góc mềm hơn */
-            display: inline-flex; align-items: center; justify-content: center; 
-            margin-bottom: 12px; 
-            animation: float 3s ease-in-out infinite; 
-            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4); 
-            border: 2px solid rgba(255,255,255,0.2);
-        }
+        .brand-img { width: 80px; height: 80px; border-radius: 20px; object-fit: cover; border: 3px solid rgba(255,255,255,0.3); box-shadow: 0 10px 25px rgba(0,0,0,0.2); margin-bottom: 15px; animation: float 3s ease-in-out infinite; }
+        .brand-icon { font-size: 35px; color: #fff; background: linear-gradient(135deg, #6366f1, #a855f7); width: 64px; height: 64px; border-radius: 20px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px; animation: float 3s ease-in-out infinite; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4); border: 2px solid rgba(255,255,255,0.2); }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
         .brand-text { font-size: 20px; font-weight: 800; letter-spacing: 0.5px; background: linear-gradient(to right, #fff, #cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
@@ -91,55 +74,18 @@
         .left-col { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .product-list { flex: 1; overflow-y: auto; padding-right: 10px; padding-bottom: 20px; }
         
-        /* GLASS PANEL (BILL) */
-        .bill-panel { 
-            width: 380px; 
-            background: rgba(255, 255, 255, 0.85); /* Trong suốt hơn */
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 24px; 
-            box-shadow: var(--glass-shadow); 
-            display: flex; flex-direction: column; height: 100%; flex-shrink: 0; 
-            border: 1px solid rgba(255, 255, 255, 0.8);
-        }
-
-        .search-bar { 
-            width: 100%; padding: 15px 20px 15px 45px; 
-            border: 2px solid transparent; border-radius: 16px; 
-            font-size: 14px; 
-            background: rgba(255,255,255,0.8); 
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-            transition: 0.3s; font-family: 'Quicksand'; margin-bottom: 25px; 
-        }
+        /* GLASS PANEL */
+        .bill-panel { width: 380px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 24px; box-shadow: var(--glass-shadow); display: flex; flex-direction: column; height: 100%; flex-shrink: 0; border: 1px solid rgba(255, 255, 255, 0.8); }
+        .search-bar { width: 100%; padding: 15px 20px 15px 45px; border: 2px solid transparent; border-radius: 16px; font-size: 14px; background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s; font-family: 'Quicksand'; margin-bottom: 25px; }
         .search-bar:focus { border-color: var(--primary); background: white; box-shadow: 0 4px 20px rgba(99, 102, 241, 0.2); }
         .search-wrapper { position: relative; }
         .search-icon { position: absolute; left: 18px; top: 35%; color: var(--primary); font-size: 16px; }
 
         /* CARD & GRID */
-        .section-header { 
-            background: rgba(255,255,255,0.6); backdrop-filter: blur(10px);
-            padding: 12px 20px; border-radius: 12px; 
-            color: var(--primary-dark); font-size: 14px; font-weight: 800; 
-            margin: 10px 0 15px 0; display: inline-flex; align-items: center; gap: 10px; 
-            text-transform: uppercase; letter-spacing: 1px; border: 1px solid white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-        }
+        .section-header { background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); padding: 12px 20px; border-radius: 12px; color: var(--primary-dark); font-size: 14px; font-weight: 800; margin: 10px 0 15px 0; display: inline-flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px; border: 1px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 18px; }
-        .card { 
-            background: rgba(255, 255, 255, 0.7); 
-            backdrop-filter: blur(10px);
-            border-radius: 18px; padding: 12px; text-align: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
-            display: flex; flex-direction: column; justify-content: space-between; align-items: center; height: 150px; 
-            border: 1px solid rgba(255,255,255,0.8); 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-        }
-        .card:hover { 
-            transform: translateY(-8px) scale(1.02); 
-            background: white;
-            border-color: var(--primary); 
-            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.25); 
-        }
+        .card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border-radius: 18px; padding: 12px; text-align: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; justify-content: space-between; align-items: center; height: 150px; border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .card:hover { transform: translateY(-8px) scale(1.02); background: white; border-color: var(--primary); box-shadow: 0 15px 30px rgba(99, 102, 241, 0.25); }
         .card-icon { font-size: 36px; margin-bottom: 8px; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1)); }
         .card-name { font-weight: 700; font-size: 13px; color: var(--text-main); line-height: 1.35; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; height: 36px; display:flex; align-items:center; justify-content:center; }
         .card-price { background: #f1f5f9; color: var(--primary-dark); font-weight: 800; font-size: 12px; padding: 6px 12px; border-radius: 20px; width: 100%; margin-top: 8px; }
@@ -155,61 +101,28 @@
         .qty-btn:hover { background: var(--primary); color: white; }
         .bill-footer { padding: 20px; background: white; border-top: 1px solid #f1f5f9; border-radius: 0 0 24px 24px; }
         .total-row { display: flex; justify-content: space-between; font-size: 22px; font-weight: 900; margin-bottom: 15px; color: var(--primary-dark); }
-        
         .pm-btn { flex: 1; text-align: center; padding: 14px; border: 2px solid #f1f5f9; background: white; border-radius: 12px; cursor: pointer; font-weight: 700; color: var(--text-light); transition: 0.3s; }
         .pm-btn:hover { background: #f8fafc; }
         .pm-btn.active { border-color: var(--primary); background: #e0e7ff; color: var(--primary); box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2); }
-        
         .btn-pay { width: 100%; padding: 16px; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; border-radius: 14px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3); }
         .btn-pay:hover { transform: translateY(-2px); box-shadow: 0 15px 25px rgba(16, 185, 129, 0.4); }
         .btn-pay:active { transform: scale(0.98); }
         .btn-debt { width: 100%; padding: 12px; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; font-weight: 700; border-radius: 12px; margin-top: 10px; cursor: pointer; transition: 0.2s; }
         .btn-debt:hover { background: #ffe4e6; }
 
-        /* HISTORY CARD STYLE (MIXED UI - IMPROVED) */
+        /* HISTORY CARD STYLE */
         .history-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; padding-bottom: 20px; }
-        .history-card { 
-            background: rgba(255, 255, 255, 0.8); 
-            backdrop-filter: blur(10px);
-            border-radius: 20px; padding: 18px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-            border: 1px solid white; 
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
-            display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; animation: bounceIn 0.5s both; 
-            border-left-width: 6px; 
-        }
+        .history-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border-radius: 20px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid white; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; animation: bounceIn 0.5s both; border-left-width: 6px; }
         .history-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px -5px rgba(99, 102, 241, 0.3); background: white; }
-        
         .hc-cash { border-left-color: #10b981; } 
         .hc-ck { border-left-color: #8b5cf6; } 
-        
         .hc-header { border-bottom: 1px dashed #e2e8f0; padding-bottom: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #64748b; font-weight: 700; }
         .badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-left: 10px; display:inline-flex; align-items:center; gap:5px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .badge-cash { background: #d1fae5; color: #059669; }
         .badge-ck { background: #ede9fe; color: #7c3aed; }
-
         .hc-items { flex: 1; margin-bottom: 15px; max-height: 160px; overflow-y: auto; font-size: 14px; }
         .hc-item-row { display: flex; justify-content: space-between; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid rgba(0,0,0,0.03); }
-        
         .hc-footer { background: rgba(248, 250, 252, 0.5); margin: 0 -18px -18px -18px; padding: 15px; text-align: center; border-top: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        
-        /* MODALS & OTHERS */
-        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 11000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.3s; background-image: radial-gradient(circle at 50% 50%, #1e293b, #0f172a); }
-        .login-box { background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); padding: 40px; border-radius: 24px; width: 350px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-        .login-input { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; background: rgba(0,0,0,0.3); font-size: 15px; color: white; transition: 0.3s; }
-        .login-input:focus { border-color: var(--primary); background: rgba(0,0,0,0.5); }
-        
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 10000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; animation: bounceIn 0.4s; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
-        
-        .dashboard-scroll { overflow-y: auto; padding-right: 5px; height: 100%; }
-        table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        th { text-align: left; padding: 15px; color: var(--text-light); border-bottom: 2px solid #e2e8f0; font-size: 13px; font-weight: 800; text-transform: uppercase; background: rgba(248, 250, 252, 0.8); }
-        td { padding: 15px; border-bottom: 1px solid #f1f5f9; color: var(--text-main); background: white; vertical-align: middle; }
-        tr:last-child td { border-bottom: none; }
-        
-        .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 25px; }
-        .stat-card { background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); padding: 25px; border-radius: 20px; box-shadow: var(--glass-shadow); display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--primary); border: 1px solid white; }
 
         /* MOBILE RESPONSIVE */
         .mobile-header { display: none; }
@@ -233,6 +146,19 @@
             .card { height: 130px; }
         }
 
+        /* OTHERS */
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 11000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.3s; background-image: radial-gradient(circle at 50% 50%, #1e293b, #0f172a); }
+        .login-box { background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); padding: 40px; border-radius: 24px; width: 350px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .login-input { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; background: rgba(0,0,0,0.3); font-size: 15px; color: white; transition: 0.3s; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 10000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; animation: bounceIn 0.4s; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+        .dashboard-scroll { overflow-y: auto; padding-right: 5px; height: 100%; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        th { text-align: left; padding: 15px; color: var(--text-light); border-bottom: 2px solid #e2e8f0; font-size: 13px; font-weight: 800; text-transform: uppercase; background: rgba(248, 250, 252, 0.8); }
+        td { padding: 15px; border-bottom: 1px solid #f1f5f9; color: var(--text-main); background: white; vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 25px; }
+        .stat-card { background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); padding: 25px; border-radius: 20px; box-shadow: var(--glass-shadow); display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--primary); border: 1px solid white; }
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 13000; }
         .toast { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 16px 24px; border-radius: 12px; box-shadow: 0 15px 40px rgba(0,0,0,0.15); margin-bottom: 10px; display: flex; align-items: center; gap: 12px; font-weight: 700; border-left: 5px solid var(--accent); animation: bounceIn 0.4s; color: var(--text-main); }
     </style>
@@ -471,12 +397,35 @@
     <div id="debt-modal" class="modal"><div class="modal-content"><h3>Ghi Nợ</h3><div class="form-group"><label>Tên Khách:</label><input type="text" id="debt-customer-name" class="login-input" style="color:#333; background:#f8fafc; border:1px solid #e2e8f0" placeholder="VD: Anh Long Sân 3"></div><div style="display:flex;gap:10px"><button class="btn-pay" onclick="confirmDebt()">Lưu Nợ</button><button class="btn-pay" style="background:#cbd5e1; box-shadow:none" onclick="document.getElementById('debt-modal').style.display='none'">Hủy</button></div></div></div>
 
     <script>
-        // --- CẤU HÌNH API (Dùng lại link cũ của bạn) ---
+        // --- CẤU HÌNH API ---
         const API_URL = "https://script.google.com/macros/s/AKfycbw0S7jryjKJOKs6jz2hjoFhAguITJPoK2OUs1bB31PXN4mlRgx8NbBATX1FZ5SavdW-gg/exec"; 
         
         function showToast(msg, type='success') { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}" style="color:${type==='success'?'#10b981':'#ef4444'}"></i> <span>${msg}</span>`; c.appendChild(t); setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000); }
-        function getLocalYMD(dateStr) { const d = new Date(dateStr); const offset = d.getTimezoneOffset() * 60000; const localISOTime = (new Date(d - offset)).toISOString().slice(0, 10); return localISOTime; }
+        function getLocalYMD(dateStr) { const d = parseDate(dateStr); const offset = d.getTimezoneOffset() * 60000; const localISOTime = (new Date(d - offset)).toISOString().slice(0, 10); return localISOTime; }
         function isWeekend(date) { const day = date.getDay(); return day === 0 || day === 6; }
+        
+        // --- FIX DATE PARSING ---
+        function parseDate(str) {
+            if (!str) return new Date();
+            // Nếu là đối tượng Date
+            if (str instanceof Date) return str;
+            // Nếu là ISO string (2024-...)
+            if (typeof str === 'string' && str.includes('T')) return new Date(str);
+            // Nếu là format VN (HH:mm dd/MM/yyyy)
+            if (typeof str === 'string' && str.includes('/')) {
+                try {
+                    const parts = str.split(' ');
+                    if(parts.length >= 2) {
+                        const dParts = parts[1].split('/');
+                        const tParts = parts[0].split(':');
+                        if (dParts.length === 3 && tParts.length >= 2) {
+                             return new Date(dParts[2], dParts[1]-1, dParts[0], tParts[0], tParts[1]);
+                        }
+                    }
+                } catch(e) {}
+            }
+            return new Date(str);
+        }
 
         const MENU_DEF = [{id: 'nav-pos', name: 'Bán Hàng'},{id: 'nav-dashboard', name: 'Thống Kê'},{id: 'nav-debt', name: 'Sổ Nợ'},{id: 'nav-calc', name: 'Tính Giờ'},{id: 'nav-products', name: 'Menu Món'},{id: 'nav-reports', name: 'Lịch Sử ĐH'},{id: 'nav-users', name: 'Nhân Viên'}];
         const DEFAULT_ROLES = { 'admin': MENU_DEF.map(m=>m.id), 'staff': ['nav-pos'] };
@@ -538,7 +487,7 @@
             document.getElementById('fun-title').innerText = funTitle; document.getElementById('fun-msg').innerText = funMsg;
 
             let categories = [], seriesData = [];
-            if (filter === 'today') { categories = Array.from({length: 24}, (_, i) => `${i}h`); seriesData = new Array(24).fill(0); todayTrans.forEach(t => { seriesData[new Date(t.time).getHours()] += t.total; }); }
+            if (filter === 'today') { categories = Array.from({length: 24}, (_, i) => `${i}h`); seriesData = new Array(24).fill(0); todayTrans.forEach(t => { seriesData[parseDate(t.time).getHours()] += t.total; }); }
             else if (filter === 'week') { for(let i=6; i>=0; i--) { const d = new Date(); d.setDate(d.getDate() - i); categories.push(d.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit'})); const iso = getLocalYMD(d.toISOString()); seriesData.push(transactions.filter(t => getLocalYMD(t.time) === iso).reduce((s,t) => s+t.total, 0)); } }
             else if (filter === 'month') { const now = new Date(); const days = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate(); for(let i=1; i<=days; i++) { categories.push(i); const iso = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`; seriesData.push(transactions.filter(t => getLocalYMD(t.time) === iso).reduce((s,t) => s+t.total, 0)); } }
 
@@ -601,9 +550,10 @@
                     const localTimes = new Set(transactions.map(t => t.time));
                     let newCount = 0;
                     serverOrders.forEach(svOrd => {
+                        // Sửa logic check trùng: Nếu localTimes ko có, HOẶC nếu svOrd là định dạng mới
                         if (svOrd.time && (svOrd.itemsStr || (svOrd.cartDetails && svOrd.cartDetails.length > 0)) && !localTimes.has(svOrd.time)) { transactions.push(svOrd); newCount++; }
                     });
-                    if (newCount > 0) { transactions.sort((a, b) => new Date(a.time) - new Date(b.time)); localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions)); renderDashboard(); renderReport(); }
+                    if (newCount > 0) { transactions.sort((a, b) => parseDate(a.time) - parseDate(b.time)); localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions)); renderDashboard(); renderReport(); }
                 }
                 dot.style.background = '#10b981'; text.innerText = "Online"; 
             } catch (e) { console.log(e); dot.style.background = '#ef4444'; text.innerText = "Offline"; }
@@ -760,7 +710,7 @@
         function addTimeCart() { if(calcResultObj) { cart.push(calcResultObj); renderCart(); showToast("Đã thêm!"); } }
 
         // --- MIX UI RENDER REPORT ---
-        function checkDateFilter(dateStr, filter) { const tDate = new Date(dateStr); const now = new Date(); const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()); if (filter === 'all') return true; if (filter === 'today') return tDate >= startOfDay; if (filter === 'yesterday') { const y = new Date(startOfDay); y.setDate(y.getDate() - 1); const e = new Date(startOfDay); return tDate >= y && tDate < e; } if (filter === 'week') { const d = now.getDay() || 7; if(d !== 1) now.setHours(-24 * (d - 1)); else now.setHours(0,0,0,0); return tDate >= now; } if (filter === 'month') return tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear(); return true; }
+        function checkDateFilter(dateStr, filter) { const tDate = parseDate(dateStr); const now = new Date(); const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()); if (filter === 'all') return true; if (filter === 'today') return tDate >= startOfDay; if (filter === 'yesterday') { const y = new Date(startOfDay); y.setDate(y.getDate() - 1); const e = new Date(startOfDay); return tDate >= y && tDate < e; } if (filter === 'week') { const d = now.getDay() || 7; if(d !== 1) now.setHours(-24 * (d - 1)); else now.setHours(0,0,0,0); return tDate >= now; } if (filter === 'month') return tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear(); return true; }
         function setReportTab(type, btn) { currentReportType = type; document.querySelectorAll('.btn-add').forEach(el => el.style.background='#e2e8f0'); btn.style.background='white'; renderReport(); }
         
         function renderReport() { 
@@ -814,7 +764,7 @@
                 if (displayItems.length === 0) return;
 
                 let dateStr = ""; 
-                try { let d = new Date(t.time); dateStr = `<span>${d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'})}</span> <span>${d.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit'})}</span>`; } catch(e) { dateStr = t.time; }
+                try { let d = parseDate(t.time); dateStr = `<span>${d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'})}</span> <span>${d.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit'})}</span>`; } catch(e) { dateStr = t.time; }
 
                 let itemsHTML = '';
                 displayItems.forEach(item => {
@@ -885,7 +835,7 @@
             const h3 = ["", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK"]; 
             const groupedData = {}; 
             filteredTrans.forEach(t => { 
-                let dateObj = new Date(t.time); if(isNaN(dateObj.getTime())) return; 
+                let dateObj = parseDate(t.time); if(isNaN(dateObj.getTime())) return; 
                 let dateStr = dateObj.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit', year:'numeric'}); 
                 if (!groupedData[dateStr]) groupedData[dateStr] = []; 
                 if(t.cartDetails) t.cartDetails.forEach(item => { 
