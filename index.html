@@ -3,49 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sân Cầu Lông (V-SORTED)</title>
+    <title>Sân Cầu Lông (V-COMPACT)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     
     <style>
-        /* --- THIẾT LẬP MÀU SẮC & FONT --- */
-        :root { 
-            --primary: #6366f1; /* Indigo */
-            --primary-dark: #4338ca;
-            --accent: #0ea5e9; /* Sky Blue */
-            --bg: #f8fafc; /* Slate 50 */
-            --sidebar-bg: #0f172a; /* Slate 900 */
-            --white: #ffffff; 
-            --success: #10b981; 
-            --danger: #ef4444; 
-            --warning: #f59e0b; 
-            --text-main: #334155;
-            --text-light: #64748b;
-            --border: #e2e8f0; 
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-
+        :root { --primary: #6366f1; --primary-dark: #4338ca; --accent: #0ea5e9; --bg: #f8fafc; --sidebar-bg: #0f172a; --white: #ffffff; --success: #10b981; --danger: #ef4444; --warning: #f59e0b; --text-main: #334155; --text-light: #64748b; --border: #e2e8f0; --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05); --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
         * { box-sizing: border-box; outline: none; }
-        body { 
-            font-family: 'Quicksand', sans-serif; 
-            margin: 0; background: var(--bg); color: var(--text-main); 
-            display: flex; height: 100vh; overflow: hidden; font-size: 14px; 
-        }
-        
-        /* --- UTILS --- */
+        body { font-family: 'Quicksand', sans-serif; margin: 0; background: var(--bg); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; font-size: 14px; }
         #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px); z-index: 12000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .spinner { width: 50px; height: 50px; border: 4px solid #e0e7ff; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 13000; }
         .toast { background: white; padding: 15px 25px; border-radius: 12px; box-shadow: var(--shadow-lg); margin-bottom: 10px; border-left: 6px solid var(--success); display: flex; align-items: center; gap: 12px; animation: slideIn 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55); font-weight: 600; font-size: 14px; }
         .toast.error { border-left-color: var(--danger); }
         @keyframes slideIn { from { transform: translateX(120%); } to { transform: translateX(0); } }
-
-        /* --- SIDEBAR --- */
         .sidebar { width: 250px; background: var(--sidebar-bg); color: white; display: flex; flex-direction: column; padding: 25px 0; z-index: 2000; box-shadow: 4px 0 24px rgba(0,0,0,0.05); }
         .app-name { font-size: 20px; font-weight: 800; text-align: center; margin-bottom: 35px; background: linear-gradient(to right, #818cf8, #22d3ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; }
         .user-info { padding: 15px 25px; font-size: 13px; color: #94a3b8; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); }
@@ -53,56 +26,23 @@
         .menu-item:hover { background: rgba(255,255,255,0.05); color: white; padding-left: 30px; }
         .menu-item.active { border-left-color: var(--primary); background: linear-gradient(90deg, rgba(99, 102, 241, 0.15) 0%, transparent 100%); color: #818cf8; }
         .menu-item.hidden { display: none !important; }
-
-        /* --- MAIN AREA --- */
         .main { flex: 1; padding: 25px; overflow-y: auto; display: none; background: var(--bg); scroll-behavior: smooth; }
         .main.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- POS & CARDS --- */
         .pos-container { display: flex; gap: 25px; height: 100%; }
         .product-list { flex: 1; overflow-y: auto; padding-right: 5px; }
         .search-bar { width: 100%; padding: 15px 20px; border: 1px solid transparent; border-radius: 15px; font-size: 15px; margin-bottom: 20px; box-shadow: var(--shadow); transition: 0.3s; background: white; }
         .search-bar:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15); }
-        
-        .section-header { 
-            background: white; padding: 15px 20px; border-radius: 12px; margin: 25px 0 15px 0; 
-            box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 12px;
-            font-size: 16px; font-weight: 800; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px;
-            border-left: 6px solid var(--accent);
-        }
+        .section-header { background: white; padding: 15px 20px; border-radius: 12px; margin: 25px 0 15px 0; box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 12px; font-size: 16px; font-weight: 800; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; border-left: 6px solid var(--accent); }
         .section-header i { color: var(--accent); font-size: 20px; }
-
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        
-        /* CARD */
-        .card { 
-            background: white; border-radius: 16px; padding: 12px; text-align: center; cursor: pointer; 
-            border: 2px solid transparent; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
-            display: flex; flex-direction: column; justify-content: space-between; align-items: center;
-            height: 140px; box-shadow: var(--shadow-sm); 
-        }
+        .card { background: white; border-radius: 16px; padding: 15px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; justify-content: space-between; align-items: center; height: 140px; box-shadow: var(--shadow-sm); }
         .card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: var(--shadow-lg); }
         .card:active { transform: scale(0.96); }
-        
-        .card-content { 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            flex-grow: 1; width: 100%;
-        }
+        .card-content { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%; }
         .card-icon { font-size: 32px; margin-bottom: 8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
-        .card-name { 
-            font-weight: 700; font-size: 13px; line-height: 1.3; 
-            width: 100%; text-align: center; 
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; 
-            color: var(--text-main); 
-        }
-        .card-price { 
-            color: var(--primary); font-weight: 800; font-size: 12px; 
-            background: #e0e7ff; padding: 6px 0; border-radius: 8px; 
-            width: 100%; text-align: center; margin-top: 5px; 
-        }
-
-        /* --- BILL PANEL --- */
+        .card-name { font-weight: 700; font-size: 13px; line-height: 1.4; margin-bottom: 8px; width: 100%; text-align: center; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--text-main); }
+        .card-price { color: var(--primary); font-weight: 800; font-size: 12px; background: #e0e7ff; padding: 6px 12px; border-radius: 20px; width: 100%; text-align: center; }
         .bill-panel { width: 360px; background: white; border-radius: 20px; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; height: calc(100vh - 50px); border: none; flex-shrink: 0; overflow: hidden; }
         .bill-header { padding: 20px; background: white; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         .bill-header h3 { margin: 0; font-size: 18px; font-weight: 800; color: var(--text-main); }
@@ -121,38 +61,28 @@
         .btn-pay:hover { transform: translateY(-2px); filter: brightness(1.1); }
         .btn-debt { width: 100%; background: var(--warning); color: white; border: none; padding: 14px; font-size: 15px; font-weight: 700; border-radius: 12px; cursor: pointer; transition: 0.2s; }
         .btn-debt:hover { transform: translateY(-2px); filter: brightness(1.1); }
-
-        /* --- LOGIN --- */
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #6366f1 0%, #0ea5e9 100%); z-index: 11000; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; }
         .login-box { background: rgba(255, 255, 255, 0.95); padding: 40px 30px; border-radius: 24px; width: 360px; color: #333; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); text-align: center; border: 1px solid rgba(255,255,255,0.5); }
         .login-input { width: 100%; padding: 16px; margin-bottom: 15px; border: 2px solid #e2e8f0; border-radius: 14px; background: #f8fafc; font-size: 15px; transition: 0.3s; }
         .login-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
         .btn-login { width: 100%; padding: 16px; background: linear-gradient(to right, var(--primary), var(--accent)); color: white; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; margin-top: 10px; font-size: 16px; transition: 0.3s; box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3); }
         .btn-login:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.4); }
-
-        /* --- TABLES & OTHERS --- */
         table { width: 100%; border-collapse: separate; border-spacing: 0; background: white; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); font-size: 14px; }
         th { background: #f8fafc; padding: 15px; text-align: left; font-weight: 700; color: var(--text-light); border-bottom: 1px solid var(--border); text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
         td { padding: 15px; border-bottom: 1px solid #f1f5f9; color: var(--text-main); }
         tr:hover td { background: #f8fafc; }
-        
         .btn-add { background: var(--primary); color: white; padding: 12px 20px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
         .btn-add:hover { background: var(--primary-dark); }
-        
         .action-btn { border: none; background: #f1f5f9; cursor: pointer; margin-right: 5px; padding: 8px; border-radius: 8px; transition: 0.2s; }
         .action-btn:hover { background: #e2e8f0; }
         .action-btn.edit { color: var(--primary); } .action-btn.delete { color: var(--danger); }
-        
-        /* MODAL FIXED Z-INDEX */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); z-index: 10000; justify-content: center; align-items: center; animation: fadeIn 0.2s; }
         .modal-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; box-shadow: var(--shadow-lg); transform: scale(0.95); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popIn { to { transform: scale(1); } }
-        
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-main); }
         .form-group input, .form-group select { width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 10px; box-sizing: border-box; font-size: 14px; transition: 0.3s; }
         .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
-
         @media (max-width: 1024px) {
             body { flex-direction: column; }
             .sidebar { width: 100%; height: 70px; flex-direction: row; position: fixed; bottom: 0; left: 0; justify-content: space-around; background: white; box-shadow: 0 -4px 20px rgba(0,0,0,0.1); padding: 0; z-index: 5000; }
@@ -285,7 +215,7 @@
             </select>
             <div style="margin-left:auto; display:flex; gap:10px">
                 <button class="btn-add" style="background:var(--primary); padding:10px 15px; font-size:13px;" onclick="exportCourtReport()"><i class="fas fa-file-excel"></i> Excel Sân</button>
-                <button class="btn-add" style="background:var(--warning); padding:10px 15px; font-size:13px;" onclick="exportServiceReport()"><i class="fas fa-file-excel"></i> Excel DV</button>
+                <button class="btn-add" style="background:var(--warning); padding:10px 15px; font-size:13px;" onclick="exportServiceReport()"><i class="fas fa-file-excel"></i> Excel DV (Gộp)</button>
             </div>
         </div>
         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; margin-bottom:30px;">
@@ -350,7 +280,7 @@
     </div>
 
     <script>
-        // --- API URL (THAY LINK CỦA BẠN VÀO ĐÂY NẾU CẦN) ---
+        // --- API URL (THAY LINK CỦA BẠN VÀO ĐÂY) ---
         const API_URL = "https://script.google.com/macros/s/AKfycbz2jrWmOSzKmdD6WNCkNsE850iKnCfx2FHsm0MvukzW-lrtFhe7qhgkdI26HPRG0o4Yeg/exec"; 
         
         function showToast(msg, type='success') {
@@ -684,8 +614,9 @@
         function setReportTab(type, btn) { currentReportType = type; document.querySelectorAll('.report-tab').forEach(el => el.classList.remove('active')); btn.classList.add('active'); renderReport(); }
         function renderReport() { const tbody = document.querySelector('#report-table tbody'); const timeFilter = document.getElementById('report-filter-time').value; let totalAll = 0, courtTotal = 0, serviceTotal = 0; const filteredTrans = transactions.filter(t => checkDateFilter(t.time, timeFilter)); filteredTrans.forEach(t => { totalAll += t.total; if(t.cartDetails) { t.cartDetails.forEach(item => { let itemPrice = item.price; let pGroup = item.group; if(!itemPrice || !pGroup) { const original = products.find(p => p.id == item.id || p.name == item.name); if(original) { if(!itemPrice) itemPrice = original.price; if(!pGroup) pGroup = original.group; } else { if(!itemPrice) itemPrice = 0; if(!pGroup) pGroup = 'Khác'; } } let itemTotal = itemPrice * item.qty; if(pGroup && pGroup.includes('Tiền Giờ')) courtTotal += itemTotal; else serviceTotal += itemTotal; }); } }); document.getElementById('report-total').innerText = formatMoney(totalAll); document.getElementById('report-court').innerText = formatMoney(courtTotal); document.getElementById('report-service').innerText = formatMoney(serviceTotal); let displayData = []; if(currentReportType === 'all') { displayData = filteredTrans; } else { filteredTrans.forEach(t => { if(t.cartDetails) { t.cartDetails.forEach(item => { let pGroup = item.group; let itemPrice = item.price; if(!pGroup || !itemPrice) { const original = products.find(p => p.id == item.id || p.name == item.name); if(original) { if(!pGroup) pGroup = original.group; if(!itemPrice) itemPrice = original.price; } else { if(!pGroup) pGroup = 'Khác'; if(!itemPrice) itemPrice = 0; } } let isCourt = pGroup && pGroup.includes('Tiền Giờ'); const displayItem = { ...item, price: itemPrice, group: pGroup }; if(currentReportType === 'court' && isCourt) displayData.push({ ...t, isSplit: true, splitItem: displayItem }); else if (currentReportType === 'service' && !isCourt) displayData.push({ ...t, isSplit: true, splitItem: displayItem }); }); } }); } tbody.innerHTML = displayData.map((t) => { let dateStr = "", timeStr = ""; try { let d = new Date(t.time); if(isNaN(d.getTime())) { let parts = t.time.split(' '); timeStr = parts[1] || ""; dateStr = parts[0] || t.time; } else { dateStr = d.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit'}); timeStr = d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}); } } catch(e) { dateStr = t.time; } if(t.isSplit) { return `<tr><td style="font-size:12px">${dateStr}<br><span style="color:#9CA3AF">${timeStr}</span></td><td><span style="font-weight:600">${t.splitItem.name}</span></td><td>${t.splitItem.qty}</td><td style="font-weight:bold">${formatMoney(t.splitItem.price * t.splitItem.qty)}</td><td style="font-size:12px;color:#475569">${t.staff || "Admin"}</td><td>${t.method === 'CK' ? '<i class="fas fa-check-circle" style="color:var(--primary)"></i>' : ''}</td></tr>`; } let itemNames = "", itemQtys = ""; if(t.cartDetails && Array.isArray(t.cartDetails)) { itemNames = t.cartDetails.map(i => `<div class="item-row">${i.name}</div>`).join(''); itemQtys = t.cartDetails.map(i => `<div class="item-row" style="color:var(--primary);font-weight:bold">${i.qty}</div>`).join(''); } else { itemNames = t.itemsStr; itemQtys = "-"; } return `<tr><td style="font-size:12px">${dateStr}<br><span style="color:#9CA3AF">${timeStr}</span></td><td>${itemNames}</td><td>${itemQtys}</td><td style="font-weight:bold; color:var(--text-main)">${formatMoney(t.total)}</td><td style="font-size:12px;color:#475569">${t.staff || "Admin"}</td><td>${t.method === 'CK' ? '<i class="fas fa-check-circle" style="color:var(--primary)"></i>' : ''}</td></tr>`; }).join(''); }
         
+        // --- NEW: COMPACT SERVICE REPORT ---
         function exportServiceReport() {
-            // 1. Define order from HTML (BÁN NƯỚC.html)
+            // 1. Order List
             const desiredOrder = [
                 "Suối nhỏ 510ml", "Suối lớn 1,5l", "Nutri dâu", "Nutri cam",
                 "Revive pro", "Revive TT", "Revive CM", "Pocari lớn", "Pocari nhỏ",
@@ -695,75 +626,86 @@
                 "Mì", "Quấn cán (25)", "Quấn cán (45)"
             ];
 
-            // 2. Filter service products (non-court)
+            // 2. Prepare Columns (Service Products Only)
             let serviceProds = products.filter(p => p.group !== '🏸 Tiền Giờ & Thuê Sân');
-
-            // 3. Sort based on desiredOrder
             serviceProds.sort((a, b) => {
                 let indexA = desiredOrder.indexOf(a.name);
                 let indexB = desiredOrder.indexOf(b.name);
-                
-                // Case 1: Both in list -> sort by index
                 if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-                // Case 2: Only A in list -> A comes first
                 if (indexA !== -1) return -1;
-                // Case 3: Only B in list -> B comes first
                 if (indexB !== -1) return 1;
-                // Case 4: Neither in list -> sort alphabetically (or keep original)
                 return a.name.localeCompare(b.name);
             });
 
-            // 4. Generate Excel
+            // 3. Prepare Buckets (Columns)
+            let buckets = {}; 
+            serviceProds.forEach(p => buckets[p.name] = []);
+
+            // 4. Fill Buckets with Transaction Data
             const timeFilter = document.getElementById('report-filter-time').value;
             const filteredTrans = transactions.filter(t => checkDateFilter(t.time, timeFilter));
-            
-            let headerRow1 = ["Thời gian", "Nhân Viên"];
-            let headerRow2 = ["", ""];
-            
-            serviceProds.forEach(p => { 
-                headerRow1.push(p.name); headerRow1.push(""); 
-                headerRow2.push("SL"); headerRow2.push("CK"); 
+
+            filteredTrans.forEach(t => {
+                if(t.cartDetails) {
+                    t.cartDetails.forEach(item => {
+                        // Find matching service product
+                        const isService = serviceProds.some(sp => String(sp.id) === String(item.id) || sp.name === item.name);
+                        if(isService) {
+                            if (!buckets[item.name]) buckets[item.name] = []; // Handle new items not in init list
+                            buckets[item.name].push({ qty: item.qty, ck: t.method === 'CK' });
+                        }
+                    });
+                }
             });
+
+            // 5. Determine Max Rows needed (Waterfall height)
+            let maxRows = 0;
+            Object.values(buckets).forEach(arr => maxRows = Math.max(maxRows, arr.length));
+
+            // 6. Build Excel Rows
+            // Header 1: Product Names
+            let headerRow1 = [];
+            let headerRow2 = []; // Qty, CK markers
             
-            let dataRows = filteredTrans.map(t => {
-                let dateStr = "";
-                try { 
-                    let d = new Date(t.time); 
-                    dateStr = d.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit'}) + " " + d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}); 
-                } catch(e) { dateStr = t.time; }
-                
-                let row = [dateStr, t.staff || "Admin"];
-                
+            serviceProds.forEach(p => {
+                headerRow1.push(p.name); headerRow1.push(""); // Merge cell placeholder
+                headerRow2.push("SL"); headerRow2.push("CK");
+            });
+
+            let dataRows = [];
+            for(let i=0; i<maxRows; i++) {
+                let row = [];
                 serviceProds.forEach(p => {
-                    let qty = 0;
-                    if (t.cartDetails) {
-                        const found = t.cartDetails.find(item => String(item.id) === String(p.id) || item.name === p.name);
-                        if(found) qty = found.qty;
-                    }
-                    if (qty > 0) {
-                        row.push(qty);
-                        row.push(t.method === 'CK' ? "x" : "");
+                    let data = buckets[p.name] && buckets[p.name][i];
+                    if(data) {
+                        row.push(data.qty);
+                        row.push(data.ck ? "x" : "");
                     } else {
                         row.push(""); row.push("");
                     }
                 });
-                return row;
-            });
-            
+                dataRows.push(row);
+            }
+
+            // 7. Export
             const ws_data = [headerRow1, headerRow2, ...dataRows];
             const ws = XLSX.utils.aoa_to_sheet(ws_data);
             
-            const merges = [{ s: {r:0, c:0}, e: {r:1, c:0} }, { s: {r:0, c:1}, e: {r:1, c:1} }];
+            // Merges for Headers
+            const merges = [];
             for (let i = 0; i < serviceProds.length; i++) {
-                let startCol = 2 + (i * 2);
+                let startCol = i * 2;
                 merges.push({ s: {r:0, c:startCol}, e: {r:0, c:startCol+1} });
             }
             ws['!merges'] = merges;
-            
+
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Dich_Vu");
-            XLSX.writeFile(wb, "Bao_Cao_Dich_Vu_Sorted.xlsx");
+            XLSX.utils.book_append_sheet(wb, ws, "Dich_Vu_Compact");
+            XLSX.writeFile(wb, "Bao_Cao_Dich_Vu_Compact.xlsx");
         }
+
+        // --- OLD: COURT REPORT (Keep as is) ---
+        function exportCourtReport() { const timeFilter = document.getElementById('report-filter-time').value; const filteredTrans = [...transactions].reverse().filter(t => checkDateFilter(t.time, timeFilter)); const h1 = ["Ngày", "5h30 - 8h", "", "", "", "8h - 17h", "", "", "", "17h - 24h", "", "", "", "T7 - CN - Lễ", "", "", ""]; const h2 = ["", "VL", "", "CĐ", "", "VL", "", "CĐ", "", "VL", "", "CĐ", "", "VL", "", "CĐ", ""]; const h3 = ["", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK", "SL", "CK"]; const groupedData = {}; filteredTrans.forEach(t => { let dateObj = new Date(t.time); if(isNaN(dateObj.getTime())) return; let dateStr = dateObj.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit', year:'numeric'}); if (!groupedData[dateStr]) groupedData[dateStr] = []; if(t.cartDetails) { t.cartDetails.forEach(item => { let pGroup = item.group; let itemName = item.name.toLowerCase(); if(!pGroup) { const original = products.find(p => p.id == item.id || p.name == item.name); if(original) pGroup = original.group; else pGroup = 'Khác'; } let isCourtFee = pGroup && pGroup.includes('Tiền Giờ'); let isRental = itemName.includes('thuê'); if(isCourtFee && !isRental) { let baseIndex = 0; if (itemName.includes('lễ') || itemName.includes('t7') || itemName.includes('cn') || itemName.includes('cuối tuần')) { baseIndex = 13; } else if(isWeekend(dateObj)) { baseIndex = 13; } else { const match = item.name.match(/(\d{1,2})[h:]/); if (match && match[1]) { let parsedHour = parseInt(match[1]); if(parsedHour < 8) baseIndex = 1; else if(parsedHour < 17) baseIndex = 5; else baseIndex = 9; } else { if (itemName.includes('sáng')) baseIndex = 1; else if (itemName.includes('tối') || itemName.includes('đêm')) baseIndex = 9; else if (itemName.includes('chiều') || itemName.includes('hành chính')) baseIndex = 5; else { let hour = dateObj.getHours(); if (hour < 8) baseIndex = 1; else if (hour < 17) baseIndex = 5; else baseIndex = 9; } } } let typeOffset = 0; if(itemName.includes('cố định') || itemName.includes('cđ')) typeOffset = 2; let targetColIndex = baseIndex + typeOffset; let placed = false; let rowsOfThisDate = groupedData[dateStr]; for (let r of rowsOfThisDate) { if (r[targetColIndex] === "") { r[targetColIndex] = item.qty; if(t.method === 'CK') r[targetColIndex + 1] = "x"; placed = true; break; } } if (!placed) { let newRow = new Array(17).fill(""); newRow[0] = dateStr; newRow[targetColIndex] = item.qty; if(t.method === 'CK') newRow[targetColIndex + 1] = "x"; rowsOfThisDate.push(newRow); } } }); } }); let finalRows = []; Object.keys(groupedData).forEach(date => { finalRows = finalRows.concat(groupedData[date]); }); const ws = XLSX.utils.aoa_to_sheet([h1, h2, h3, ...finalRows]); const merges = [{s:{r:0,c:1}, e:{r:0,c:4}}, {s:{r:0,c:5}, e:{r:0,c:8}}, {s:{r:0,c:9}, e:{r:0,c:12}}, {s:{r:0,c:13}, e:{r:0,c:16}}, {s:{r:1,c:1}, e:{r:1,c:2}}, {s:{r:1,c:3}, e:{r:1,c:4}}, {s:{r:1,c:5}, e:{r:1,c:6}}, {s:{r:1,c:7}, e:{r:1,c:8}}, {s:{r:1,c:9}, e:{r:1,c:10}}, {s:{r:1,c:11}, e:{r:1,c:12}}, {s:{r:1,c:13}, e:{r:1,c:14}}, {s:{r:1,c:15}, e:{r:1,c:16}}]; ws['!merges'] = merges; const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Tien_San_Gop"); XLSX.writeFile(wb, "Bao_Cao_Tien_San_Gop.xlsx"); }
 
         // --- INIT & FIX EMPTY PRODUCTS ---
         window.onload = function() { 
