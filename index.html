@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sân Cầu Lông (Final Fix Report)</title>
+    <title>Sân Cầu Lông (Card History)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -17,6 +17,7 @@
         ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         body { font-family: 'Quicksand', sans-serif; margin: 0; background: var(--bg); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; font-size: 14px; }
         
+        /* SIDEBAR */
         .sidebar { width: 250px; background: var(--sidebar-bg); color: white; display: flex; flex-direction: column; padding: 20px 15px; z-index: 2000; flex-shrink: 0; }
         .brand { text-align: center; margin: 15px 0 30px 0; }
         .brand-icon { font-size: 35px; color: #fff; background: var(--primary); width: 60px; height: 60px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 10px; animation: float 3s ease-in-out infinite; box-shadow: 0 0 15px rgba(99, 102, 241, 0.5); }
@@ -28,10 +29,12 @@
         .menu-item.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4); }
         .menu-item.hidden { display: none !important; }
 
+        /* MAIN CONTENT */
         .main { flex: 1; padding: 20px; overflow: hidden; display: none; flex-direction: column; height: 100%; background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 20px 20px; }
         .main.active { display: flex; animation: bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
         @keyframes bounceIn { 0% { opacity: 0; transform: scale(0.9) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
 
+        /* POS LAYOUT */
         .pos-container { display: flex; gap: 20px; height: 100%; overflow: hidden; }
         .left-col { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .product-list { flex: 1; overflow-y: auto; padding-right: 5px; padding-bottom: 20px; }
@@ -41,9 +44,8 @@
         .search-wrapper { position: relative; }
         .search-icon { position: absolute; left: 15px; top: 35%; color: #94a3b8; }
 
-        /* BOX HEADER */
+        /* CARD & GRID */
         .section-header { background: white; padding: 15px 20px; border-radius: 12px; box-shadow: var(--shadow); color: var(--primary); font-size: 15px; font-weight: 800; margin: 20px 0 15px 0; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px; border-left: 5px solid var(--accent); }
-
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
         .card { background: white; border-radius: 12px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between; align-items: center; height: 140px; border: 2px solid transparent; box-shadow: var(--shadow); }
         .card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
@@ -52,34 +54,45 @@
         .card-price { background: #f1f5f9; color: var(--primary); font-weight: 700; font-size: 12px; padding: 4px 10px; border-radius: 20px; width: 100%; margin-top: 5px; }
         .flying-item { position: fixed; z-index: 9999; pointer-events: none; font-size: 24px; transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1); }
 
+        /* BILL AREA */
         .bill-header { padding: 15px 20px; background: linear-gradient(to right, #6366f1, #8b5cf6); color: white; display: flex; justify-content: space-between; align-items: center; border-radius: 16px 16px 0 0; }
-        .bill-info { padding: 8px 15px; background: #f8fafc; font-size: 12px; color: #64748b; display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; }
         .bill-items { flex: 1; overflow-y: auto; padding: 10px; }
         .bill-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 10px; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); animation: slideInLeft 0.3s; }
         @keyframes slideInLeft { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        
         .qty-btn { width: 24px; height: 24px; border: 1px solid #e2e8f0; background: white; border-radius: 6px; cursor: pointer; color: var(--primary); font-weight: 700; display: flex; align-items: center; justify-content: center; }
         .bill-footer { padding: 15px; background: white; border-top: 1px solid #f1f5f9; border-radius: 0 0 16px 16px; }
         .total-row { display: flex; justify-content: space-between; font-size: 20px; font-weight: 800; margin-bottom: 10px; color: var(--primary); }
         .pm-btn { flex: 1; text-align: center; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; cursor: pointer; font-weight: 700; color: var(--text-light); transition: 0.2s; }
         .pm-btn.active { border-color: var(--primary); background: #e0e7ff; color: var(--primary); }
         .btn-pay { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2); }
-        .btn-pay:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(16, 185, 129, 0.3); background: #059669; }
         .btn-debt { width: 100%; padding: 10px; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; font-weight: 700; border-radius: 10px; margin-top: 8px; cursor: pointer; }
 
+        /* HISTORY CARD STYLE (MỚI) */
+        .history-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; padding-bottom: 20px; }
+        .history-card { background: white; border-radius: 16px; padding: 15px; box-shadow: var(--shadow); border: 2px solid transparent; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; animation: bounceIn 0.5s both; }
+        .history-card:hover { transform: translateY(-8px); border-color: var(--primary); box-shadow: 0 15px 30px -5px rgba(99, 102, 241, 0.2); }
+        .hc-header { border-bottom: 1px dashed #e2e8f0; padding-bottom: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #64748b; font-weight: 600; }
+        .hc-items { flex: 1; margin-bottom: 15px; max-height: 150px; overflow-y: auto; font-size: 13px; }
+        .hc-item-row { display: flex; justify-content: space-between; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px solid #f8fafc; }
+        .hc-item-row:last-child { border-bottom: none; }
+        .hc-footer { background: #f8fafc; margin: 0 -15px -15px -15px; padding: 15px; text-align: center; border-top: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        
+        /* MODALS & OTHERS */
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 11000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.3s; }
         .login-box { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding: 40px; border-radius: 20px; width: 350px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
         .login-input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; background: rgba(0,0,0,0.3); font-size: 14px; color: white; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); z-index: 10000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 25px; border-radius: 16px; width: 90%; max-width: 450px; animation: bounceIn 0.4s; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-
+        
         .dashboard-scroll { overflow-y: auto; padding-right: 5px; height: 100%; }
         table { width: 100%; border-collapse: separate; border-spacing: 0; }
         th { text-align: left; padding: 12px; color: var(--text-light); border-bottom: 1px solid #e2e8f0; font-size: 12px; font-weight: 700; text-transform: uppercase; background: #f8fafc; }
-        td { padding: 12px; border-bottom: 1px solid #f1f5f9; color: var(--text-main); background: white; }
+        td { padding: 12px; border-bottom: 1px solid #f1f5f9; color: var(--text-main); background: white; vertical-align: middle; }
+        
         .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
         .stat-card { background: white; padding: 20px; border-radius: 12px; box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--primary); }
 
+        /* MOBILE RESPONSIVE */
         .mobile-header { display: none; }
         .mobile-cart-btn { display: none; }
         @media (max-width: 1024px) {
@@ -122,11 +135,6 @@
         </div>
     </div>
 
-    <div id="loading-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.7); z-index:12000; justify-content:center; align-items:center;">
-        <div style="width:40px; height:40px; border:4px solid #e2e8f0; border-top:4px solid var(--primary); border-radius:50%; animation:spin 1s linear infinite"></div>
-        <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
-    </div>
-
     <div class="sidebar">
         <div class="brand">
             <div class="brand-icon"><i class="fas fa-feather-alt"></i></div>
@@ -146,7 +154,7 @@
         <div id="nav-debt" class="menu-item" onclick="showTab('debt')"><i class="fas fa-book"></i> <span>Sổ Nợ</span></div>
         <div id="nav-calc" class="menu-item" onclick="showTab('calc')"><i class="fas fa-calculator"></i> <span>Tính Giờ</span></div>
         <div id="nav-products" class="menu-item admin-only" onclick="showTab('products')"><i class="fas fa-box"></i> <span>Menu</span></div>
-        <div id="nav-reports" class="menu-item admin-only" onclick="showTab('reports')"><i class="fas fa-file-invoice"></i> <span>Báo Cáo</span></div>
+        <div id="nav-reports" class="menu-item admin-only" onclick="showTab('reports')"><i class="fas fa-history"></i> <span>Lịch Sử ĐH</span></div>
         <div id="nav-users" class="menu-item admin-only" onclick="showTab('users')"><i class="fas fa-users"></i> <span>Nhân Viên</span></div>
         
         <div class="sync-box" style="margin-top:auto; text-align:center;">
@@ -292,7 +300,7 @@
     <div id="tab-reports" class="main">
         <div class="dashboard-scroll">
             <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:20px;">
-                <h2 style="color:var(--primary); margin:0;">Báo Cáo</h2>
+                <h2 style="color:var(--primary); margin:0;">Lịch Sử Đơn Hàng</h2>
                 <div style="display:flex; gap:10px;">
                     <select id="report-filter-time" style="padding:8px; border-radius:8px; border:1px solid #e2e8f0;" onchange="renderReport()"><option value="today">Hôm nay</option><option value="month" selected>Tháng này</option><option value="all">Tất cả</option></select>
                     <button onclick="exportCourtReport()" style="padding:8px 15px; background:#10b981; color:white; border:none; border-radius:8px; font-weight:700; cursor:pointer;">Excel Sân</button>
@@ -316,14 +324,14 @@
             </div>
 
             <div style="margin-bottom:15px; display:flex; gap:10px;">
-                <button onclick="setReportTab('all', this)" style="padding:6px 15px; background:#e2e8f0; border:none; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer;">Tất cả</button>
-                <button onclick="setReportTab('court', this)" style="padding:6px 15px; background:white; border:1px solid #e2e8f0; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer;">Tiền Sân</button>
-                <button onclick="setReportTab('service', this)" style="padding:6px 15px; background:white; border:1px solid #e2e8f0; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer;">Dịch Vụ</button>
+                <button onclick="setReportTab('all', this)" style="padding:6px 15px; background:#e2e8f0; border:none; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer;" class="btn-add">Tất cả</button>
+                <button onclick="setReportTab('court', this)" style="padding:6px 15px; background:white; border:1px solid #e2e8f0; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer;" class="btn-add">Tiền Sân</button>
+                <button onclick="setReportTab('service', this)" style="padding:6px 15px; background:white; border:1px solid #e2e8f0; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer;" class="btn-add">Dịch Vụ</button>
             </div>
 
-            <div style="background:white; border-radius:16px; overflow:hidden; box-shadow:var(--shadow)">
-                <table id="report-table"><thead><tr><th>Thời gian</th><th>Chi tiết</th><th>Tổng</th><th>NV</th></tr></thead><tbody></tbody></table>
-            </div>
+            <div id="report-grid" class="history-grid">
+                </div>
+            <div id="report-empty" style="text-align:center; padding:40px; color:#94a3b8; display:none">Không tìm thấy đơn hàng nào</div>
         </div>
     </div>
 
@@ -338,19 +346,18 @@
     </div>
 
     <div id="product-modal" class="modal"><div class="modal-content"><h3>Món Mới</h3><input type="hidden" id="prod-id"><div class="form-group"><label>Tên:</label><input type="text" id="prod-name" class="login-input" style="color:#333; background:#f8fafc; border:1px solid #e2e8f0"></div><div class="form-group"><label>Giá:</label><input type="number" id="prod-price" class="login-input" style="color:#333; background:#f8fafc; border:1px solid #e2e8f0"></div><div class="form-group"><label>Nhóm:</label><select id="prod-group" class="login-input" style="color:#333; background:#f8fafc; border:1px solid #e2e8f0"><option value="🏸 Tiền Giờ & Thuê Sân">Tiền Giờ & Sân</option><option value="Nước Giải Khát">Nước Giải Khát</option><option value="Trà Đá & Pha Chế">Trà Đá & Pha Chế</option><option value="Cầu Lông">Cầu Lông</option><option value="Đồ Ăn & Dịch Vụ">Đồ Ăn & Dịch Vụ</option></select></div><div style="display:flex;gap:10px"><button class="btn-pay" onclick="saveProduct()">Lưu</button><button class="btn-pay" style="background:#cbd5e1" onclick="closeModal()">Đóng</button></div></div></div>
-    
     <div id="user-modal" class="modal"><div class="modal-content"><h3>Nhân Viên</h3><input type="hidden" id="u-mode"><div class="form-group"><label>User:</label><input type="text" id="u-username" class="login-input" style="color:#333; background:#f8fafc; border:1px solid #e2e8f0"></div><div class="form-group"><label>Pass:</label><input type="text" id="u-password" class="login-input" style="color:#333; background:#f8fafc; border:1px solid #e2e8f0"></div><div class="form-group"><label>Tên:</label><input type="text" id="u-name" class="login-input" style="color:#333; background:#f8fafc; border:1px solid #e2e8f0"></div><div class="form-group"><label>Quyền:</label><select id="u-role" class="login-input" style="color:#333; background:#f8fafc; border:1px solid #e2e8f0"><option value="staff">Staff</option><option value="admin">Admin</option></select></div><div style="display:flex;gap:10px"><button class="btn-pay" onclick="saveUser()">Lưu</button><button class="btn-pay" style="background:#cbd5e1" onclick="document.getElementById('user-modal').style.display='none'">Hủy</button></div></div></div>
-    
     <div id="debt-modal" class="modal"><div class="modal-content"><h3>Ghi Nợ</h3><div class="form-group"><label>Tên Khách:</label><input type="text" id="debt-customer-name" class="login-input" style="color:#333; background:#f8fafc; border:1px solid #e2e8f0" placeholder="VD: Anh Long Sân 3"></div><div style="display:flex;gap:10px"><button class="btn-pay" onclick="confirmDebt()">Lưu Nợ</button><button class="btn-pay" style="background:#cbd5e1" onclick="document.getElementById('debt-modal').style.display='none'">Hủy</button></div></div></div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxK8ofjXqd-ApTl09--4J78iqtF_YGWN_6GrzX2B3a1WjXoaROIWdGPMn37VG9KEiuWXw/exec"; 
+        // --- CẤU HÌNH API ---
+        const API_URL = "https://script.google.com/macros/s/AKfycbzxwqEE6kSKEMYOmcpkS8zZj7V1vpBB4uaM9nDFvI2AslzQEymXvK_Tdy7Pq079cawKIA/exec"; 
         
         function showToast(msg, type='success') { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}" style="color:${type==='success'?'#10b981':'#ef4444'}"></i> <span>${msg}</span>`; c.appendChild(t); setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000); }
         function getLocalYMD(dateStr) { const d = new Date(dateStr); const offset = d.getTimezoneOffset() * 60000; const localISOTime = (new Date(d - offset)).toISOString().slice(0, 10); return localISOTime; }
         function isWeekend(date) { const day = date.getDay(); return day === 0 || day === 6; }
 
-        const MENU_DEF = [{id: 'nav-pos', name: 'Bán Hàng'},{id: 'nav-dashboard', name: 'Thống Kê'},{id: 'nav-debt', name: 'Sổ Nợ'},{id: 'nav-calc', name: 'Tính Giờ'},{id: 'nav-products', name: 'Menu Món'},{id: 'nav-reports', name: 'Báo Cáo'},{id: 'nav-users', name: 'Nhân Viên'}];
+        const MENU_DEF = [{id: 'nav-pos', name: 'Bán Hàng'},{id: 'nav-dashboard', name: 'Thống Kê'},{id: 'nav-debt', name: 'Sổ Nợ'},{id: 'nav-calc', name: 'Tính Giờ'},{id: 'nav-products', name: 'Menu Món'},{id: 'nav-reports', name: 'Lịch Sử ĐH'},{id: 'nav-users', name: 'Nhân Viên'}];
         const DEFAULT_ROLES = { 'admin': MENU_DEF.map(m=>m.id), 'staff': ['nav-pos'] };
         let roleConfig = JSON.parse(localStorage.getItem('bd_role_config')) || DEFAULT_ROLES;
 
@@ -358,7 +365,11 @@
 
         // Khởi tạo products từ localStorage hoặc default
         let products = JSON.parse(localStorage.getItem('bd_pro_debt_v7')) || [];
+        
         let transactions = JSON.parse(localStorage.getItem('bd_transactions_backup')) || [];
+        transactions = transactions.filter(t => t && t.time && (t.itemsStr || (t.cartDetails && t.cartDetails.length > 0)));
+        localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions));
+
         let debts = JSON.parse(localStorage.getItem('bd_debts_v1')) || []; 
         let cart = []; let paymentMethod = 'Tiền mặt'; let currentUser = null; let allUsers = []; let currentReportType = 'all';
 
@@ -367,50 +378,34 @@
         function toggleBillPanel(show) {
             const panel = document.getElementById('bill-panel');
             const closeBtn = document.querySelector('.close-bill-btn');
-            if (show) {
-                panel.classList.add('show');
-                closeBtn.style.display = 'block';
-            } else {
-                panel.classList.remove('show');
-                setTimeout(() => { if(window.innerWidth > 1024) closeBtn.style.display = 'none'; }, 300);
-            }
+            if (show) { panel.classList.add('show'); closeBtn.style.display = 'block'; } 
+            else { panel.classList.remove('show'); setTimeout(() => { if(window.innerWidth > 1024) closeBtn.style.display = 'none'; }, 300); }
         }
 
         // --- RESET ORDER STATE ---
         function resetOrderState() { 
             try {
-                cart = []; 
-                renderCart(); 
-                toggleBillPanel(false);
-                const search = document.getElementById('search-pos');
-                if(search) search.value = ''; 
-                renderPOS(); 
-                setPayment('Tiền mặt'); 
-                const debtInput = document.getElementById('debt-customer-name');
-                if(debtInput) debtInput.value = '';
-            } catch (e) {
-                console.error("Lỗi khi reset:", e);
-                cart = []; renderCart();
-            }
+                cart = []; renderCart(); toggleBillPanel(false);
+                const search = document.getElementById('search-pos'); if(search) search.value = ''; 
+                renderPOS(); setPayment('Tiền mặt'); 
+                const debtInput = document.getElementById('debt-customer-name'); if(debtInput) debtInput.value = '';
+            } catch (e) { console.error("Lỗi khi reset:", e); cart = []; renderCart(); }
         }
 
         function setPayment(method) {
             paymentMethod = method;
-            const btnCash = document.getElementById('pm-cash');
-            const btnTransfer = document.getElementById('pm-transfer');
-            if(btnCash) btnCash.classList.remove('active');
-            if(btnTransfer) btnTransfer.classList.remove('active');
-            
-            if (method === 'Tiền mặt' && btnCash) btnCash.classList.add('active');
-            else if(btnTransfer) btnTransfer.classList.add('active');
+            const btnCash = document.getElementById('pm-cash'); const btnTransfer = document.getElementById('pm-transfer');
+            if(btnCash) btnCash.classList.remove('active'); if(btnTransfer) btnTransfer.classList.remove('active');
+            if (method === 'Tiền mặt' && btnCash) btnCash.classList.add('active'); else if(btnTransfer) btnTransfer.classList.add('active');
         }
 
+        // --- DASHBOARD & CHARTS ---
         function renderDashboard() {
             const filter = document.getElementById('chart-filter').value; 
             const today = getLocalYMD(new Date().toISOString());
             const todayTrans = transactions.filter(t => getLocalYMD(t.time) === today);
             
-            const totalToday = todayTrans.reduce((sum, t) => sum + t.total, 0);
+            const totalToday = todayTrans.reduce((sum, t) => sum + (t.total || 0), 0);
             document.getElementById('dash-today').innerText = formatMoney(totalToday);
             document.getElementById('dash-orders').innerText = todayTrans.length;
 
@@ -419,8 +414,7 @@
             else if(totalToday < 500000) { funTitle = "Khởi động!"; funMsg = "Cứ tà tà mà tiến 🏸"; }
             else if(totalToday < 2000000) { funTitle = "Ngon lành!"; funMsg = "Tiền về, làm ly trà sữa thôi 🥤"; }
             else { funTitle = "Quá đỉnh!"; funMsg = "Hôm nay bội thu rồi sếp ơi! 🐜💰"; }
-            document.getElementById('fun-title').innerText = funTitle;
-            document.getElementById('fun-msg').innerText = funMsg;
+            document.getElementById('fun-title').innerText = funTitle; document.getElementById('fun-msg').innerText = funMsg;
 
             let categories = [], seriesData = [];
             if (filter === 'today') { categories = Array.from({length: 24}, (_, i) => `${i}h`); seriesData = new Array(24).fill(0); todayTrans.forEach(t => { seriesData[new Date(t.time).getHours()] += t.total; }); }
@@ -428,42 +422,20 @@
             else if (filter === 'month') { const now = new Date(); const days = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate(); for(let i=1; i<=days; i++) { categories.push(i); const iso = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`; seriesData.push(transactions.filter(t => getLocalYMD(t.time) === iso).reduce((s,t) => s+t.total, 0)); } }
 
             document.getElementById('chart-revenue').innerHTML = '';
-            new ApexCharts(document.querySelector("#chart-revenue"), {
-                series: [{ name: 'Doanh thu', data: seriesData }],
-                chart: { type: 'area', height: 280, toolbar: { show: false }, fontFamily: 'Quicksand' },
-                dataLabels: { enabled: false },
-                stroke: { curve: 'smooth', width: 3 },
-                xaxis: { categories: categories },
-                tooltip: { y: { formatter: val => formatMoney(val) } },
-                colors: ['#6366f1'],
-                fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.7, opacityTo: 0.1, stops: [0, 90, 100] } }
-            }).render();
+            new ApexCharts(document.querySelector("#chart-revenue"), { series: [{ name: 'Doanh thu', data: seriesData }], chart: { type: 'area', height: 280, toolbar: { show: false }, fontFamily: 'Quicksand' }, dataLabels: { enabled: false }, stroke: { curve: 'smooth', width: 3 }, xaxis: { categories: categories }, tooltip: { y: { formatter: val => formatMoney(val) } }, colors: ['#6366f1'], fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.7, opacityTo: 0.1, stops: [0, 90, 100] } } }).render();
 
-            // Top Items
             const itemCounts = {}; transactions.forEach(t => { if(t.cartDetails) t.cartDetails.forEach(i => { if(!i.group.includes('Tiền Giờ') && !i.name.includes('Thuê')) itemCounts[i.name] = (itemCounts[i.name] || 0) + i.qty; }); });
             const sortedItems = Object.entries(itemCounts).sort((a,b) => b[1] - a[1]).slice(0, 5);
             document.getElementById('chart-top-items').innerHTML = '';
-            new ApexCharts(document.querySelector("#chart-top-items"), {
-                series: [{ name: 'SL', data: sortedItems.map(i => i[1]) }],
-                chart: { type: 'bar', height: 250, toolbar: { show: false }, fontFamily: 'Quicksand' },
-                plotOptions: { bar: { borderRadius: 6, horizontal: true, barHeight: '60%', distributed: true } },
-                xaxis: { categories: sortedItems.map(i => i[0]) },
-                colors: ['#10b981', '#06b6d4', '#6366f1', '#8b5cf6', '#f59e0b'],
-                legend: { show: false }
-            }).render();
+            new ApexCharts(document.querySelector("#chart-top-items"), { series: [{ name: 'SL', data: sortedItems.map(i => i[1]) }], chart: { type: 'bar', height: 250, toolbar: { show: false }, fontFamily: 'Quicksand' }, plotOptions: { bar: { borderRadius: 6, horizontal: true, barHeight: '60%', distributed: true } }, xaxis: { categories: sortedItems.map(i => i[0]) }, colors: ['#10b981', '#06b6d4', '#6366f1', '#8b5cf6', '#f59e0b'], legend: { show: false } }).render();
 
-            // Category
             const catData = {}; transactions.forEach(t => { if (t.cartDetails) t.cartDetails.forEach(item => { const g = item.group.includes('Tiền Giờ') ? 'Tiền Sân' : 'Dịch Vụ'; catData[g] = (catData[g] || 0) + (item.price * item.qty); }); });
             document.getElementById('chart-category').innerHTML = '';
-            new ApexCharts(document.querySelector("#chart-category"), {
-                series: Object.values(catData), labels: Object.keys(catData),
-                chart: { type: 'donut', height: 250, fontFamily: 'Quicksand' },
-                colors: ['#6366f1', '#f59e0b', '#ec4899'],
-                legend: { position: 'bottom' }
-            }).render();
+            new ApexCharts(document.querySelector("#chart-category"), { series: Object.values(catData), labels: Object.keys(catData), chart: { type: 'donut', height: 250, fontFamily: 'Quicksand' }, colors: ['#6366f1', '#f59e0b', '#ec4899'], legend: { position: 'bottom' } }).render();
         }
         function updateRevenueChart() { renderDashboard(); }
 
+        // --- POS FUNCTIONS ---
         function searchProduct() {
             const term = document.getElementById('search-pos').value.toLowerCase();
             const grid = document.getElementById('pos-grid');
@@ -472,7 +444,6 @@
             const filtered = products.filter(p => p.name.toLowerCase().includes(term) || p.group.toLowerCase().includes(term));
             if (filtered.length === 0) { grid.innerHTML = '<div style="width:100%;text-align:center;color:#999;grid-column:span 3;margin-top:20px;">Không tìm thấy món</div>'; return; }
             
-            // --- SECTION HEADER IN BOX ---
             const groups = [...new Set(filtered.map(p => p.group))].sort((a,b) => a.includes('Tiền Giờ') ? -1 : 1);
             groups.forEach(groupName => {
                 const header = document.createElement('div'); header.className = 'section-header';
@@ -498,61 +469,31 @@
             } catch (e) { console.error("Sync Menu Fail"); }
         }
 
-        // --- NEW SYNC LOGIC (Client Side) ---
         async function syncData() {
-            const dot = document.getElementById('sync-dot');
-            const text = document.getElementById('sync-text');
-            if(!dot) return;
-            if(API_URL.includes("THAY_LINK")) { dot.style.background = 'gray'; text.innerText = "No API"; return; }
+            const dot = document.getElementById('sync-dot'); const text = document.getElementById('sync-text');
+            if(!dot) return; if(API_URL.includes("THAY_LINK")) { dot.style.background = 'gray'; text.innerText = "No API"; return; }
             
             try {
-                dot.style.background = '#eab308'; // Vàng (Checking)
-                
-                // 1. Sync Orders from Server
-                const response = await fetch(API_URL + "?action=get_orders&t=" + new Date().getTime());
-                const serverOrders = await response.json();
-                
+                dot.style.background = '#eab308';
+                const response = await fetch(API_URL + "?action=get_orders&t=" + new Date().getTime()); const serverOrders = await response.json();
                 if (serverOrders && Array.isArray(serverOrders) && serverOrders.length > 0) {
                     const localTimes = new Set(transactions.map(t => t.time));
                     let newCount = 0;
                     serverOrders.forEach(svOrd => {
-                        if (!localTimes.has(svOrd.time)) {
-                            transactions.push(svOrd);
-                            newCount++;
-                        }
+                        if (svOrd.time && (svOrd.itemsStr || (svOrd.cartDetails && svOrd.cartDetails.length > 0)) && !localTimes.has(svOrd.time)) { transactions.push(svOrd); newCount++; }
                     });
-                    
-                    if (newCount > 0) {
-                        transactions.sort((a, b) => new Date(a.time) - new Date(b.time));
-                        localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions));
-                        renderDashboard(); // Cập nhật lại biểu đồ
-                        renderReport(); // Cập nhật báo cáo
-                    }
+                    if (newCount > 0) { transactions.sort((a, b) => new Date(a.time) - new Date(b.time)); localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions)); renderDashboard(); renderReport(); }
                 }
-
                 dot.style.background = '#10b981'; text.innerText = "Online"; 
-            } catch (e) { 
-                console.log(e);
-                dot.style.background = '#ef4444'; text.innerText = "Offline"; 
-            }
+            } catch (e) { console.log(e); dot.style.background = '#ef4444'; text.innerText = "Offline"; }
         }
 
         async function pushOrderToSheet(order) {
-            transactions.push(order);
-            localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions));
+            transactions.push(order); localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions));
             showToast("Đã lưu đơn thành công!", "success");
-            
-            // Effect: Confetti
             try { runConfetti(); } catch(e){}
-
-            resetOrderState();
-            renderDashboard();
-
-            if(!API_URL.includes("THAY_LINK")) {
-                try {
-                    await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: 'add_order', data: order }) });
-                } catch (e) { console.error("Send Order Fail"); }
-            }
+            resetOrderState(); renderDashboard();
+            if(!API_URL.includes("THAY_LINK")) { try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: 'add_order', data: order }) }); } catch (e) { console.error("Send Order Fail"); } }
         }
 
         async function loadUsersForLogin() {
@@ -578,18 +519,15 @@
             document.getElementById('staff-name').innerText = `NV: ${currentUser.name}`;
             const role = (currentUser.role || '').toLowerCase().trim();
             if (currentUser.username === 'admin') { roleConfig['admin'] = MENU_DEF.map(m => m.id); localStorage.setItem('bd_role_config', JSON.stringify(roleConfig)); }
-            applyRole();
-            syncData(); syncProductData(); renderPOS(); renderReport(); renderDebtTable(); renderDashboard();
+            applyRole(); syncData(); syncProductData(); renderPOS(); renderReport(); renderDebtTable(); renderDashboard();
         }
 
         function applyRole() {
-            const role = (currentUser.role || '').toLowerCase().trim();
-            const username = (currentUser.username || '').toLowerCase().trim();
+            const role = (currentUser.role || '').toLowerCase().trim(); const username = (currentUser.username || '').toLowerCase().trim();
             document.querySelectorAll('.menu-item').forEach(el => el.classList.add('hidden'));
             let allowed = (username === 'admin' || role === 'admin') ? MENU_DEF.map(m => m.id) : (roleConfig[role] || DEFAULT_ROLES['staff']);
             allowed.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('hidden'); });
-            const currentActive = document.querySelector('.main.active');
-            if(!currentActive || currentActive.id !== 'tab-pos') showTab('pos');
+            const currentActive = document.querySelector('.main.active'); if(!currentActive || currentActive.id !== 'tab-pos') showTab('pos');
         }
 
         function showTab(tabName) {
@@ -607,47 +545,18 @@
 
         function logout() { localStorage.removeItem('bd_current_user'); location.reload(); }
         
-        // --- USER MANAGEMENT (OPTIMISTIC) ---
+        // --- USERS ---
         function renderUserTable() { document.querySelector('#user-table tbody').innerHTML = allUsers.map(u => `<tr><td>${u.username}</td><td><b>${u.name}</b></td><td><span style="padding:4px 8px; background:#e0e7ff; color:#6366f1; border-radius:8px; font-size:11px; font-weight:bold">${u.role}</span></td><td><button class="qty-btn" onclick="openUserModal(false, '${u.username}')" style="color:var(--primary)"><i class="fas fa-edit"></i></button>${u.username!=='admin'?`<button class="qty-btn" onclick="deleteUser('${u.username}')" style="color:#ef4444"><i class="fas fa-trash"></i></button>`:''}</td></tr>`).join(''); }
-        function openUserModal(isNew, uEdit) { 
-            const modal=document.getElementById('user-modal'); modal.style.display='flex'; 
-            const uIn=document.getElementById('u-username'); 
-            if(isNew) { document.getElementById('u-mode').value='add'; uIn.value=""; uIn.disabled=false; document.getElementById('u-password').value=""; document.getElementById('u-name').value=""; } 
-            else { const user=allUsers.find(u=>u.username===uEdit); document.getElementById('u-mode').value='edit'; uIn.value=user.username; uIn.disabled=true; document.getElementById('u-password').value=user.password; document.getElementById('u-name').value=user.name; document.getElementById('u-role').value=user.role; } 
-        }
-        
-        async function saveUser() { 
-            const mode = document.getElementById('u-mode').value; 
-            const u = document.getElementById('u-username').value; 
-            const p = document.getElementById('u-password').value; 
-            const n = document.getElementById('u-name').value; 
-            const r = document.getElementById('u-role').value; 
-            if(!u || !p) return showToast("Thiếu thông tin!", "error"); 
-            if (mode === 'add') allUsers.push({ username: u, password: p, name: n, role: r });
-            else { const idx = allUsers.findIndex(user => user.username === u); if(idx !== -1) allUsers[idx] = { username: u, password: p, name: n, role: r }; }
-            renderUserTable(); showToast("Đã lưu (Đang đồng bộ...)"); document.getElementById('user-modal').style.display = 'none'; 
-            try { await fetch(API_URL + '?t=' + new Date().getTime(), { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: mode==='add'?'add_user':'edit_user', username: u, password: p, name: n, role: r }) }); } catch (error) {} 
-        }
+        function openUserModal(isNew, uEdit) { const modal=document.getElementById('user-modal'); modal.style.display='flex'; const uIn=document.getElementById('u-username'); if(isNew) { document.getElementById('u-mode').value='add'; uIn.value=""; uIn.disabled=false; document.getElementById('u-password').value=""; document.getElementById('u-name').value=""; } else { const user=allUsers.find(u=>u.username===uEdit); document.getElementById('u-mode').value='edit'; uIn.value=user.username; uIn.disabled=true; document.getElementById('u-password').value=user.password; document.getElementById('u-name').value=user.name; document.getElementById('u-role').value=user.role; } }
+        async function saveUser() { const mode = document.getElementById('u-mode').value; const u = document.getElementById('u-username').value; const p = document.getElementById('u-password').value; const n = document.getElementById('u-name').value; const r = document.getElementById('u-role').value; if(!u || !p) return showToast("Thiếu thông tin!", "error"); if (mode === 'add') allUsers.push({ username: u, password: p, name: n, role: r }); else { const idx = allUsers.findIndex(user => user.username === u); if(idx !== -1) allUsers[idx] = { username: u, password: p, name: n, role: r }; } renderUserTable(); showToast("Đã lưu (Đang đồng bộ...)"); document.getElementById('user-modal').style.display = 'none'; try { await fetch(API_URL + '?t=' + new Date().getTime(), { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: mode==='add'?'add_user':'edit_user', username: u, password: p, name: n, role: r }) }); } catch (error) {} }
+        async function deleteUser(username) { if(!confirm("Xóa?")) return; allUsers = allUsers.filter(user => user.username !== username); renderUserTable(); showToast("Đã xóa (Đang đồng bộ...)"); try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_user', username: username }) }); } catch(e) { } }
 
-        async function deleteUser(username) { 
-            if(!confirm("Xóa?")) return; 
-            allUsers = allUsers.filter(user => user.username !== username);
-            renderUserTable(); showToast("Đã xóa (Đang đồng bộ...)");
-            try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_user', username: username }) }); } catch(e) { } 
-        }
-
-        // --- PRODUCT & POS ---
+        // --- PRODUCTS ---
         function renderProductTable() { document.querySelector('#product-table tbody').innerHTML = products.map((p) => `<tr><td><b>${p.name}</b><br><span style="font-size:11px;color:#94a3b8">${p.group}</span></td><td style="color:var(--primary); font-weight:bold">${formatMoney(p.price)}</td><td><button class="qty-btn" onclick="editProduct('${p.id}')"><i class="fas fa-edit"></i></button><button class="qty-btn" onclick="deleteProduct('${p.id}')" style="color:#ef4444"><i class="fas fa-trash"></i></button></td></tr>`).join(''); }
         function openProductModal() { document.getElementById('prod-id').value = ''; document.getElementById('prod-name').value = ''; document.getElementById('prod-price').value = ''; document.getElementById('product-modal').style.display = 'flex'; }
         function editProduct(id) { const p = products.find(x => String(x.id) === String(id)); if(p) { document.getElementById('prod-id').value = p.id; document.getElementById('prod-name').value = p.name; document.getElementById('prod-price').value = p.price; document.getElementById('prod-group').value = p.group; document.getElementById('product-modal').style.display = 'flex'; } }
         function closeModal() { document.getElementById('product-modal').style.display = 'none'; }
-        async function saveProduct() { 
-            const id = document.getElementById('prod-id').value; const name = document.getElementById('prod-name').value.trim(); const price = Number(document.getElementById('prod-price').value); const group = document.getElementById('prod-group').value; 
-            if (!name) return showToast("Thiếu tên!", "error");
-            if(id) { const index = products.findIndex(p => String(p.id) === String(id)); if(index !== -1) products[index] = { ...products[index], name, price, group }; } else { products.push({ id: Date.now(), name, price, group, icon: '📦' }); }
-            localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products)); closeModal(); renderProductTable(); renderPOS();
-            try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'save_all_products', products: products }) }); } catch(e) {}
-        }
+        async function saveProduct() { const id = document.getElementById('prod-id').value; const name = document.getElementById('prod-name').value.trim(); const price = Number(document.getElementById('prod-price').value); const group = document.getElementById('prod-group').value; if (!name) return showToast("Thiếu tên!", "error"); if(id) { const index = products.findIndex(p => String(p.id) === String(id)); if(index !== -1) products[index] = { ...products[index], name, price, group }; } else { products.push({ id: Date.now(), name, price, group, icon: '📦' }); } localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products)); closeModal(); renderProductTable(); renderPOS(); try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'save_all_products', products: products }) }); } catch(e) {} }
         async function deleteProduct(id) { if(confirm("Xóa?")) { products = products.filter(p => String(p.id) !== String(id)); localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products)); renderProductTable(); renderPOS(); try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'save_all_products', products: products }) }); } catch(e){} } }
 
         function renderPOS() {
@@ -677,13 +586,33 @@
         function changeQty(index, delta) { cart[index].qty += delta; if (cart[index].qty <= 0) cart.splice(index, 1); renderCart(); }
         
         function payOrder() {
-            if (cart.length === 0) return showToast("Chưa chọn món!", "error");
-            const staffName = currentUser ? currentUser.name : "Admin";
-            const orderData = { time: new Date().toISOString(), itemsStr: cart.map(i => `${i.name} (${i.qty})`).join(', '), cartDetails: cart.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price, group: i.group || 'Khác' })), total: cart.reduce((sum, item) => sum + (item.price * item.qty), 0), method: paymentMethod, staff: staffName };
-            pushOrderToSheet(orderData);
-        }
+    if (cart.length === 0) return showToast("Chưa chọn món!", "error");
+    const staffName = currentUser ? currentUser.name : "Admin";
+    
+    // SỬA LỖI MÚI GIỜ: Tạo thời gian hiện tại theo format ISO (Browser sẽ tự xử lý, nhưng Server đã có code Utilities.formatDate hứng rồi)
+    // Tuy nhiên, để an toàn nhất, ta gửi luôn một biến time chuẩn
+    const now = new Date();
+    
+    const orderData = { 
+        // Giữ nguyên toISOString để App Script parse dễ dàng
+        time: now.toISOString(), 
+        itemsStr: cart.map(i => `${i.name} (${i.qty})`).join(', '), 
+        cartDetails: cart.map(i => ({ 
+            id: i.id, 
+            name: i.name, 
+            qty: i.qty, 
+            price: i.price, 
+            group: i.group || 'Khác' 
+        })), 
+        total: cart.reduce((sum, item) => sum + (item.price * item.qty), 0), 
+        method: paymentMethod, 
+        staff: staffName 
+    };
+    
+    pushOrderToSheet(orderData);
+}
 
-        // --- FIX: DEBT ---
+        // --- DEBT ---
         function renderDebtTable() {
             const tbody = document.querySelector('#debt-table tbody'); const empty = document.getElementById('debt-empty');
             if(debts.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
@@ -697,13 +626,11 @@
         
         async function confirmDebt() {
             const name = document.getElementById('debt-customer-name').value; if(!name) return showToast("Nhập tên khách!", "error");
-            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0); 
-            const items = cart.map(i => `${i.name} (x${i.qty})`).join(', ');
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0); const items = cart.map(i => `${i.name} (x${i.qty})`).join(', ');
             debts.push({ customer: name, date: new Date().toLocaleDateString('vi-VN'), items: items, total: total });
             localStorage.setItem('bd_debts_v1', JSON.stringify(debts));
             const orderData = { time: new Date().toISOString(), itemsStr: items, total: total, method: 'Ghi Nợ (' + name + ')', staff: currentUser?currentUser.name:"Admin" };
-            pushOrderToSheet(orderData);
-            document.getElementById('debt-modal').style.display = 'none'; 
+            pushOrderToSheet(orderData); document.getElementById('debt-modal').style.display = 'none'; 
         }
         function payDebt(index) { if(confirm("Đã thanh toán?")) { debts.splice(index, 1); localStorage.setItem('bd_debts_v1', JSON.stringify(debts)); renderDebtTable(); showToast("Đã xóa nợ!"); } }
 
@@ -714,47 +641,123 @@
             const s = document.getElementById('c-start').value; const e = document.getElementById('c-end').value; const price = Number(document.getElementById('c-price-select').value);
             if(!s || !e) return showToast("Nhập giờ!", "error");
             const d1 = new Date("2000-01-01 " + s); const d2 = new Date("2000-01-01 " + e);
-            let diff = (d2 - d1) / 36e5; if(diff <= 0) diff += 24;
-            const total = Math.ceil(diff * price);
+            let diff = (d2 - d1) / 36e5; if(diff <= 0) diff += 24; const total = Math.ceil(diff * price);
             const hours = Math.floor(diff); const minutes = Math.round((diff - hours) * 60);
-            document.getElementById('res-time').innerText = `Thời gian: ${hours}h ${minutes}p`;
-            document.getElementById('res-total').innerText = formatMoney(total);
-            document.getElementById('calc-result').style.display = 'block';
+            document.getElementById('res-time').innerText = `Thời gian: ${hours}h ${minutes}p`; document.getElementById('res-total').innerText = formatMoney(total); document.getElementById('calc-result').style.display = 'block';
             const pName = document.getElementById('c-price-select').options[document.getElementById('c-price-select').selectedIndex].text.split(' - ')[0];
             calcResultObj = { id: Date.now(), name: pName + ` (${s}-${e})`, price: total, qty: 1, group: '🏸 Tiền Giờ & Thuê Sân' };
         }
         function addTimeCart() { if(calcResultObj) { cart.push(calcResultObj); renderCart(); showToast("Đã thêm!"); } }
 
-        // --- EXPORT ---
+        // --- REPORT & EXPORT ---
         function checkDateFilter(dateStr, filter) { const tDate = new Date(dateStr); const now = new Date(); const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()); if (filter === 'all') return true; if (filter === 'today') return tDate >= startOfDay; if (filter === 'yesterday') { const y = new Date(startOfDay); y.setDate(y.getDate() - 1); const e = new Date(startOfDay); return tDate >= y && tDate < e; } if (filter === 'week') { const d = now.getDay() || 7; if(d !== 1) now.setHours(-24 * (d - 1)); else now.setHours(0,0,0,0); return tDate >= now; } if (filter === 'month') return tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear(); return true; }
         function setReportTab(type, btn) { currentReportType = type; document.querySelectorAll('.btn-add').forEach(el => el.style.background='white'); btn.style.background='#e2e8f0'; renderReport(); }
         
+        // --- NEW RENDER REPORT AS CARD GRID ---
         function renderReport() { 
-            const tbody = document.querySelector('#report-table tbody'); const timeFilter = document.getElementById('report-filter-time').value; 
-            let totalAll = 0, courtTotal = 0, serviceTotal = 0; const filteredTrans = transactions.filter(t => checkDateFilter(t.time, timeFilter)); 
-            filteredTrans.forEach(t => { totalAll += t.total; if(t.cartDetails) t.cartDetails.forEach(item => { let itemTotal = item.price * item.qty; if(item.group.includes('Tiền Giờ')) courtTotal += itemTotal; else serviceTotal += itemTotal; }); }); 
-            document.getElementById('report-total').innerText = formatMoney(totalAll); document.getElementById('report-court').innerText = formatMoney(courtTotal); document.getElementById('report-service').innerText = formatMoney(serviceTotal); 
+            const gridContainer = document.getElementById('report-grid'); 
+            const emptyMsg = document.getElementById('report-empty');
+            const timeFilter = document.getElementById('report-filter-time').value; 
             
-            let displayData = []; 
-            if(currentReportType === 'all') displayData = filteredTrans; 
-            else filteredTrans.forEach(t => { if(t.cartDetails) t.cartDetails.forEach(item => { let isCourt = item.group.includes('Tiền Giờ'); if((currentReportType === 'court' && isCourt) || (currentReportType === 'service' && !isCourt)) displayData.push({ ...t, isSplit: true, splitItem: item }); }); });
-            
-            tbody.innerHTML = displayData.map((t) => { 
-                let dateStr = ""; try { let d = new Date(t.time); dateStr = d.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit'}) + " " + d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}); } catch(e) { dateStr = t.time; } 
-                
-                // Fix: Hiển thị chi tiết từ cartDetails nếu itemsStr bị thiếu (dữ liệu cũ)
-                let detail = t.itemsStr;
-                if (!detail && t.cartDetails) {
-                    detail = t.cartDetails.map(i => `${i.name} (${i.qty})`).join(', ');
+            // Lấy dữ liệu và đảo ngược để xem mới nhất trước
+            const filteredTrans = transactions.slice().reverse().filter(t => {
+                if (!t.time) return false;
+                const hasItems = t.itemsStr || (t.cartDetails && t.cartDetails.length > 0);
+                if (!hasItems) return false;
+                return checkDateFilter(t.time, timeFilter);
+            });
+
+            if (filteredTrans.length === 0) {
+                gridContainer.innerHTML = '';
+                emptyMsg.style.display = 'block';
+                return;
+            } else {
+                emptyMsg.style.display = 'none';
+            }
+
+            let totalRevenue = 0, courtRevenue = 0, serviceRevenue = 0;
+            let gridHTML = '';
+
+            filteredTrans.forEach((t, i) => {
+                // Tính toán tổng thu (Header Stats)
+                totalRevenue += (t.total || 0);
+                if (t.cartDetails) {
+                    t.cartDetails.forEach(item => {
+                         const itemTotal = item.price * item.qty;
+                         if (item.group && item.group.includes('Tiền Giờ')) courtRevenue += itemTotal;
+                         else serviceRevenue += itemTotal;
+                    });
+                } else {
+                    // Fallback cho dữ liệu cũ không phân loại
+                    serviceRevenue += t.total; 
                 }
-                
-                if(t.isSplit) return `<tr><td>${dateStr}</td><td><b>${t.splitItem.name}</b></td><td>${t.splitItem.qty}</td><td><b>${formatMoney(t.splitItem.price * t.splitItem.qty)}</b></td><td>${t.staff || "Admin"}</td><td>${t.method==='CK'?'CK':''}</td></tr>`; 
-                
-                return `<tr><td>${dateStr}</td><td>${detail}</td><td><b>${formatMoney(t.total)}</b></td><td>${t.staff || "Admin"}</td></tr>`; 
-            }).join(''); 
+
+                // Xử lý hiển thị thẻ (Card)
+                // Filter theo loại (Sân/Dịch vụ) nếu user chọn tab con
+                let displayItems = [];
+                if (t.cartDetails) {
+                     displayItems = t.cartDetails.filter(item => {
+                        let isCourt = item.group && item.group.includes('Tiền Giờ');
+                        if (currentReportType === 'all') return true;
+                        if (currentReportType === 'court') return isCourt;
+                        if (currentReportType === 'service') return !isCourt;
+                        return true;
+                    });
+                } else if (currentReportType === 'all') {
+                    // Dữ liệu cũ dạng chuỗi
+                    displayItems = [{name: t.itemsStr, qty: 1, price: t.total, isOld: true}];
+                }
+
+                if (displayItems.length === 0) return; // Bỏ qua nếu thẻ rỗng do filter
+
+                // Định dạng thời gian
+                let dateStr = ""; 
+                try { let d = new Date(t.time); dateStr = `<span>${d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'})}</span> <span>${d.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit'})}</span>`; } catch(e) { dateStr = t.time; }
+
+                // Tạo HTML cho danh sách món
+                let itemsHTML = '';
+                displayItems.forEach(item => {
+                    let priceDisplay = formatMoney(item.price * item.qty);
+                    if(item.isOld) priceDisplay = formatMoney(item.price);
+                    itemsHTML += `
+                        <div class="hc-item-row">
+                            <div>
+                                <div style="font-weight:700; color:#334155">${item.name}</div>
+                                ${!item.isOld ? `<div style="font-size:10px; color:#94a3b8">${item.group || ''}</div>` : ''}
+                            </div>
+                            <div style="text-align:right">
+                                <div style="font-weight:700; color:var(--primary)">x${item.qty}</div>
+                                <div style="font-size:11px; color:#64748b">${priceDisplay}</div>
+                            </div>
+                        </div>`;
+                });
+
+                // HTML Thẻ hoàn chỉnh
+                gridHTML += `
+                <div class="history-card" style="animation-delay: ${Math.min(i * 0.05, 1)}s">
+                    <div class="hc-header">
+                        ${dateStr}
+                    </div>
+                    <div class="hc-items">
+                        ${itemsHTML}
+                    </div>
+                    <div class="hc-footer">
+                        <div style="font-size:24px; color:#ef4444; font-weight:900; letter-spacing:1px">${formatMoney(t.total)}</div>
+                        <div style="font-size:13px; color:var(--primary); font-weight:700; margin-top:5px; background:#e0e7ff; padding:4px 12px; border-radius:12px;">NV: ${t.staff || "Admin"}</div>
+                    </div>
+                </div>`;
+            });
+
+            // Update stats header
+            document.getElementById('report-total').innerText = formatMoney(totalRevenue); 
+            document.getElementById('report-court').innerText = formatMoney(courtRevenue); 
+            document.getElementById('report-service').innerText = formatMoney(serviceRevenue); 
+            
+            // Render Grid
+            gridContainer.innerHTML = gridHTML;
         }
 
-        // Excel Export (Compact)
+        // Export Functions (Giữ nguyên)
         function exportServiceReport() {
             const desiredOrder = ["Suối nhỏ 510ml", "Suối lớn 1,5l", "Nutri dâu", "Nutri cam", "Revive pro", "Revive TT", "Revive CM", "Pocari lớn", "Pocari nhỏ", "Aquarius", "Coca TT", "Coca (zr calo)", "Fanta", "Red bull", "C2 chanh", "Sting", "Trà đá 2", "Trà đá 3", "Trà đá 5", "Trà đá 10", "Trà đá 20", "Soda lon", "Soda chanh dây", "Cầu mới", "Cầu cũ", "Cầu ống PH", "Cầu ống 88", "Mì", "Quấn cán (25)", "Quấn cán (45)"];
             let serviceProds = products.filter(p => p.group !== '🏸 Tiền Giờ & Thuê Sân');
@@ -798,32 +801,17 @@
         }
 
         window.onload = function() { 
-            // 1. Enter key login
-            document.getElementById("password").addEventListener("keypress", function(event) {
-                if (event.key === "Enter") { event.preventDefault(); login(); }
-            });
-            document.getElementById("username").addEventListener("keypress", function(event) {
-                if (event.key === "Enter") { event.preventDefault(); document.getElementById("password").focus(); }
-            });
+            // Enter key login
+            document.getElementById("password").addEventListener("keypress", function(event) { if (event.key === "Enter") { event.preventDefault(); login(); } });
+            document.getElementById("username").addEventListener("keypress", function(event) { if (event.key === "Enter") { event.preventDefault(); document.getElementById("password").focus(); } });
 
-            // 2. CHECK AUTO LOGIN
+            // Auto Login
             const savedUser = localStorage.getItem('bd_current_user');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                loginSuccess();
-            } else {
-                document.getElementById("username").focus(); 
-            }
+            if (savedUser) { currentUser = JSON.parse(savedUser); loginSuccess(); } else { document.getElementById("username").focus(); }
 
-            // 3. RESTORE DEFAULT ITEMS IF EMPTY (FIX LỖI MẤT MENU)
-            if (!products || products.length === 0) {
-                products = defaultProducts;
-                localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products));
-            }
+            if (!products || products.length === 0) { products = defaultProducts; localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products)); }
 
-            loadUsersForLogin(); 
-            renderPOS(); 
-            renderReport();
+            loadUsersForLogin(); renderPOS(); renderReport();
         };
         setInterval(syncData, 30000); 
     </script>
