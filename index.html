@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hệ Thống Bán Hàng - Sân Bảo Khang</title>
+    <title>Sân Cầu Lông (V-SORTED)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -75,21 +75,31 @@
 
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; margin-bottom: 30px; }
         
+        /* CARD */
         .card { 
-            background: white; border-radius: 16px; padding: 15px; text-align: center; cursor: pointer; 
+            background: white; border-radius: 16px; padding: 12px; text-align: center; cursor: pointer; 
             border: 2px solid transparent; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
             display: flex; flex-direction: column; justify-content: space-between; align-items: center;
             height: 140px; box-shadow: var(--shadow-sm); 
         }
         .card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: var(--shadow-lg); }
         .card:active { transform: scale(0.96); }
-        .card-content { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%; }
+        
+        .card-content { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            flex-grow: 1; width: 100%;
+        }
         .card-icon { font-size: 32px; margin-bottom: 8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
-        .card-name { font-weight: 700; font-size: 13px; line-height: 1.4; margin-bottom: 8px; width: 100%; text-align: center; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--text-main); }
+        .card-name { 
+            font-weight: 700; font-size: 13px; line-height: 1.3; 
+            width: 100%; text-align: center; 
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; 
+            color: var(--text-main); 
+        }
         .card-price { 
             color: var(--primary); font-weight: 800; font-size: 12px; 
-            background: #e0e7ff; padding: 6px 12px; border-radius: 20px; 
-            width: 100%; text-align: center; 
+            background: #e0e7ff; padding: 6px 0; border-radius: 8px; 
+            width: 100%; text-align: center; margin-top: 5px; 
         }
 
         /* --- BILL PANEL --- */
@@ -180,7 +190,7 @@
     <div id="loading-overlay" style="display:none"><div class="spinner"></div><p style="margin-top:20px; font-weight:700; color:var(--primary)">Đang xử lý...</p></div>
 
     <div class="sidebar">
-        <div class="app-name"><i class="fas fa-shuttlecock"></i>Hệ Thống Bán Hàng - Sân BẢO KHANG</div>
+        <div class="app-name"><i class="fas fa-shuttlecock"></i> BẢO KHANG SPORT</div>
         <div class="user-info"><span id="user-display">...</span><button class="logout-btn" onclick="logout()" style="background:none;border:none;color:#ef4444;cursor:pointer"><i class="fas fa-sign-out-alt"></i></button></div>
         
         <div class="menu-item active" onclick="showTab('pos')"><i class="fas fa-cash-register"></i> <span>Bán Hàng</span></div>
@@ -386,9 +396,10 @@
             { id: 24, name: 'Cầu mới', price: 280000, group: 'Cầu Lông', icon: '🏸' }, 
             { id: 25, name: 'Cầu cũ', price: 5000, group: 'Cầu Lông', icon: '🏸' }, 
             { id: 26, name: 'Cầu ống PH', price: 200000, group: 'Cầu Lông', icon: '🏸' }, 
-            { id: 27, name: 'Mì', price: 15000, group: 'Đồ Ăn & Dịch Vụ', icon: '🍜' }, 
-            { id: 28, name: 'Quấn cán (25)', price: 25000, group: 'Đồ Ăn & Dịch Vụ', icon: '🎗️' }, 
-            { id: 29, name: 'Quấn cán (45)', price: 45000, group: 'Đồ Ăn & Dịch Vụ', icon: '🎗️' }
+            { id: 27, name: 'Cầu ống 88', price: 200000, group: 'Cầu Lông', icon: '🏸' },
+            { id: 28, name: 'Mì', price: 15000, group: 'Đồ Ăn & Dịch Vụ', icon: '🍜' }, 
+            { id: 29, name: 'Quấn cán (25)', price: 25000, group: 'Đồ Ăn & Dịch Vụ', icon: '🎗️' }, 
+            { id: 30, name: 'Quấn cán (45)', price: 45000, group: 'Đồ Ăn & Dịch Vụ', icon: '🎗️' }
         ];
 
         let savedProds = localStorage.getItem('bd_pro_debt_v5'); 
@@ -492,7 +503,7 @@
         document.getElementById("password").addEventListener("keypress", function(event) { if (event.key === "Enter") { event.preventDefault(); login(); } });
         document.getElementById("username").addEventListener("keypress", function(event) { if (event.key === "Enter") { event.preventDefault(); document.getElementById("password").focus(); } });
         
-        function renderUserTable() { document.querySelector('#product-table tbody').innerHTML = products.map((p) => `<tr><td><div style="font-weight:600">${p.name}</div><div style="font-size:11px;color:#6B7280">${p.group}</div></td><td style="font-weight:700; color:var(--primary)">${formatMoney(p.price)}</td><td><button class="action-btn edit" onclick="editProduct('${p.id}')"><i class="fas fa-edit"></i></button><button class="action-btn delete" onclick="deleteProduct('${p.id}')"><i class="fas fa-trash"></i></button></td></tr>`).join(''); }
+        function renderUserTable() { document.querySelector('#user-table tbody').innerHTML = allUsers.map(u => `<tr><td>${u.username}</td><td><span style="font-weight:600">${u.name}</span></td><td><span style="padding:4px 8px; border-radius:6px; background:${u.role.includes('admin')?'#dcfce7':'#e0e7ff'}; color:${u.role.includes('admin')?'#15803d':'#4338ca'}; font-size:11px; font-weight:700; text-transform:uppercase;">${u.role}</span></td><td><button class="action-btn edit" onclick="openUserModal(false, '${u.username}')"><i class="fas fa-edit"></i></button>${u.username!=='admin'?`<button class="action-btn delete" onclick="deleteUser('${u.username}')"><i class="fas fa-trash"></i></button>`:''}</td></tr>`).join(''); }
         function openUserModal(isNew, usernameToEdit) { const modal=document.getElementById('user-modal'); modal.style.display='flex'; const uIn=document.getElementById('u-username'); if(isNew) { document.getElementById('user-modal-title').innerText="Tạo Tài Khoản Mới"; document.getElementById('u-mode').value='add'; uIn.value=""; uIn.disabled=false; document.getElementById('u-password').value=""; document.getElementById('u-name').value=""; } else { const user=allUsers.find(u=>u.username===usernameToEdit); document.getElementById('user-modal-title').innerText="Sửa Tài Khoản"; document.getElementById('u-mode').value='edit'; uIn.value=user.username; uIn.disabled=true; document.getElementById('u-password').value=user.password; document.getElementById('u-name').value=user.name; document.getElementById('u-role').value=user.role; } }
         async function saveUser() { const mode = document.getElementById('u-mode').value; const u = document.getElementById('u-username').value; const p = document.getElementById('u-password').value; const n = document.getElementById('u-name').value; const r = document.getElementById('u-role').value; if(!u || !p) return showToast("Thiếu thông tin!", "error"); document.getElementById('loading-overlay').style.display = 'flex'; try { await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: mode==='add'?'add_user':'edit_user', username: u, password: p, name: n, role: r }) }); showToast("Thành công!"); document.getElementById('user-modal').style.display = 'none'; await loadUsersForLogin(); renderUserTable(); } catch (error) { showToast("Lỗi!", "error"); } finally { document.getElementById('loading-overlay').style.display = 'none'; } }
         async function deleteUser(username) { if(!confirm("Xóa?")) return; document.getElementById('loading-overlay').style.display = 'flex'; try { await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'delete_user', username: username }) }); showToast("Đã xóa!"); await loadUsersForLogin(); renderUserTable(); } catch(e) { showToast("Lỗi mạng!", "error"); } finally { document.getElementById('loading-overlay').style.display = 'none'; } }
@@ -527,16 +538,14 @@
         
         async function saveProduct() { 
             const id = document.getElementById('prod-id').value; 
-            const name = document.getElementById('prod-name').value.trim(); // Xóa khoảng trắng thừa
+            const name = document.getElementById('prod-name').value.trim(); 
             const priceVal = document.getElementById('prod-price').value; 
-            const price = Number(priceVal); 
+            const price = Number(priceVal);
             const group = document.getElementById('prod-group').value; 
             
-            // SỬA LỖI: Kiểm tra chặt chẽ hơn (Cho phép giá 0đ, nhưng không được để trống ô giá)
             if (!name) return showToast("Vui lòng nhập tên món!", "error");
-            if (priceVal === "" || isNaN(price)) return showToast("Vui lòng nhập giá tiền hợp lệ!", "error");
+            if (priceVal === "" || isNaN(price)) return showToast("Vui lòng nhập giá tiền!", "error");
             
-            // Logic lưu như cũ
             if(id) { 
                 const index = products.findIndex(p => String(p.id) === String(id)); 
                 if(index !== -1) products[index] = { ...products[index], name, price, group }; 
@@ -547,7 +556,6 @@
             localStorage.setItem('bd_pro_debt_v5', JSON.stringify(products)); 
             closeModal(); renderProductTable(); renderPOS(); 
             
-            // Đồng bộ lên Server (nếu có mạng)
             if(!API_URL.includes("THAY_LINK")) { 
                 const btn = document.querySelectorAll('#product-modal .btn-add')[0]; 
                 const oldText = btn.innerText;
@@ -556,7 +564,7 @@
                     await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'save_all_products', products: products }) }); 
                 } catch(e) { 
                     console.error(e); 
-                    showToast("Lưu Offline thành công (Chưa đồng bộ Server)", "warning");
+                    showToast("Đã lưu Offline (Chưa đồng bộ Server)", "warning");
                 } finally { 
                     btn.innerText = oldText; 
                 } 
@@ -675,7 +683,87 @@
         function checkDateFilter(dateStr, filter) { const tDate = new Date(dateStr); const now = new Date(); const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()); if (filter === 'all') return true; if (filter === 'today') return tDate >= startOfDay; if (filter === 'yesterday') { const yesterday = new Date(startOfDay); yesterday.setDate(yesterday.getDate() - 1); const endYesterday = new Date(startOfDay); return tDate >= yesterday && tDate < endYesterday; } if (filter === 'week') { const day = now.getDay() || 7; if(day !== 1) now.setHours(-24 * (day - 1)); else now.setHours(0,0,0,0); return tDate >= now; } if (filter === 'month') return tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear(); return true; }
         function setReportTab(type, btn) { currentReportType = type; document.querySelectorAll('.report-tab').forEach(el => el.classList.remove('active')); btn.classList.add('active'); renderReport(); }
         function renderReport() { const tbody = document.querySelector('#report-table tbody'); const timeFilter = document.getElementById('report-filter-time').value; let totalAll = 0, courtTotal = 0, serviceTotal = 0; const filteredTrans = transactions.filter(t => checkDateFilter(t.time, timeFilter)); filteredTrans.forEach(t => { totalAll += t.total; if(t.cartDetails) { t.cartDetails.forEach(item => { let itemPrice = item.price; let pGroup = item.group; if(!itemPrice || !pGroup) { const original = products.find(p => p.id == item.id || p.name == item.name); if(original) { if(!itemPrice) itemPrice = original.price; if(!pGroup) pGroup = original.group; } else { if(!itemPrice) itemPrice = 0; if(!pGroup) pGroup = 'Khác'; } } let itemTotal = itemPrice * item.qty; if(pGroup && pGroup.includes('Tiền Giờ')) courtTotal += itemTotal; else serviceTotal += itemTotal; }); } }); document.getElementById('report-total').innerText = formatMoney(totalAll); document.getElementById('report-court').innerText = formatMoney(courtTotal); document.getElementById('report-service').innerText = formatMoney(serviceTotal); let displayData = []; if(currentReportType === 'all') { displayData = filteredTrans; } else { filteredTrans.forEach(t => { if(t.cartDetails) { t.cartDetails.forEach(item => { let pGroup = item.group; let itemPrice = item.price; if(!pGroup || !itemPrice) { const original = products.find(p => p.id == item.id || p.name == item.name); if(original) { if(!pGroup) pGroup = original.group; if(!itemPrice) itemPrice = original.price; } else { if(!pGroup) pGroup = 'Khác'; if(!itemPrice) itemPrice = 0; } } let isCourt = pGroup && pGroup.includes('Tiền Giờ'); const displayItem = { ...item, price: itemPrice, group: pGroup }; if(currentReportType === 'court' && isCourt) displayData.push({ ...t, isSplit: true, splitItem: displayItem }); else if (currentReportType === 'service' && !isCourt) displayData.push({ ...t, isSplit: true, splitItem: displayItem }); }); } }); } tbody.innerHTML = displayData.map((t) => { let dateStr = "", timeStr = ""; try { let d = new Date(t.time); if(isNaN(d.getTime())) { let parts = t.time.split(' '); timeStr = parts[1] || ""; dateStr = parts[0] || t.time; } else { dateStr = d.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit'}); timeStr = d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}); } } catch(e) { dateStr = t.time; } if(t.isSplit) { return `<tr><td style="font-size:12px">${dateStr}<br><span style="color:#9CA3AF">${timeStr}</span></td><td><span style="font-weight:600">${t.splitItem.name}</span></td><td>${t.splitItem.qty}</td><td style="font-weight:bold">${formatMoney(t.splitItem.price * t.splitItem.qty)}</td><td style="font-size:12px;color:#475569">${t.staff || "Admin"}</td><td>${t.method === 'CK' ? '<i class="fas fa-check-circle" style="color:var(--primary)"></i>' : ''}</td></tr>`; } let itemNames = "", itemQtys = ""; if(t.cartDetails && Array.isArray(t.cartDetails)) { itemNames = t.cartDetails.map(i => `<div class="item-row">${i.name}</div>`).join(''); itemQtys = t.cartDetails.map(i => `<div class="item-row" style="color:var(--primary);font-weight:bold">${i.qty}</div>`).join(''); } else { itemNames = t.itemsStr; itemQtys = "-"; } return `<tr><td style="font-size:12px">${dateStr}<br><span style="color:#9CA3AF">${timeStr}</span></td><td>${itemNames}</td><td>${itemQtys}</td><td style="font-weight:bold; color:var(--text-main)">${formatMoney(t.total)}</td><td style="font-size:12px;color:#475569">${t.staff || "Admin"}</td><td>${t.method === 'CK' ? '<i class="fas fa-check-circle" style="color:var(--primary)"></i>' : ''}</td></tr>`; }).join(''); }
-        function exportServiceReport() { const serviceProds = products.filter(p => p.group !== '🏸 Tiền Giờ & Thuê Sân'); const timeFilter = document.getElementById('report-filter-time').value; const filteredTrans = transactions.filter(t => checkDateFilter(t.time, timeFilter)); let headerRow1 = ["Thời gian", "Nhân Viên"]; let headerRow2 = ["", ""]; serviceProds.forEach(p => { headerRow1.push(p.name); headerRow1.push(""); headerRow2.push("SL"); headerRow2.push("CK"); }); let dataRows = filteredTrans.map(t => { let dateStr = ""; try { let d = new Date(t.time); dateStr = d.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit'}) + " " + d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}); } catch(e) { dateStr = t.time; } let row = [dateStr, t.staff || "Admin"]; serviceProds.forEach(p => { let qty = 0; if (t.cartDetails) { const found = t.cartDetails.find(item => item.id == p.id || item.name == p.name); if(found) qty = found.qty; } if (qty > 0) { row.push(qty); row.push(t.method === 'CK' ? "x" : ""); } else { row.push(""); row.push(""); } }); return row; }); const ws_data = [headerRow1, headerRow2, ...dataRows]; const ws = XLSX.utils.aoa_to_sheet(ws_data); const merges = [{ s: {r:0, c:0}, e: {r:1, c:0} }, { s: {r:0, c:1}, e: {r:1, c:1} }]; for (let i = 0; i < serviceProds.length; i++) { let startCol = 2 + (i * 2); merges.push({ s: {r:0, c:startCol}, e: {r:0, c:startCol+1} }); } ws['!merges'] = merges; const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Dich_Vu"); XLSX.writeFile(wb, "Bao_Cao_Dich_Vu.xlsx"); }
+        
+        function exportServiceReport() {
+            // 1. Define order from HTML (BÁN NƯỚC.html)
+            const desiredOrder = [
+                "Suối nhỏ 510ml", "Suối lớn 1,5l", "Nutri dâu", "Nutri cam",
+                "Revive pro", "Revive TT", "Revive CM", "Pocari lớn", "Pocari nhỏ",
+                "Aquarius", "Coca TT", "Coca (zr calo)", "Fanta", "Red bull",
+                "C2 chanh", "Sting", "Trà đá 2", "Trà đá 3", "Trà đá 5", "Trà đá 10", "Trà đá 20",
+                "Soda lon", "Soda chanh dây", "Cầu mới", "Cầu cũ", "Cầu ống PH", "Cầu ống 88",
+                "Mì", "Quấn cán (25)", "Quấn cán (45)"
+            ];
+
+            // 2. Filter service products (non-court)
+            let serviceProds = products.filter(p => p.group !== '🏸 Tiền Giờ & Thuê Sân');
+
+            // 3. Sort based on desiredOrder
+            serviceProds.sort((a, b) => {
+                let indexA = desiredOrder.indexOf(a.name);
+                let indexB = desiredOrder.indexOf(b.name);
+                
+                // Case 1: Both in list -> sort by index
+                if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                // Case 2: Only A in list -> A comes first
+                if (indexA !== -1) return -1;
+                // Case 3: Only B in list -> B comes first
+                if (indexB !== -1) return 1;
+                // Case 4: Neither in list -> sort alphabetically (or keep original)
+                return a.name.localeCompare(b.name);
+            });
+
+            // 4. Generate Excel
+            const timeFilter = document.getElementById('report-filter-time').value;
+            const filteredTrans = transactions.filter(t => checkDateFilter(t.time, timeFilter));
+            
+            let headerRow1 = ["Thời gian", "Nhân Viên"];
+            let headerRow2 = ["", ""];
+            
+            serviceProds.forEach(p => { 
+                headerRow1.push(p.name); headerRow1.push(""); 
+                headerRow2.push("SL"); headerRow2.push("CK"); 
+            });
+            
+            let dataRows = filteredTrans.map(t => {
+                let dateStr = "";
+                try { 
+                    let d = new Date(t.time); 
+                    dateStr = d.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit'}) + " " + d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}); 
+                } catch(e) { dateStr = t.time; }
+                
+                let row = [dateStr, t.staff || "Admin"];
+                
+                serviceProds.forEach(p => {
+                    let qty = 0;
+                    if (t.cartDetails) {
+                        const found = t.cartDetails.find(item => String(item.id) === String(p.id) || item.name === p.name);
+                        if(found) qty = found.qty;
+                    }
+                    if (qty > 0) {
+                        row.push(qty);
+                        row.push(t.method === 'CK' ? "x" : "");
+                    } else {
+                        row.push(""); row.push("");
+                    }
+                });
+                return row;
+            });
+            
+            const ws_data = [headerRow1, headerRow2, ...dataRows];
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            
+            const merges = [{ s: {r:0, c:0}, e: {r:1, c:0} }, { s: {r:0, c:1}, e: {r:1, c:1} }];
+            for (let i = 0; i < serviceProds.length; i++) {
+                let startCol = 2 + (i * 2);
+                merges.push({ s: {r:0, c:startCol}, e: {r:0, c:startCol+1} });
+            }
+            ws['!merges'] = merges;
+            
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Dich_Vu");
+            XLSX.writeFile(wb, "Bao_Cao_Dich_Vu_Sorted.xlsx");
+        }
 
         // --- INIT & FIX EMPTY PRODUCTS ---
         window.onload = function() { 
@@ -694,5 +782,4 @@
         setInterval(syncData, 30000); 
     </script>
 </body>
-
 </html>
