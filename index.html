@@ -122,7 +122,9 @@
         .badge-ck { background: #ede9fe; color: #7c3aed; }
         .hc-items { flex: 1; margin-bottom: 15px; max-height: 160px; overflow-y: auto; font-size: 14px; }
         .hc-item-row { display: flex; justify-content: space-between; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid rgba(0,0,0,0.03); }
-        .hc-footer { background: rgba(248, 250, 252, 0.5); margin: 0 -18px -18px -18px; padding: 15px; text-align: center; border-top: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .hc-footer { background: rgba(248, 250, 252, 0.5); margin: 0 -18px -18px -18px; padding: 15px; text-align: center; border-top: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        .hc-edit-btn { position: absolute; right: 10px; top: 10px; border: none; background: #f1f5f9; color: var(--primary); width: 30px; height: 30px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .hc-edit-btn:hover { background: var(--primary); color: white; }
 
         /* MOBILE RESPONSIVE */
         .mobile-header { display: none; }
@@ -161,6 +163,10 @@
         .stat-card { background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); padding: 25px; border-radius: 20px; box-shadow: var(--glass-shadow); display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--primary); border: 1px solid white; }
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 13000; }
         .toast { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 16px 24px; border-radius: 12px; box-shadow: 0 15px 40px rgba(0,0,0,0.15); margin-bottom: 10px; display: flex; align-items: center; gap: 12px; font-weight: 700; border-left: 5px solid var(--accent); animation: bounceIn 0.4s; color: var(--text-main); }
+        
+        /* Edit Modal Styles */
+        .edit-item-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9; }
+        .edit-qty-input { width: 50px; padding: 5px; border: 1px solid #e2e8f0; border-radius: 5px; text-align: center; }
     </style>
 </head>
 <body>
@@ -393,8 +399,45 @@
     </div>
 
     <div id="product-modal" class="modal"><div class="modal-content"><h3>Món Mới</h3><input type="hidden" id="prod-id"><div class="form-group"><label>Tên:</label><input type="text" id="prod-name" class="login-input" style="color:#333; background:#f8fafc; border:1px solid #e2e8f0"></div><div class="form-group"><label>Giá:</label><input type="number" id="prod-price" class="login-input" style="color:#333; background:#f8fafc; border:1px solid #e2e8f0"></div><div class="form-group"><label>Nhóm:</label><select id="prod-group" class="login-input" style="color:#333; background:#f8fafc; border:1px solid #e2e8f0"><option value="🏸 Tiền Giờ & Thuê Sân">Tiền Giờ & Sân</option><option value="Nước Giải Khát">Nước Giải Khát</option><option value="Trà Đá & Pha Chế">Trà Đá & Pha Chế</option><option value="Cầu Lông">Cầu Lông</option><option value="Đồ Ăn & Dịch Vụ">Đồ Ăn & Dịch Vụ</option></select></div><div style="display:flex;gap:10px"><button class="btn-pay" onclick="saveProduct()">Lưu</button><button class="btn-pay" style="background:#cbd5e1; box-shadow:none" onclick="closeModal()">Đóng</button></div></div></div>
+    
     <div id="user-modal" class="modal"><div class="modal-content"><h3>Nhân Viên</h3><input type="hidden" id="u-mode"><div class="form-group"><label>User:</label><input type="text" id="u-username" class="login-input" style="color:#333; background:#f8fafc; border:1px solid #e2e8f0"></div><div class="form-group"><label>Pass:</label><input type="text" id="u-password" class="login-input" style="color:#333; background:#f8fafc; border:1px solid #e2e8f0"></div><div class="form-group"><label>Tên:</label><input type="text" id="u-name" class="login-input" style="color:#333; background:#f8fafc; border:1px solid #e2e8f0"></div><div class="form-group"><label>Quyền:</label><select id="u-role" class="login-input" style="color:#333; background:#f8fafc; border:1px solid #e2e8f0"><option value="staff">Staff</option><option value="admin">Admin</option></select></div><div style="display:flex;gap:10px"><button class="btn-pay" onclick="saveUser()">Lưu</button><button class="btn-pay" style="background:#cbd5e1; box-shadow:none" onclick="document.getElementById('user-modal').style.display='none'">Hủy</button></div></div></div>
+    
     <div id="debt-modal" class="modal"><div class="modal-content"><h3>Ghi Nợ</h3><div class="form-group"><label>Tên Khách:</label><input type="text" id="debt-customer-name" class="login-input" style="color:#333; background:#f8fafc; border:1px solid #e2e8f0" placeholder="VD: Anh Long Sân 3"></div><div style="display:flex;gap:10px"><button class="btn-pay" onclick="confirmDebt()">Lưu Nợ</button><button class="btn-pay" style="background:#cbd5e1; box-shadow:none" onclick="document.getElementById('debt-modal').style.display='none'">Hủy</button></div></div></div>
+
+    <div id="edit-order-modal" class="modal">
+        <div class="modal-content" style="max-width:500px">
+            <h3 style="margin-top:0; color:var(--primary)">Sửa Đơn Hàng</h3>
+            <div style="font-size:12px; color:#64748b; margin-bottom:15px">Lưu ý: Chỉ sửa trên máy này, nếu đồng bộ từ server có thể bị ghi đè.</div>
+            
+            <div id="edit-order-list" style="max-height:300px; overflow-y:auto; margin-bottom:15px; border:1px solid #f1f5f9; padding:10px; border-radius:10px;">
+                </div>
+            
+            <div style="margin-bottom:15px">
+                 <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px">Thêm món:</label>
+                 <select id="edit-add-item-select" onchange="addEditItem(this)" class="login-input" style="color:#333; background:#f8fafc; border:1px solid #e2e8f0; margin-bottom:0">
+                     <option value="">-- Chọn món để thêm --</option>
+                 </select>
+            </div>
+
+            <div class="form-group">
+                <label>Phương thức:</label>
+                <select id="edit-payment-method" class="login-input" style="color:#333; background:#f8fafc; border:1px solid #e2e8f0">
+                    <option value="Tiền mặt">Tiền mặt</option>
+                    <option value="CK">Chuyển khoản</option>
+                </select>
+            </div>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; font-weight:900; font-size:18px; color:var(--primary)">
+                <span>Tổng tiền mới:</span>
+                <span id="edit-total-display">0 ₫</span>
+            </div>
+
+            <div style="display:flex;gap:10px">
+                <button class="btn-pay" onclick="saveEditOrder()">Lưu Thay Đổi</button>
+                <button class="btn-pay" style="background:#cbd5e1; box-shadow:none" onclick="document.getElementById('edit-order-modal').style.display='none'">Hủy</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // --- CẤU HÌNH API ---
@@ -431,8 +474,50 @@
         const DEFAULT_ROLES = { 'admin': MENU_DEF.map(m=>m.id), 'staff': ['nav-pos'] };
         let roleConfig = JSON.parse(localStorage.getItem('bd_role_config')) || DEFAULT_ROLES;
 
-        const defaultProducts = [{ id: 101, name: '5h30 - 8h (Vãng Lai)', price: 70000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🌅' },{ id: 102, name: '5h30 - 8h (Cố Định)', price: 60000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🌅' },{ id: 103, name: '8h - 17h (Vãng Lai)', price: 60000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '☀️' },{ id: 104, name: '8h - 17h (Cố Định)', price: 50000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '☀️' },{ id: 105, name: '17h - 24h (Vãng Lai)', price: 110000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🌙' },{ id: 106, name: '17h - 24h (Cố Định)', price: 100000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🌙' },{ id: 107, name: 'T7-CN-Lễ (Vãng Lai)', price: 100000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '📅' },{ id: 108, name: 'T7-CN-Lễ (Cố Định)', price: 90000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '📅' },{ id: 109, name: 'Thuê Vợt', price: 20000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🏸' },{ id: 1, name: 'Suối nhỏ 510ml', price: 10000, group: 'Nước Giải Khát', icon: '💧' },{ id: 2, name: 'Suối lớn 1,5l', price: 15000, group: 'Nước Giải Khát', icon: '🍶' },{ id: 3, name: 'Nutri dâu', price: 12000, group: 'Nước Giải Khát', icon: '🍓' },{ id: 4, name: 'Nutri cam', price: 12000, group: 'Nước Giải Khát', icon: '🍊' },{ id: 5, name: 'Revive pro', price: 15000, group: 'Nước Giải Khát', icon: '🧂' },{ id: 6, name: 'Revive TT', price: 15000, group: 'Nước Giải Khát', icon: '🧂' },{ id: 7, name: 'Revive CM', price: 15000, group: 'Nước Giải Khát', icon: '🧂' },{ id: 8, name: 'Pocari lớn', price: 20000, group: 'Nước Giải Khát', icon: '🔵' },{ id: 9, name: 'Pocari nhỏ', price: 15000, group: 'Nước Giải Khát', icon: '🔵' },{ id: 10, name: 'Aquarius', price: 15000, group: 'Nước Giải Khát', icon: '🥤' },{ id: 11, name: 'Coca TT', price: 15000, group: 'Nước Giải Khát', icon: '🥤' },{ id: 12, name: 'Coca (zr calo)', price: 15000, group: 'Nước Giải Khát', icon: '🥤' },{ id: 13, name: 'Fanta', price: 15000, group: 'Nước Giải Khát', icon: '🍊' },{ id: 14, name: 'Red bull', price: 20000, group: 'Nước Giải Khát', icon: '🐂' },{ id: 15, name: 'C2 chanh', price: 12000, group: 'Nước Giải Khát', icon: '🍋' },{ id: 16, name: 'Sting', price: 15000, group: 'Nước Giải Khát', icon: '🍓' },{ id: 17, name: 'Trà đá 2', price: 2000, group: 'Trà Đá & Pha Chế', icon: '🧊' },{ id: 18, name: 'Trà đá 3', price: 3000, group: 'Trà Đá & Pha Chế', icon: '🧊' },{ id: 19, name: 'Trà đá 5', price: 5000, group: 'Trà Đá & Pha Chế', icon: '🧊' },{ id: 20, name: 'Trà đá 10', price: 10000, group: 'Trà Đá & Pha Chế', icon: '🧊' },{ id: 21, name: 'Trà đá 20', price: 20000, group: 'Trà Đá & Pha Chế', icon: '🧊' },{ id: 22, name: 'Soda lon', price: 15000, group: 'Trà Đá & Pha Chế', icon: '🫧' },{ id: 23, name: 'Soda chanh dây', price: 20000, group: 'Trà Đá & Pha Chế', icon: '🍹' },{ id: 24, name: 'Cầu mới', price: 280000, group: 'Cầu Lông', icon: '🏸' },{ id: 25, name: 'Cầu cũ', price: 5000, group: 'Cầu Lông', icon: '🏸' },{ id: 26, name: 'Cầu ống PH', price: 200000, group: 'Cầu Lông', icon: '🏸' },{ id: 27, name: 'Cầu ống 88', price: 200000, group: 'Cầu Lông', icon: '🏸' },{ id: 28, name: 'Mì', price: 15000, group: 'Đồ Ăn & Dịch Vụ', icon: '🍜' },{ id: 29, name: 'Quấn cán (25)', price: 25000, group: 'Đồ Ăn & Dịch Vụ', icon: '🎗️' },{ id: 30, name: 'Quấn cán (45)', price: 45000, group: 'Đồ Ăn & Dịch Vụ', icon: '🎗️' }];
+        const defaultProducts = [
+            // --- NHÓM TIỀN GIỜ & SÂN (Giữ nguyên) ---
+            { id: 101, name: '5h30 - 8h (Vãng Lai)', price: 70000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🌅' },
+            { id: 102, name: '5h30 - 8h (Cố Định)', price: 60000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🌅' },
+            { id: 103, name: '8h - 17h (Vãng Lai)', price: 60000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '☀️' },
+            { id: 104, name: '8h - 17h (Cố Định)', price: 50000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '☀️' },
+            { id: 105, name: '17h - 24h (Vãng Lai)', price: 110000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🌙' },
+            { id: 106, name: '17h - 24h (Cố Định)', price: 100000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🌙' },
+            { id: 107, name: 'T7-CN-Lễ (Vãng Lai)', price: 100000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '📅' },
+            { id: 108, name: 'T7-CN-Lễ (Cố Định)', price: 90000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '📅' },
+            { id: 109, name: 'Thuê Vợt', price: 20000, group: '🏸 Tiền Giờ & Thuê Sân', icon: '🏸' },
 
+            // --- NHÓM NƯỚC & DỊCH VỤ (Tên đã chỉnh khớp 100% với file BÁN NƯỚC) ---
+            { id: 1, name: 'Suối nhỏ 510ml', price: 10000, group: 'Nước Giải Khát', icon: '💧' },
+            { id: 2, name: 'Suối lớn 1,5l', price: 15000, group: 'Nước Giải Khát', icon: '🍶' },
+            { id: 3, name: 'Nutri dâu', price: 12000, group: 'Nước Giải Khát', icon: '🍓' },
+            { id: 4, name: 'Nutri cam', price: 12000, group: 'Nước Giải Khát', icon: '🍊' },
+            { id: 5, name: 'Revive pro', price: 15000, group: 'Nước Giải Khát', icon: '🧂' },
+            { id: 6, name: 'Revive TT', price: 15000, group: 'Nước Giải Khát', icon: '🧂' },
+            { id: 7, name: 'Revive CM', price: 15000, group: 'Nước Giải Khát', icon: '🧂' },
+            { id: 8, name: 'Pocari lớn', price: 20000, group: 'Nước Giải Khát', icon: '🔵' },
+            { id: 9, name: 'Pocari nhỏ', price: 15000, group: 'Nước Giải Khát', icon: '🔵' },
+            { id: 10, name: 'Aquarius', price: 15000, group: 'Nước Giải Khát', icon: '🥤' },
+            { id: 11, name: 'Coca TT', price: 15000, group: 'Nước Giải Khát', icon: '🥤' },
+            { id: 12, name: 'Coca (zr calo)', price: 15000, group: 'Nước Giải Khát', icon: '🥤' },
+            { id: 13, name: 'Fanta', price: 15000, group: 'Nước Giải Khát', icon: '🍊' },
+            { id: 14, name: 'Red bull', price: 20000, group: 'Nước Giải Khát', icon: '🐂' },
+            { id: 15, name: 'C2 chanh', price: 12000, group: 'Nước Giải Khát', icon: '🍋' },
+            { id: 16, name: 'Sting', price: 15000, group: 'Nước Giải Khát', icon: '🍓' },
+            { id: 17, name: 'Trà đá 2', price: 2000, group: 'Trà Đá & Pha Chế', icon: '🧊' },
+            { id: 18, name: 'Trà đá 3', price: 3000, group: 'Trà Đá & Pha Chế', icon: '🧊' },
+            { id: 19, name: 'Trà đá 5', price: 5000, group: 'Trà Đá & Pha Chế', icon: '🧊' },
+            { id: 20, name: 'Trà đá 10', price: 10000, group: 'Trà Đá & Pha Chế', icon: '🧊' },
+            { id: 21, name: 'Trà đá 20', price: 20000, group: 'Trà Đá & Pha Chế', icon: '🧊' },
+            { id: 22, name: 'Soda lon', price: 15000, group: 'Trà Đá & Pha Chế', icon: '🫧' },
+            { id: 23, name: 'Soda chanh dây', price: 20000, group: 'Trà Đá & Pha Chế', icon: '🍹' },
+            { id: 24, name: 'Cầu mới', price: 280000, group: 'Cầu Lông', icon: '🏸' },
+            { id: 25, name: 'Cầu cũ', price: 5000, group: 'Cầu Lông', icon: '🏸' },
+            { id: 26, name: 'Cầu ống PH', price: 200000, group: 'Cầu Lông', icon: '🏸' },
+            { id: 27, name: 'Cầu ống 88', price: 200000, group: 'Cầu Lông', icon: '🏸' },
+            { id: 28, name: 'Mì', price: 15000, group: 'Đồ Ăn & Dịch Vụ', icon: '🍜' },
+            { id: 29, name: 'Quấn cán (25)', price: 25000, group: 'Đồ Ăn & Dịch Vụ', icon: '🎗️' },
+            { id: 30, name: 'Quấn cán (45)', price: 45000, group: 'Đồ Ăn & Dịch Vụ', icon: '🎗️' }
+        ];
         // Khởi tạo products từ localStorage hoặc default
         let products = JSON.parse(localStorage.getItem('bd_pro_debt_v7')) || [];
         
@@ -761,6 +846,146 @@
         }
         function addTimeCart() { if(calcResultObj) { cart.push(calcResultObj); renderCart(); showToast("Đã thêm!"); } }
 
+        // --- EDIT ORDER LOGIC ---
+        let editingOrderIndex = null;
+        let editingCart = []; // Temporary cart for editing
+
+        function openEditOrder(index) {
+            // Find actual index in transactions array (since filteredTrans might be displayed)
+            // But here index is passed from the filtered list in renderReport? 
+            // Better to re-find or pass the object? 
+            // In renderReport, we iterate filteredTrans. So index 'i' matches filteredTrans[i].
+            // We need to find this transaction in the main `transactions` array.
+            
+            // To make it simple, let's pass the index of the main array?
+            // Re-renderReport maps filtered items.
+            // Let's find the transaction by time since it's unique enough or just use the filtered object reference if possible.
+            // Simplified: In renderReport, we'll store the *original* index.
+            
+            editingOrderIndex = index;
+            const t = transactions[index];
+            if (!t) return;
+
+            // Deep copy items to editingCart
+            if (t.cartDetails) {
+                editingCart = JSON.parse(JSON.stringify(t.cartDetails));
+            } else {
+                // If legacy order without details, we can't edit items easily, just total/method
+                editingCart = [];
+            }
+
+            // Populate UI
+            const container = document.getElementById('edit-order-list');
+            container.innerHTML = '';
+            renderEditItems();
+
+            // Populate Add Item Select
+            const addSelect = document.getElementById('edit-add-item-select');
+            addSelect.innerHTML = '<option value="">-- Chọn món để thêm --</option>' + 
+                products.map(p => `<option value="${p.id}">${p.name} (${formatMoney(p.price)})</option>`).join('');
+
+            document.getElementById('edit-payment-method').value = t.method === 'CK' ? 'CK' : 'Tiền mặt';
+            updateEditTotal();
+            
+            document.getElementById('edit-order-modal').style.display = 'flex';
+        }
+
+        function renderEditItems() {
+            const container = document.getElementById('edit-order-list');
+            if (editingCart.length === 0) {
+                container.innerHTML = '<div style="color:#94a3b8; font-style:italic">Đơn cũ không có chi tiết món (Chỉ có chuỗi tên). Không thể sửa chi tiết.</div>';
+                return;
+            }
+
+            container.innerHTML = editingCart.map((item, idx) => `
+                <div class="edit-item-row">
+                    <div style="flex:1">
+                        <div style="font-weight:700">${item.name}</div>
+                        <div style="font-size:11px; color:#64748b">${formatMoney(item.price)}</div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px">
+                        <button onclick="changeEditQty(${idx}, -1)" class="qty-btn">-</button>
+                        <span style="font-weight:bold; width:20px; text-align:center">${item.qty}</span>
+                        <button onclick="changeEditQty(${idx}, 1)" class="qty-btn">+</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function changeEditQty(idx, delta) {
+            editingCart[idx].qty += delta;
+            if (editingCart[idx].qty <= 0) {
+                editingCart.splice(idx, 1); // Remove item
+            }
+            renderEditItems();
+            updateEditTotal();
+        }
+
+        function addEditItem(select) {
+            const prodId = select.value;
+            if (!prodId) return;
+            
+            const product = products.find(p => String(p.id) === String(prodId));
+            if (product) {
+                // Check if exists in editingCart
+                const existing = editingCart.find(item => String(item.id) === String(product.id) || item.name === product.name);
+                if (existing) {
+                    existing.qty++;
+                } else {
+                    editingCart.push({
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        qty: 1,
+                        group: product.group
+                    });
+                }
+                renderEditItems();
+                updateEditTotal();
+                select.value = ""; // Reset select
+            }
+        }
+
+        function updateEditTotal() {
+            let total = 0;
+            editingCart.forEach(item => total += item.price * item.qty);
+            // Update UI
+            document.getElementById('edit-total-display').innerText = formatMoney(total);
+        }
+
+        function saveEditOrder() {
+            if (editingOrderIndex === null) return;
+            
+            // Recalculate everything
+            let newTotal = 0;
+            if (editingCart.length > 0) {
+                editingCart.forEach(item => newTotal += item.price * item.qty);
+            } else {
+                // Keep old total if legacy (or maybe user wants to edit total manually? 
+                // For simplicity, if legacy, we assume total doesn't change unless we add manual override input.
+                // But the user asked for fixing inputs mostly)
+                newTotal = transactions[editingOrderIndex].total; 
+            }
+
+            const newMethod = document.getElementById('edit-payment-method').value;
+            const newItemsStr = editingCart.map(i => `${i.name} (${i.qty})`).join(', ');
+
+            // Update Transaction
+            transactions[editingOrderIndex].cartDetails = editingCart;
+            transactions[editingOrderIndex].itemsStr = newItemsStr;
+            transactions[editingOrderIndex].total = newTotal;
+            transactions[editingOrderIndex].method = newMethod;
+
+            // Save to LocalStorage
+            localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions));
+            
+            // Close & Render
+            document.getElementById('edit-order-modal').style.display = 'none';
+            renderReport();
+            renderDashboard(); // Update charts too
+            showToast("Đã sửa đơn hàng!");
+        }
+
         // --- MIX UI RENDER REPORT ---
         function checkDateFilter(dateStr, filter) { const tDate = parseDate(dateStr); const now = new Date(); const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()); if (filter === 'all') return true; if (filter === 'today') return tDate >= startOfDay; if (filter === 'yesterday') { const y = new Date(startOfDay); y.setDate(y.getDate() - 1); const e = new Date(startOfDay); return tDate >= y && tDate < e; } if (filter === 'week') { const d = now.getDay() || 7; if(d !== 1) now.setHours(-24 * (d - 1)); else now.setHours(0,0,0,0); return tDate >= now; } if (filter === 'month') return tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear(); return true; }
         function setReportTab(type, btn) { currentReportType = type; document.querySelectorAll('.btn-add').forEach(el => el.style.background='#e2e8f0'); btn.style.background='white'; renderReport(); }
@@ -770,14 +995,25 @@
             const emptyMsg = document.getElementById('report-empty');
             const timeFilter = document.getElementById('report-filter-time').value; 
             
-            const filteredTrans = transactions.slice().reverse().filter(t => {
-                if (!t.time) return false;
+            // Map original index to the sorted/filtered list so we can edit the correct one
+            // We need to loop backwards or keep reference.
+            // Safest way: Attach original index to the object temporarily or find it?
+            // Let's filter first, but keep the original index.
+            
+            const displayList = [];
+            transactions.forEach((t, originalIndex) => {
+                if (!t.time) return;
                 const hasItems = t.itemsStr || (t.cartDetails && t.cartDetails.length > 0);
-                if (!hasItems) return false;
-                return checkDateFilter(t.time, timeFilter);
+                if (!hasItems) return;
+                if (checkDateFilter(t.time, timeFilter)) {
+                    displayList.push({ ...t, originalIndex: originalIndex });
+                }
             });
+            
+            // Sort Descending by time
+            displayList.sort((a, b) => parseDate(b.time) - parseDate(a.time));
 
-            if (filteredTrans.length === 0) {
+            if (displayList.length === 0) {
                 gridContainer.innerHTML = '';
                 emptyMsg.style.display = 'block';
                 return;
@@ -788,7 +1024,7 @@
             let totalRevenue = 0, courtRevenue = 0, serviceRevenue = 0;
             let gridHTML = '';
 
-            filteredTrans.forEach((t, i) => {
+            displayList.forEach((t, i) => {
                 totalRevenue += (t.total || 0);
                 if (t.cartDetails) {
                     t.cartDetails.forEach(item => {
@@ -851,6 +1087,7 @@
                         ${itemsHTML}
                     </div>
                     <div class="hc-footer">
+                        <button class="hc-edit-btn" onclick="openEditOrder(${t.originalIndex})"><i class="fas fa-pen"></i></button>
                         <div style="font-size:24px; font-weight:900; letter-spacing:1px; color:${isCK ? '#8b5cf6' : '#10b981'}">${footerIcon} ${formatMoney(t.total)}</div>
                         <div style="font-size:13px; color:var(--primary); font-weight:700; margin-top:5px; background:#e0e7ff; padding:4px 12px; border-radius:12px;">NV: ${t.staff || "Admin"}</div>
                     </div>
@@ -866,18 +1103,72 @@
 
         // Export Functions
         function exportServiceReport() {
-            const desiredOrder = ["Suối nhỏ 510ml", "Suối lớn 1,5l", "Nutri dâu", "Nutri cam", "Revive pro", "Revive TT", "Revive CM", "Pocari lớn", "Pocari nhỏ", "Aquarius", "Coca TT", "Coca (zr calo)", "Fanta", "Red bull", "C2 chanh", "Sting", "Trà đá 2", "Trà đá 3", "Trà đá 5", "Trà đá 10", "Trà đá 20", "Soda lon", "Soda chanh dây", "Cầu mới", "Cầu cũ", "Cầu ống PH", "Cầu ống 88", "Mì", "Quấn cán (25)", "Quấn cán (45)"];
+            // Danh sách thứ tự CHUẨN lấy từ file BÁN NƯỚC.html
+            const desiredOrder = [
+                "Suối nhỏ 510ml", "Suối lớn 1,5l", "Nutri dâu", "Nutri cam", 
+                "Revive pro", "Revive TT", "Revive CM", 
+                "Pocari lớn", "Pocari nhỏ", "Aquarius", 
+                "Coca TT", "Coca (zr calo)", "Fanta", "Red bull", 
+                "C2 chanh", "Sting", 
+                "Trà đá 2", "Trà đá 3", "Trà đá 5", "Trà đá 10", "Trà đá 20", 
+                "Soda lon", "Soda chanh dây", 
+                "Cầu mới", "Cầu cũ", "Cầu ống PH", "Cầu ống 88", 
+                "Mì", "Quấn cán (25)", "Quấn cán (45)"
+            ];
+
             let serviceProds = products.filter(p => p.group !== '🏸 Tiền Giờ & Thuê Sân');
-            serviceProds.sort((a, b) => { let ia = desiredOrder.indexOf(a.name); let ib = desiredOrder.indexOf(b.name); if(ia!==-1 && ib!==-1) return ia-ib; if(ia!==-1) return -1; if(ib!==-1) return 1; return a.name.localeCompare(b.name); });
+            
+            // Sắp xếp: Món nào có trong danh sách chuẩn thì lên trước
+            serviceProds.sort((a, b) => { 
+                let ia = desiredOrder.indexOf(a.name); 
+                let ib = desiredOrder.indexOf(b.name); 
+                if(ia !== -1 && ib !== -1) return ia - ib; 
+                if(ia !== -1) return -1; 
+                if(ib !== -1) return 1; 
+                return a.name.localeCompare(b.name); 
+            });
+
             let buckets = {}; serviceProds.forEach(p => buckets[p.name] = []);
+            
+            // Lọc giao dịch
             const filteredTrans = transactions.filter(t => checkDateFilter(t.time, document.getElementById('report-filter-time').value));
-            filteredTrans.forEach(t => { if(t.cartDetails) t.cartDetails.forEach(item => { if(serviceProds.some(sp => sp.name === item.name)) { if (!buckets[item.name]) buckets[item.name] = []; buckets[item.name].push({ qty: item.qty, ck: t.method === 'CK' }); } }); });
+            
+            filteredTrans.forEach(t => { 
+                if(t.cartDetails) t.cartDetails.forEach(item => { 
+                    if(serviceProds.some(sp => sp.name === item.name)) { 
+                        if (!buckets[item.name]) buckets[item.name] = []; 
+                        buckets[item.name].push({ qty: item.qty, ck: t.method === 'CK' }); 
+                    } 
+                }); 
+            });
+
             let maxRows = 0; Object.values(buckets).forEach(arr => maxRows = Math.max(maxRows, arr.length));
-            let headerRow1 = [], headerRow2 = []; serviceProds.forEach(p => { headerRow1.push(p.name); headerRow1.push(""); headerRow2.push("SL"); headerRow2.push("CK"); });
-            let dataRows = []; for(let i=0; i<maxRows; i++) { let row = []; serviceProds.forEach(p => { let data = buckets[p.name] && buckets[p.name][i]; if(data) { row.push(data.qty); row.push(data.ck ? "x" : ""); } else { row.push(""); row.push(""); } }); dataRows.push(row); }
+            
+            let headerRow1 = [], headerRow2 = []; 
+            serviceProds.forEach(p => { 
+                headerRow1.push(p.name); headerRow1.push(""); 
+                headerRow2.push("SL"); headerRow2.push("CK"); 
+            });
+            
+            let dataRows = []; 
+            for(let i=0; i<maxRows; i++) { 
+                let row = []; 
+                serviceProds.forEach(p => { 
+                    let data = buckets[p.name] && buckets[p.name][i]; 
+                    if(data) { 
+                        row.push(data.qty); row.push(data.ck ? "x" : ""); 
+                    } else { 
+                        row.push(""); row.push(""); 
+                    } 
+                }); 
+                dataRows.push(row); 
+            }
+            
             const ws = XLSX.utils.aoa_to_sheet([headerRow1, headerRow2, ...dataRows]);
             ws['!merges'] = serviceProds.map((_, i) => ({ s: {r:0, c:i*2}, e: {r:0, c:i*2+1} }));
-            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Dich_Vu"); XLSX.writeFile(wb, "Bao_Cao_Dich_Vu.xlsx");
+            const wb = XLSX.utils.book_new(); 
+            XLSX.utils.book_append_sheet(wb, ws, "Dich_Vu"); 
+            XLSX.writeFile(wb, "Bao_Cao_Dich_Vu.xlsx");
         }
 
         function exportCourtReport() { 
@@ -916,7 +1207,9 @@
             const savedUser = localStorage.getItem('bd_current_user');
             if (savedUser) { currentUser = JSON.parse(savedUser); loginSuccess(); } else { document.getElementById("username").focus(); }
 
-            if (!products || products.length === 0) { products = defaultProducts; localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products)); }
+            // --- TỰ ĐỘNG CẬP NHẬT MENU CHUẨN ---
+            products = defaultProducts; 
+            localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products));
 
             loadUsersForLogin(); renderPOS(); renderReport();
         };
