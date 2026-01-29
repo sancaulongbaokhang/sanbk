@@ -438,18 +438,22 @@
 
     <div id="tab-reports" class="main">
         <div class="dashboard-scroll">
-            <div style="display:flex; gap:10px; align-items:center">
-    <select id="report-filter-time" style="padding:10px; border-radius:10px; border:1px solid #e2e8f0; background:white; color:var(--primary); font-weight:600" onchange="toggleDatePicker(); renderReport()">
-        <option value="today">Hôm nay</option>
-        <option value="date">📅 Chọn ngày</option> <option value="week">Tuần này</option>    <option value="month" selected>Tháng này</option>
-        <option value="all">Tất cả</option>
-    </select>
-    
-    <input type="date" id="report-custom-date" onchange="renderReport()" style="display:none; padding:9px; border:1px solid #e2e8f0; border-radius:10px; color:var(--primary); font-family:'Inter'">
+            <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:20px;">
+                <h2 style="color:var(--primary); margin:0; font-weight:800; font-family:'Quicksand'; font-size:28px">Lịch Sử Giao Dịch</h2>
+                <div style="display:flex; gap:10px; align-items:center">
+                    <select id="report-filter-time" style="padding:10px; border-radius:10px; border:1px solid #e2e8f0; background:white; color:var(--primary); font-weight:600" onchange="toggleDatePicker(); renderReport()">
+                        <option value="today">Hôm nay</option>
+                        <option value="date">📅 Chọn ngày</option>
+                        <option value="week">Tuần này</option>
+                        <option value="month" selected>Tháng này</option>
+                        <option value="all">Tất cả</option>
+                    </select>
+                    
+                    <input type="date" id="report-custom-date" onchange="renderReport()" style="display:none; padding:9px; border:1px solid #e2e8f0; border-radius:10px; color:var(--primary); font-family:'Inter'">
 
-    <button onclick="exportCourtReport()" style="padding:10px 20px; background:#10b981; color:white; border:none; border-radius:10px; font-weight:700; cursor:pointer; box-shadow:0 4px 10px rgba(16, 185, 129, 0.3)">Excel Sân</button>
-    <button onclick="exportServiceReport()" style="padding:10px 20px; background:#f59e0b; color:white; border:none; border-radius:10px; font-weight:700; cursor:pointer; box-shadow:0 4px 10px rgba(245, 158, 11, 0.3)">Excel DV</button>
-</div>
+                    <button onclick="exportCourtReport()" style="padding:10px 20px; background:#10b981; color:white; border:none; border-radius:10px; font-weight:700; cursor:pointer; box-shadow:0 4px 10px rgba(16, 185, 129, 0.3)">Excel Sân</button>
+                    <button onclick="exportServiceReport()" style="padding:10px 20px; background:#f59e0b; color:white; border:none; border-radius:10px; font-weight:700; cursor:pointer; box-shadow:0 4px 10px rgba(245, 158, 11, 0.3)">Excel DV</button>
+                </div>
             </div>
             
             <div class="dashboard-grid" style="grid-template-columns: repeat(3, 1fr); gap:20px; margin-bottom:25px;">
@@ -1017,46 +1021,45 @@
             }
         }
 
-        // Thay thế toàn bộ hàm checkDateFilter cũ bằng hàm này
-function checkDateFilter(dateStr, filter) {
-    const tDate = parseDate(dateStr);
-    const now = new Date();
-    // Đưa now về 00:00:00 hôm nay để so sánh chính xác
-    now.setHours(0,0,0,0);
-    
-    const startOfTx = new Date(tDate); 
-    startOfTx.setHours(0,0,0,0);
+        function checkDateFilter(dateStr, filter) {
+            const tDate = parseDate(dateStr);
+            const now = new Date();
+            // Đưa now về 00:00:00 hôm nay để so sánh chính xác
+            now.setHours(0,0,0,0);
+            
+            const startOfTx = new Date(tDate); 
+            startOfTx.setHours(0,0,0,0);
 
-    if (filter === 'all') return true;
-    
-    // 1. Lọc Hôm nay
-    if (filter === 'today') {
-        return startOfTx.getTime() === now.getTime();
-    }
-    
-    // 2. Lọc Theo ngày cụ thể (Dựa vào ô chọn ngày)
-    if (filter === 'date') {
-        const pickedStr = document.getElementById('report-custom-date').value;
-        if(!pickedStr) return startOfTx.getTime() === now.getTime(); // Chưa chọn thì lấy hôm nay
-        return getLocalYMD(tDate) === pickedStr;
-    }
+            if (filter === 'all') return true;
+            
+            // 1. Lọc Hôm nay
+            if (filter === 'today') {
+                return startOfTx.getTime() === now.getTime();
+            }
+            
+            // 2. Lọc Theo ngày cụ thể (Dựa vào ô chọn ngày)
+            if (filter === 'date') {
+                const pickedStr = document.getElementById('report-custom-date').value;
+                if(!pickedStr) return startOfTx.getTime() === now.getTime(); // Chưa chọn thì lấy hôm nay
+                return getLocalYMD(tDate) === pickedStr;
+            }
 
-    // 3. Lọc Tuần này (Từ Thứ 2 đến Chủ Nhật)
-    if (filter === 'week') {
-        const day = now.getDay() || 7; // CN là 0 -> đổi thành 7
-        const startOfWeek = new Date(now);
-        startOfWeek.setHours(0,0,0,0);
-        startOfWeek.setDate(now.getDate() - (day - 1)); // Lùi về Thứ 2
-        return tDate >= startOfWeek;
-    }
+            // 3. Lọc Tuần này (Từ Thứ 2 đến Chủ Nhật)
+            if (filter === 'week') {
+                const day = now.getDay() || 7; // CN là 0 -> đổi thành 7
+                const startOfWeek = new Date(now);
+                startOfWeek.setHours(0,0,0,0);
+                startOfWeek.setDate(now.getDate() - (day - 1)); // Lùi về Thứ 2
+                return tDate >= startOfWeek;
+            }
 
-    // 4. Lọc Tháng này
-    if (filter === 'month') {
-        return tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear();
-    }
-    
-    return true;
-}
+            // 4. Lọc Tháng này
+            if (filter === 'month') {
+                return tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear();
+            }
+            
+            return true;
+        }
 
         function setReportTab(type, btn) { currentReportType = type; document.querySelectorAll('.btn-add').forEach(el => el.style.background='#e2e8f0'); btn.style.background='white'; renderReport(); }
         
