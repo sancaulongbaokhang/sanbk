@@ -441,7 +441,13 @@
             <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:20px;">
                 <h2 style="color:var(--primary); margin:0; font-weight:800; font-family:'Quicksand'; font-size:28px">Lịch Sử Giao Dịch</h2>
                 <div style="display:flex; gap:10px;">
-                    <select id="report-filter-time" style="padding:10px; border-radius:10px; border:1px solid #e2e8f0; background:white; color:var(--primary)" onchange="renderReport()"><option value="today">Hôm nay</option><option value="month" selected>Tháng này</option><option value="all">Tất cả</option></select>
+                    <select id="report-filter-time" style="padding:10px; border-radius:10px; border:1px solid #e2e8f0; background:white; color:var(--primary)" onchange="toggleDatePicker(); renderReport()">
+                        <option value="today">Hôm nay</option>
+                        <option value="date">Theo ngày</option>
+                        <option value="month" selected>Tháng này</option>
+                        <option value="all">Tất cả</option>
+                    </select>
+                    <input type="date" id="report-custom-date" onchange="renderReport()" style="display:none; padding:9px; border:1px solid #e2e8f0; border-radius:10px; color:var(--primary); font-family:'Inter'">
                     <button onclick="exportCourtReport()" style="padding:10px 20px; background:#10b981; color:white; border:none; border-radius:10px; font-weight:700; cursor:pointer; box-shadow:0 4px 10px rgba(16, 185, 129, 0.3)">Excel Sân</button>
                     <button onclick="exportServiceReport()" style="padding:10px 20px; background:#f59e0b; color:white; border:none; border-radius:10px; font-weight:700; cursor:pointer; box-shadow:0 4px 10px rgba(245, 158, 11, 0.3)">Excel DV</button>
                 </div>
@@ -869,14 +875,57 @@
         function openDebtModal() { if(cart.length === 0) return showToast("Giỏ hàng trống!", "error"); document.getElementById('debt-modal').style.display = 'flex'; }
         
         async function confirmDebt() {
-            const name = document.getElementById('debt-customer-name').value; if(!name) return showToast("Nhập tên khách!", "error");
-            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0); const items = cart.map(i => `${i.name} (x${i.qty})`).join(', ');
-            debts.push({ customer: name, date: new Date().toLocaleDateString('vi-VN'), items: items, total: total });
+            const name = document.getElementById('debt-customer-name').value; 
+            if(!name) return showToast("Nhập tên khách!", "error");
+            
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0); 
+            const items = cart.map(i => `${i.name} (x${i.qty})`).join(', ');
+            
+            // Lưu thêm chi tiết cart để khi trả nợ còn biết món gì
+            debts.push({ 
+                customer: name, 
+                date: new Date().toLocaleDateString('vi-VN'), 
+                items: items, 
+                total: total,
+                fullDetails: JSON.parse(JSON.stringify(cart)) 
+            });
+            
             localStorage.setItem('bd_debts_v1', JSON.stringify(debts));
-            const orderData = { time: new Date().toISOString(), itemsStr: items, total: total, method: 'Ghi Nợ (' + name + ')', staff: currentUser?currentUser.name:"Admin" };
-            pushOrderToSheet(orderData); document.getElementById('debt-modal').style.display = 'none'; 
+            
+            // KHÔNG pushOrderToSheet ở đây nữa (theo yêu cầu mới)
+            resetOrderState(); 
+            document.getElementById('debt-modal').style.display = 'none'; 
+            renderDebtTable();
+            showToast("Đã ghi nợ (Chưa tính doanh thu)!");
         }
-        function payDebt(index) { if(confirm("Đã thanh toán?")) { debts.splice(index, 1); localStorage.setItem('bd_debts_v1', JSON.stringify(debts)); renderDebtTable(); showToast("Đã xóa nợ!"); } }
+
+        function payDebt(index) { 
+            if(confirm("Khách thanh toán nợ này? \n(Sẽ tính vào doanh thu hôm nay)")) { 
+                const debtItem = debts[index];
+                const now = new Date();
+                const staffName = currentUser ? currentUser.name : "Admin";
+                
+                // Khôi phục chi tiết đơn
+                const details = debtItem.fullDetails || []; 
+                
+                const orderData = { 
+                    time: now.toISOString(), // Tính thời gian lúc TRẢ TIỀN
+                    itemsStr: debtItem.items + " (Trả Nợ)", 
+                    cartDetails: details, 
+                    total: debtItem.total, 
+                    method: 'Tiền mặt', // Mặc định trả bằng tiền mặt cho đơn giản
+                    staff: staffName 
+                };
+
+                // Giờ mới đẩy vào báo cáo doanh thu
+                pushOrderToSheet(orderData);
+
+                // Xóa khỏi danh sách nợ
+                debts.splice(index, 1); 
+                localStorage.setItem('bd_debts_v1', JSON.stringify(debts)); 
+                renderDebtTable(); 
+            } 
+        }
 
         // --- CALC ---
         function updateCalcOptions() { const sel = document.getElementById('c-price-select'); sel.innerHTML = products.filter(p => p.group.includes('Tiền Giờ')).map(p => `<option value="${p.price}">${p.name} - ${formatMoney(p.price)}/h</option>`).join(''); }
@@ -957,7 +1006,36 @@
         }
 
         // --- RENDER REPORT ---
-        function checkDateFilter(dateStr, filter) { const tDate = parseDate(dateStr); const now = new Date(); const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()); if (filter === 'all') return true; if (filter === 'today') return tDate >= startOfDay; if (filter === 'yesterday') { const y = new Date(startOfDay); y.setDate(y.getDate() - 1); const e = new Date(startOfDay); return tDate >= y && tDate < e; } if (filter === 'week') { const d = now.getDay() || 7; if(d !== 1) now.setHours(-24 * (d - 1)); else now.setHours(0,0,0,0); return tDate >= now; } if (filter === 'month') return tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear(); return true; }
+        function toggleDatePicker() {
+            const val = document.getElementById('report-filter-time').value;
+            const dateInput = document.getElementById('report-custom-date');
+            if (val === 'date') {
+                dateInput.style.display = 'inline-block';
+                // Nếu chưa có giá trị, gán bằng hôm nay
+                if(!dateInput.value) dateInput.value = new Date().toISOString().split('T')[0];
+            } else {
+                dateInput.style.display = 'none';
+            }
+        }
+
+        function checkDateFilter(dateStr, filter) {
+            const tDate = parseDate(dateStr);
+            const now = new Date();
+            
+            if (filter === 'all') return true;
+            if (filter === 'today') return getLocalYMD(tDate) === getLocalYMD(now);
+            
+            // Logic mới cho bộ lọc theo ngày
+            if (filter === 'date') {
+                const picked = document.getElementById('report-custom-date').value;
+                return getLocalYMD(tDate) === picked;
+            }
+
+            if (filter === 'month') return tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear();
+            
+            return true;
+        }
+
         function setReportTab(type, btn) { currentReportType = type; document.querySelectorAll('.btn-add').forEach(el => el.style.background='#e2e8f0'); btn.style.background='white'; renderReport(); }
         
         function renderReport() { 
