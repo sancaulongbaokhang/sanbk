@@ -9,6 +9,7 @@
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
         /* --- THEME SANG TRỌNG & SÁNG SỦA (FINAL VERSION) --- */
@@ -30,6 +31,10 @@
             --success: #10b981;       
             --danger: #ef4444;
             --radius-m: 16px;
+
+            /* Variables cho phần Hóa Đơn */
+            --text-dark: #1e293b;
+            --text-gray: #64748b;
         }
         
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -203,6 +208,13 @@
         .span-1 { grid-column: span 1; } .span-2 { grid-column: span 2; } .span-4 { grid-column: span 4; }
         .bento-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 15px; }
         .bi-blue { background: #eff6ff; color: #3b82f6; }
+
+        /* --- STYLES CHO HÓA ĐƠN & LỊCH SỬ THU (Thêm vào từ file kia) --- */
+        .invoice-paper { background: white; padding: 40px; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.1); background-image: radial-gradient(#e2e8f0 1px, transparent 1px); background-size: 20px 20px; border-radius: 16px; }
+        .table-modern { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .table-modern th { background: var(--text-dark); color: white; padding: 12px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        .table-modern td { padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: center; font-weight: 600; }
+        .total-highlight { font-size: 24px; font-weight: 900; color: var(--accent-start); text-align: right; }
         
         /* MOBILE RESPONSIVE */
         .mobile-header { display: none; }
@@ -219,15 +231,16 @@
                 position: fixed; bottom: 0; left: 0; padding: 0; 
                 box-shadow: 0 -5px 20px rgba(0,0,0,0.1); border-top: 1px solid #e2e8f0; 
                 justify-content: space-around; 
+                overflow-x: auto; /* Cho phép cuộn ngang menu nếu nhiều món */
             }
             .brand, .user-info, .sync-box { display: none; }
             .menu-item { 
                 flex-direction: column; gap: 4px; padding: 10px; font-size: 10px; 
                 background: transparent !important; margin: 0; color: #94a3b8; 
-                border-radius: 0; box-shadow: none !important; width:100%; justify-content:center; 
+                border-radius: 0; box-shadow: none !important; min-width: 60px; justify-content:center; 
             }
             .menu-item.active { color: #4f46e5; border-top: 3px solid #4f46e5; }
-            .menu-item i { font-size: 22px; }
+            .menu-item i { font-size: 20px; }
             
             .main { 
                 padding: 20px 20px 90px 20px; 
@@ -263,6 +276,8 @@
             .mobile-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px 20px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); margin: -20px -20px 20px -20px; position: sticky; top: 0; z-index: 100; border-bottom:1px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
             .mobile-cart-btn { display: flex; position: fixed; bottom: 90px; right: 20px; background: var(--primary); color: white; padding: 14px 24px; border-radius: 50px; z-index: 2050; font-weight: 700; align-items: center; gap: 10px; animation: bounce 2s infinite; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
             .close-bill-btn { display: block; border: none; background: none; font-size: 20px; color: var(--primary); }
+            
+            .invoice-paper { padding: 20px; }
         }
 
         .history-card { background: white; border: 1px solid #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border-radius: 16px; padding: 18px; margin-bottom: 15px; }
@@ -322,6 +337,8 @@
         </div>
         
         <div id="nav-pos" class="menu-item active" onclick="showTab('pos')"><i class="fas fa-cash-register"></i> <span>Bán Hàng</span></div>
+        <div id="nav-bill-export" class="menu-item" onclick="showTab('bill-export')"><i class="fas fa-file-invoice-dollar"></i> <span>Xuất Hóa Đơn</span></div>
+        <div id="nav-history-collection" class="menu-item" onclick="showTab('history-collection')"><i class="fas fa-list-alt"></i> <span>Lịch Sử Thu</span></div>
         <div id="nav-dashboard" class="menu-item" onclick="showTab('dashboard')"><i class="fas fa-chart-pie"></i> <span>Thống Kê</span></div>
         <div id="nav-debt" class="menu-item" onclick="showTab('debt')"><i class="fas fa-book"></i> <span>Sổ Nợ</span></div>
         <div id="nav-calc" class="menu-item" onclick="showTab('calc')"><i class="fas fa-clock"></i> <span>Tính Giờ</span></div>
@@ -388,6 +405,134 @@
         
         <div class="mobile-cart-btn" onclick="toggleBillPanel(true)">
             <i class="fas fa-shopping-cart"></i> <span id="mobile-cart-total">0 ₫</span>
+        </div>
+    </div>
+
+    <div id="tab-bill-export" class="main">
+        <div class="dashboard-scroll">
+            <h2 style="color:var(--primary); font-weight:800; font-family:'Outfit'; font-size:28px; margin-bottom: 20px;">Xuất Hóa Đơn (Thủ Công)</h2>
+            <div class="card no-print" style="display: flex; gap: 10px; flex-wrap: wrap; background: rgba(255,255,255,0.8); flex-direction: row; justify-content: flex-start; height: auto;">
+                <button class="btn btn-pay" style="width: auto; background: var(--success); font-size: 13px;" onclick="addRow()">+ Thêm giờ</button>
+                <button class="btn btn-pay" style="width: auto; background: var(--primary); font-size: 13px;" onclick="saveToHistory()">💾 Lưu Nhật Ký</button>
+                <button class="btn btn-pay" style="width: auto; background: var(--danger); font-size: 13px;" onclick="captureInvoice()">📸 Xuất Ảnh</button>
+                <button class="btn btn-pay" style="width: auto; background: white; color: var(--text-dark); border: 1px solid #ddd; box-shadow: none; font-size: 13px;" onclick="resetInvoice()">🔄 Làm mới</button>
+                <button class="btn btn-pay" style="width: auto; background: transparent; margin-left: auto; text-decoration: underline; color: var(--text-dark); border: none; box-shadow: none; font-size: 13px;" onclick="toggleSetup()">⚙️ Cấu hình giá</button>
+            </div>
+            
+            <div id="bill-setup-tab" class="card" style="display:none; height: auto;">
+                <h3 style="margin: 0 0 15px 0;">⚙️ Cấu hình giá giờ</h3>
+                <div id="fixed-setup">
+                    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:10px;">
+                        <input type="text" class="t-start login-input" style="color:var(--primary); background:#f8fafc;" value="05:30"> 
+                        <input type="text" class="t-end login-input" style="color:var(--primary); background:#f8fafc;" value="08:00"> 
+                        <input type="number" class="t-price login-input" style="color:var(--primary); background:#f8fafc;" value="60000"> 
+                        <span style="align-self:center">Sáng</span>
+                    </div>
+                    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:10px;">
+                        <input type="text" class="t-start login-input" style="color:var(--primary); background:#f8fafc;" value="08:00"> 
+                        <input type="text" class="t-end login-input" style="color:var(--primary); background:#f8fafc;" value="17:00"> 
+                        <input type="number" class="t-price login-input" style="color:var(--primary); background:#f8fafc;" value="50000"> 
+                        <span style="align-self:center">Thường</span>
+                    </div>
+                    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:10px;">
+                        <input type="text" class="t-start login-input" style="color:var(--primary); background:#f8fafc;" value="17:00"> 
+                        <input type="text" class="t-end login-input" style="color:var(--primary); background:#f8fafc;" value="22:00"> 
+                        <input type="number" class="t-price login-input" style="color:var(--primary); background:#f8fafc;" value="100000"> 
+                        <span style="align-self:center">Tối</span>
+                    </div>
+                    <div style="margin-top:10px; font-weight:bold; color:var(--accent)">
+                        Cuối tuần (T7-CN): <input type="number" class="t-price-we login-input" value="90000" style="width:100px; display:inline-block; color:var(--primary); background:#f8fafc;"> đ/giờ
+                    </div>
+                </div>
+            </div>
+            
+            <div id="invoice-capture-area" class="card invoice-paper" style="height: auto; align-items: stretch; text-align: left;">
+                <div style="position: absolute; right: 20px; top: 20px; font-size: 40px; font-weight: 900; color: rgba(0,0,0,0.05); pointer-events: none;">INVOICE</div>
+                
+                <div style="border-bottom: 3px solid var(--accent-start); padding-bottom: 20px; margin-bottom: 20px;">
+                    <h2 style="margin:0; color:var(--accent-start); font-size:28px; text-transform:uppercase;">Sân Cầu Lông Bảo Khang</h2>
+                    <p style="margin:5px 0; color:var(--text-gray);">📍 71 Quách Đình Bảo, P.Phú Thạnh, Q. Tân Phú</p>
+                    <p style="margin:0; font-weight:bold;">📞 0938.844.865</p>
+                </div>
+    
+                <div style="background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px dashed #cbd5e1;">
+                    <div style="display: flex; gap: 15px; margin-bottom: 10px; flex-wrap: wrap;">
+                        <input type="text" id="custName" list="custNameList" placeholder="Tên khách hàng (Chọn để tự điền)..." style="font-size: 16px; font-weight: bold; border:none; background:transparent; border-bottom: 1px solid #cbd5e1; border-radius: 0; flex: 1;" onchange="fillCustomerOldData()" oninput="updateQR()">
+                        <datalist id="custNameList"></datalist>
+    
+                        <select id="monthSelector" onchange="autoSetDateRange()" style="width: 150px; border:none; background:transparent; font-weight:bold; color:var(--accent-start);">
+                            <option value="1">Tháng 01</option><option value="2">Tháng 02</option><option value="3">Tháng 03</option>
+                            <option value="4">Tháng 04</option><option value="5">Tháng 05</option><option value="6">Tháng 06</option>
+                            <option value="7">Tháng 07</option><option value="8">Tháng 08</option><option value="9">Tháng 09</option>
+                            <option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 10px; font-size: 13px; color: var(--text-gray); flex-wrap: wrap;">
+                        <span>Từ: <input type="date" id="dateFrom" onchange="syncDateAndRows()" style="border:none; background:transparent; font-family:inherit;"></span>
+                        <span>Đến: <input type="date" id="dateTo" onchange="updateAllRows()" style="border:none; background:transparent; font-family:inherit;"></span>
+                    </div>
+                </div>
+    
+                <table class="table-modern">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left; border-radius: 8px 0 0 8px;">Nội dung</th>
+                            <th>Giờ</th>
+                            <th>Buổi</th>
+                            <th>Giờ thuê</th>
+                            <th>Đơn giá</th>
+                            <th style="text-align:right; border-radius: 0 8px 8px 0;">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+    
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e2e8f0; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap: wrap; gap: 20px;">
+                    
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <img id="qrImg" crossOrigin="anonymous" src="" style="width:180px; border-radius: 8px; border: 1px solid #eee; display:block;">
+                        <div style="text-align: left;">
+                            <div style="font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase;">Thông tin chuyển khoản</div>
+                            <div style="color: var(--accent-start); font-weight: 800; font-size: 16px;">ACB</div>
+                            <div style="font-size: 20px; font-weight: 900; color: #1e293b; letter-spacing: 1px; margin: 2px 0;">47776077</div>
+                            <div style="font-size: 12px; font-weight: 700; color: #1e293b; max-width: 250px;">HKD CLB CAU LONG BAO KHANG</div>
+                        </div>
+                    </div>
+    
+                    <div style="text-align: right; padding-top: 10px;">
+                        <div style="font-size:12px; text-transform:uppercase; color:var(--text-gray);">Tổng thanh toán</div>
+                        <div id="grandTotal" class="total-highlight" style="font-size: 32px;">0 VNĐ</div>
+                        <div style="font-style:italic; font-size:12px; color:var(--text-gray); margin-top:10px;">Cảm ơn quý khách đã ủng hộ!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-history-collection" class="main">
+        <div class="dashboard-scroll">
+            <div class="card" style="height: auto; align-items: stretch; text-align: left;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h3 style="margin:0;">📜 Lịch sử hóa đơn đã lưu</h3>
+                    <div style="text-align:right">
+                        <span style="font-size:12px; display:block;">Tổng doanh thu hiển thị</span>
+                        <span id="history-grand-total" style="font-size:20px; font-weight:800; color:var(--accent-start)">0 đ</span>
+                    </div>
+                </div>
+                <select id="historyMonthFilter" onchange="renderHistoryTable()" style="margin-bottom:15px; width:200px; padding: 10px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                    <option value="ALL">Tất cả</option>
+                    <option value="1">Tháng 1</option><option value="2">Tháng 2</option><option value="3">Tháng 3</option>
+                    <option value="4">Tháng 4</option><option value="5">Tháng 5</option><option value="6">Tháng 6</option>
+                    <option value="7">Tháng 7</option><option value="8">Tháng 8</option><option value="9">Tháng 9</option>
+                    <option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option>
+                </select>
+                <div style="overflow-x:auto;">
+                    <table class="table-modern" style="margin:0;">
+                        <thead><tr><th>Check</th><th>Thời gian</th><th>Khách</th><th>Chi tiết</th><th>Loại</th><th>Tiền</th><th>Xóa</th></tr></thead>
+                        <tbody id="history-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -613,8 +758,19 @@
             return new Date(str);
         }
 
-        const MENU_DEF = [{id: 'nav-pos', name: 'Bán Hàng'},{id: 'nav-dashboard', name: 'Thống Kê'},{id: 'nav-debt', name: 'Sổ Nợ'},{id: 'nav-calc', name: 'Tính Giờ'},{id: 'nav-products', name: 'Menu Món'},{id: 'nav-reports', name: 'Lịch Sử ĐH'},{id: 'nav-users', name: 'Nhân Viên'}];
-        const DEFAULT_ROLES = { 'admin': MENU_DEF.map(m=>m.id), 'staff': ['nav-pos'] };
+        const MENU_DEF = [
+            {id: 'nav-pos', name: 'Bán Hàng'},
+            {id: 'nav-bill-export', name: 'Xuất Hóa Đơn'},
+            {id: 'nav-history-collection', name: 'Lịch Sử Thu'},
+            {id: 'nav-dashboard', name: 'Thống Kê'},
+            {id: 'nav-debt', name: 'Sổ Nợ'},
+            {id: 'nav-calc', name: 'Tính Giờ'},
+            {id: 'nav-products', name: 'Menu Món'},
+            {id: 'nav-reports', name: 'Lịch Sử ĐH'},
+            {id: 'nav-users', name: 'Nhân Viên'}
+        ];
+        // Mặc định Staff chỉ thấy Bán Hàng, Hóa Đơn, Lịch Sử Thu
+        const DEFAULT_ROLES = { 'admin': MENU_DEF.map(m=>m.id), 'staff': ['nav-pos', 'nav-bill-export', 'nav-history-collection'] };
         let roleConfig = JSON.parse(localStorage.getItem('bd_role_config')) || DEFAULT_ROLES;
 
         const defaultProducts = [
@@ -666,6 +822,9 @@
 
         let debts = JSON.parse(localStorage.getItem('bd_debts_v1')) || []; 
         let cart = []; let paymentMethod = 'Tiền mặt'; let currentUser = null; let allUsers = []; let currentReportType = 'all';
+
+        // --- NEW VARIABLES FOR INVOICE FEATURE ---
+        let historyBills = JSON.parse(localStorage.getItem('bk_bills_history_standalone')) || [];
 
         function formatMoney(num) { if(isNaN(num)) return "0 ₫"; return num.toLocaleString('vi-VN') + ' ₫'; }
         
@@ -851,6 +1010,11 @@
             const role = (currentUser.role || '').toLowerCase().trim();
             if (currentUser.username === 'admin') { roleConfig['admin'] = MENU_DEF.map(m => m.id); localStorage.setItem('bd_role_config', JSON.stringify(roleConfig)); }
             applyRole(); syncData(); syncProductData(); renderPOS(); renderReport(); renderDebtTable(); renderDashboard();
+            
+            // Init features for new tabs
+            updateCustDropdowns();
+            renderHistoryTable();
+            if(document.getElementById('tableBody').children.length === 0) addRow();
         }
 
         function applyRole() {
@@ -872,6 +1036,9 @@
             if(tabName === 'debt') renderDebtTable();
             if(tabName === 'dashboard') renderDashboard();
             if(tabName === 'reports') renderReport();
+            
+            if(tabName === 'bill-export') updateAllRows();
+            if(tabName === 'history-collection') renderHistoryTable();
         }
 
         function logout() { localStorage.removeItem('bd_current_user'); location.reload(); }
@@ -1135,6 +1302,7 @@
         }
 
         window.onload = function() { 
+            // Existing Login/Init Logic
             document.getElementById("password").addEventListener("keypress", function(event) { if (event.key === "Enter") { event.preventDefault(); login(); } });
             document.getElementById("username").addEventListener("keypress", function(event) { if (event.key === "Enter") { event.preventDefault(); document.getElementById("password").focus(); } });
             const savedUser = localStorage.getItem('bd_current_user');
@@ -1142,8 +1310,298 @@
             products = defaultProducts; 
             localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products));
             loadUsersForLogin(); renderPOS(); renderReport();
+            
+            // New Bill Logic Init
+            const today = new Date();
+            const y = today.getFullYear();
+            const m = today.getMonth() + 1;
+            document.getElementById('monthSelector').value = m;
+            document.getElementById('dateFrom').value = `${y}-${String(m).padStart(2,'0')}-01`;
+            document.getElementById('dateTo').value = `${y}-${String(m).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
         };
         setInterval(syncData, 30000); 
+
+        // --- NEW FUNCTIONS FOR INVOICE & HISTORY ---
+
+        function toggleSetup() {
+            const el = document.getElementById('bill-setup-tab');
+            el.style.display = el.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function timeToMins(t) { 
+            if(!t) return 0; 
+            const c = t.toLowerCase().replace('h',':').split(':'); 
+            return (parseInt(c[0])||0)*60 + (parseInt(c[1])||0); 
+        }
+
+        // Overwrite formatCurrency specific for input fields
+        function formatCurrencyInput(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value === '') return input.value = '';
+            input.value = parseInt(value).toLocaleString('en-US');
+        }
+
+        function resetInvoice() { 
+            if(confirm("Tạo hóa đơn mới?")) { 
+                document.getElementById('tableBody').innerHTML = ''; 
+                document.getElementById('custName').value = '';
+                addRow(); 
+                updateTotal(); 
+            } 
+        }
+
+        function addRow(data = null) {
+            const tr = document.createElement('tr');
+            const contentVal = data ? data.content : '';
+            const timeVal = data ? data.time : '';
+            const priceVal = data ? data.price : '';
+            tr.innerHTML = `
+                <td style="text-align:left"><input type="text" class="noi-dung-input" value="${contentVal}" placeholder="VD: Thứ 2..." style="border:none; border-bottom:1px solid #eee; width:100%" oninput="updateAllRows()"></td>
+                <td><input type="text" class="time-input" value="${timeVal}" placeholder="18:00-20:00" style="text-align:center; width:100%" oninput="calculateRow(this.closest('tr'))"></td>
+                <td><input type="number" class="buoi-input" value="0" style="text-align:center; width:100%" oninput="calculateRow(this.closest('tr'))"></td>
+                <td><input type="number" step="0.5" class="gio-thue-input" value="0" style="text-align:center; width:100%" oninput="calculateRow(this.closest('tr'), true)"></td>
+                <td><input type="text" class="gia-input" value="${priceVal}" style="text-align:center; width:100%" oninput="formatCurrencyInput(this); calculateRow(this.closest('tr'), true)"></td>
+                <td class="amount-cell" style="font-weight:bold; color:var(--accent-start); text-align:right">0</td>
+                <td class="no-print"><button onclick="this.closest('tr').remove(); updateTotal()" style="color:red;border:none;background:none;font-size:18px;">&times;</button></td>
+            `;
+            document.getElementById('tableBody').appendChild(tr);
+            if(data) calculateRow(tr); 
+        }
+
+        function calculateRow(row, isManual = false) {
+            const noiDung = row.querySelector('.noi-dung-input').value.toLowerCase();
+            const amountCell = row.querySelector('.amount-cell');
+            const buoiInput = row.querySelector('.buoi-input');
+            
+            if (noiDung.includes("pass")) { 
+                amountCell.innerText = "PASS"; 
+                buoiInput.value = 0; 
+                updateTotal(); return; 
+            }
+
+            const timeVal = row.querySelector('.time-input').value;
+            if (!isManual && timeVal.includes('-')) {
+                const p = timeVal.split('-');
+                const tS = timeToMins(p[0]), tE = timeToMins(p[1]);
+                if (tE > tS) row.querySelector('.gio-thue-input').value = ((tE - tS) / 60).toFixed(2);
+            }
+
+            const gioThue = parseFloat(row.querySelector('.gio-thue-input').value) || 0;
+            if (!isManual) {
+                const isWE = ["t7","cn","thứ 7","chủ nhật"].some(x => noiDung.includes(x));
+                let rate = 0;
+                if (isWE) rate = parseFloat(document.querySelector('.t-price-we').value);
+                else {
+                    const tCheck = timeVal.includes('-') ? timeToMins(timeVal.split('-')[0]) : 0;
+                    document.querySelectorAll('#fixed-setup div').forEach(d => {
+                        const inputs = d.querySelectorAll('input');
+                        if(inputs.length >= 3 && tCheck >= timeToMins(inputs[0].value) && tCheck < timeToMins(inputs[1].value)) rate = parseFloat(inputs[2].value);
+                    });
+                }
+                const currentPrice = row.querySelector('.gia-input').value.replace(/,/g, '');
+                if(!currentPrice || currentPrice == '0') {
+                    row.querySelector('.gia-input').value = Math.round(gioThue * rate).toLocaleString();
+                }
+            }
+            
+            const gia = parseInt(row.querySelector('.gia-input').value.replace(/,/g, '')) || 0;
+            const buoi = parseInt(buoiInput.value) || 0;
+            
+            if (noiDung.includes("off")) {
+                amountCell.innerHTML = `<span style="color:red">-${(gia * Math.abs(buoi)).toLocaleString()}</span>`;
+            } else if (["khác","nước","thuê vợt"].some(k => noiDung.includes(k))) {
+                if(!amountCell.querySelector('input')) amountCell.innerHTML = `<input type="text" oninput="formatCurrencyInput(this); updateTotal()" style="width:80px; text-align:right">`;
+            } else {
+                amountCell.innerText = (gia * buoi).toLocaleString();
+            }
+            updateTotal();
+        }
+
+        function updateTotal() {
+            let total = 0;
+            document.querySelectorAll('.amount-cell').forEach(td => {
+                const inp = td.querySelector('input');
+                if(inp) total += (parseInt(inp.value.replace(/,/g, ''))||0);
+                else {
+                    const txt = td.innerText.replace(/,/g, '').replace('PASS','0');
+                    if(!isNaN(parseInt(txt))) total += parseInt(txt);
+                }
+            });
+            document.getElementById('grandTotal').innerText = total.toLocaleString() + " VNĐ";
+            updateQR();
+        }
+
+        function updateAllRows() {
+            document.querySelectorAll('#tableBody tr').forEach(row => {
+                const txt = row.querySelector('.noi-dung-input').value;
+                const c = countDays(txt);
+                if(c > 0) row.querySelector('.buoi-input').value = c;
+                calculateRow(row);
+            });
+        }
+
+        const dayMap = { "thứ 2":1, "thứ 3":2, "thứ 4":3, "thứ 5":4, "thứ 6":5, "thứ 7":6, "chủ nhật":0, "t2":1, "t3":2, "t4":3, "t5":4, "t6":5, "t7":6, "cn":0 };
+        function countDays(txt) {
+            const s = new Date(document.getElementById('dateFrom').value), e = new Date(document.getElementById('dateTo').value);
+            if(isNaN(s) || isNaN(e)) return 0;
+            let targets = []; Object.keys(dayMap).forEach(k => { if(txt.toLowerCase().includes(k)) targets.push(dayMap[k]); });
+            if(!targets.length) return 0;
+            let c = 0, curr = new Date(s);
+            while(curr <= e) { if(targets.includes(curr.getDay())) c++; curr.setDate(curr.getDate()+1); }
+            return c;
+        }
+
+        function autoSetDateRange() {
+            const m = parseInt(document.getElementById('monthSelector').value);
+            const y = new Date().getFullYear(); 
+            const lastDay = new Date(y, m, 0).getDate(); 
+            document.getElementById('dateFrom').value = `${y}-${String(m).padStart(2,'0')}-01`;
+            document.getElementById('dateTo').value = `${y}-${String(m).padStart(2,'0')}-${String(lastDay).padStart(2,'0')}`;
+            updateAllRows();
+            updateQR();
+        }
+
+        function syncDateAndRows() { 
+            const d = new Date(document.getElementById('dateFrom').value); 
+            if(!isNaN(d)) document.getElementById('monthSelector').value = d.getMonth() + 1; 
+            updateAllRows(); 
+        }
+
+        function updateQR() {
+            const total = document.getElementById('grandTotal').innerText.replace(/\D/g, '');
+            const name = document.getElementById('custName').value || 'Khach';
+            const m = document.getElementById('monthSelector').value;
+            const info = encodeURIComponent(`${name} T${m}`);
+            document.getElementById('qrImg').src = `https://img.vietqr.io/image/acb-47776077-compact2.png?amount=${total}&addInfo=${info}&accountName=CLB%20Cau%20Long%20Bao%20Khang`;
+        }
+
+        function captureInvoice() {
+            const area = document.getElementById('invoice-capture-area');
+            html2canvas(area, { scale: 3, useCORS: true, allowTaint: true }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `HoaDon_BK_${document.getElementById('custName').value}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+
+        function fillCustomerOldData() {
+            const name = document.getElementById('custName').value;
+            if(!name) return;
+            // Tìm bill gần nhất của khách này
+            const lastBill = historyBills.slice().reverse().find(b => b.customer === name);
+            if(lastBill) {
+                document.getElementById('tableBody').innerHTML = ''; 
+                if (lastBill.rowsDetail) {
+                    lastBill.rowsDetail.forEach(r => addRow(r));
+                } else if (lastBill.content) {
+                    const parts = lastBill.content.split(',');
+                    parts.forEach(p => {
+                        let txt = p.trim();
+                        let extractedTime = '';
+                        const timeMatch = txt.match(/(\d{1,2}(?:[:h]\d{2})?)\s*-\s*(\d{1,2}(?:[:h]\d{2})?)/);
+                        if(timeMatch) { extractedTime = timeMatch[0]; }
+                        addRow({ content: txt, time: extractedTime, price: '' });
+                    });
+                }
+                updateAllRows(); 
+            }
+        }
+
+        function updateCustDropdowns() {
+            // Lấy danh sách tên khách hàng duy nhất từ lịch sử
+            const uniqueNames = [...new Set(historyBills.map(b => b.customer))].sort();
+            const dataListOptions = uniqueNames.map(n => `<option value="${n}">`).join('');
+            document.getElementById('custNameList').innerHTML = dataListOptions;
+        }
+
+        function saveToHistory() {
+            const cust = document.getElementById('custName').value;
+            const total = document.getElementById('grandTotal').innerText;
+            if(!cust) return alert("Chưa nhập tên khách!");
+            
+            let rowsDetail = [];
+            let contents = [];
+            document.querySelectorAll('#tableBody tr').forEach(r => { 
+                const content = r.querySelector('.noi-dung-input').value;
+                const time = r.querySelector('.time-input').value;
+                const price = r.querySelector('.gia-input').value;
+                if(content) {
+                    contents.push(content);
+                    rowsDetail.push({ content, time, price });
+                }
+            });
+
+            historyBills.push({ 
+                id: Date.now(), 
+                customer: cust, 
+                content: contents.join(', '), 
+                rowsDetail: rowsDetail, 
+                month: document.getElementById('monthSelector').value, 
+                total: total, 
+                payType: 'CK', 
+                dateSaved: new Date().toLocaleString(), 
+                checked: false 
+            });
+            localStorage.setItem('bk_bills_history_standalone', JSON.stringify(historyBills)); 
+            alert("Đã lưu!"); 
+            renderHistoryTable(); 
+            updateCustDropdowns();
+        }
+
+        function renderHistoryTable() {
+            const tbody = document.getElementById('history-table-body'); 
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            const m = document.getElementById('historyMonthFilter').value;
+            let total = 0;
+            const list = historyBills.filter(b => m === "ALL" || b.month == m).reverse();
+            
+            list.forEach((b, idx) => {
+                total += parseInt(b.total.replace(/\D/g,''))||0;
+                const realIdx = historyBills.findIndex(x => x.id === b.id);
+                const tr = document.createElement('tr');
+                if(b.checked) tr.style.opacity = 0.5;
+                const typeColor = b.payType === 'TM' ? 'var(--accent)' : 'var(--primary)';
+                
+                tr.innerHTML = `
+                    <td><input type="checkbox" ${b.checked?'checked':''} onchange="toggleCheck(${realIdx})"></td>
+                    <td style="font-size:11px;">${b.dateSaved}</td> 
+                    <td><b>${b.customer}</b></td>
+                    <td style="font-size:11px; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${b.content}">${b.content}</td>
+                    <td>
+                        <select onchange="updateHistoryPayType(${realIdx}, this.value)" style="border:none; background:transparent; font-weight:bold; color:${typeColor}; cursor:pointer; padding: 2px;">
+                            <option value="CK" ${b.payType==='CK'?'selected':''} style="color:var(--primary)">CK</option>
+                            <option value="TM" ${b.payType==='TM'?'selected':''} style="color:var(--accent)">TM</option>
+                        </select>
+                    </td>
+                    <td style="color:var(--primary);font-weight:bold">${b.total}</td>
+                    <td><button onclick="delHistory(${realIdx})" style="color:red;border:none;background:none">✕</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+            document.getElementById('history-grand-total').innerText = total.toLocaleString() + " đ";
+        }
+
+        function updateHistoryPayType(index, val) {
+            historyBills[index].payType = val;
+            localStorage.setItem('bk_bills_history_standalone', JSON.stringify(historyBills));
+            renderHistoryTable(); 
+        }
+
+        function toggleCheck(i) { 
+            historyBills[i].checked = !historyBills[i].checked; 
+            localStorage.setItem('bk_bills_history_standalone', JSON.stringify(historyBills)); 
+            renderHistoryTable(); 
+        }
+
+        function delHistory(i) { 
+            if(confirm("Xóa dòng này?")) { 
+                historyBills.splice(i,1); 
+                localStorage.setItem('bk_bills_history_standalone', JSON.stringify(historyBills)); 
+                renderHistoryTable(); updateCustDropdowns(); 
+            } 
+        }
     </script>
 </body>
 </html>
