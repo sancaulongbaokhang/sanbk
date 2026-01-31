@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Quản Lý Sân - Bao Khang Sport (Final Pro)</title>
+    <title>Quản Lý Sân - Bao Khang Sport (Final Icons)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -55,7 +55,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .dashboard-scroll { flex: 1; overflow-y: auto; padding-right: 5px; padding-bottom: 50px; min-height: 0; }
 
-        /* POS LAYOUT */
+        /* CARDS (POS & MENU) */
         .pos-container { display: flex; gap: 30px; height: 100%; overflow: hidden; }
         .left-col { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .product-list { flex: 1; overflow-y: auto; padding-right: 5px; padding-bottom: 20px; }
@@ -63,7 +63,6 @@
         .search-bar { width: 100%; padding: 16px 20px 16px 50px; border: 1px solid #e2e8f0; border-radius: 18px; font-size: 14px; background: white; box-shadow: var(--card-shadow); transition: 0.3s; font-family: 'Plus Jakarta Sans'; color: var(--primary); }
         .search-icon { position: absolute; left: 20px; top: 35%; color: #94a3b8; font-size: 16px; }
 
-        /* CARDS (POS) */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; }
         .card { background: white; border-radius: 20px; padding: 18px; text-align: center; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; justify-content: space-between; align-items: center; height: auto; min-height: 170px; border: 1px solid transparent; box-shadow: var(--card-shadow); position: relative; overflow: hidden; }
         .card.no-hover:hover { transform: none; border-color: transparent; box-shadow: var(--card-shadow); }
@@ -86,10 +85,9 @@
         .pm-btn { flex: 1; text-align: center; padding: 14px; border: 1px solid #e2e8f0; background: #f8fafc; border-radius: 14px; cursor: pointer; font-weight: 600; color: #64748b; font-size:13px; position:relative; overflow:hidden; user-select: none; }
         .pm-btn.active { border-color: #4f46e5; background: #eef2ff; color: #4f46e5; font-weight:700; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15); }
         .pm-btn.active::after { content:"✔"; position: absolute; top: 0; right: 0; background: #4f46e5; color:white; font-size:10px; padding:2px 6px; border-bottom-left-radius: 8px; }
+        
         .btn-pay { width: 100%; padding: 16px; background: var(--accent-gradient); color: white; border: none; border-radius: 18px; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3); }
         .btn-debt { width: 100%; padding: 14px; background: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; font-weight: 600; border-radius: 18px; margin-top: 12px; cursor: pointer; }
-
-        /* NEW BUTTON STYLES FOR WALLET */
         .btn-green { background: var(--success); color:white; padding: 12px; border-radius: 14px; border:none; cursor:pointer; font-weight:700; transition:0.2s; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); display:flex; align-items:center; justify-content:center; gap:8px; }
         .btn-green:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(16, 185, 129, 0.3); }
         .btn-red { background: var(--danger); color:white; padding: 12px; border-radius: 14px; border:none; cursor:pointer; font-weight:700; transition:0.2s; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); display:flex; align-items:center; justify-content:center; gap:8px; }
@@ -108,13 +106,14 @@
         /* TABLE CSS (FIXED COLUMNS & ALIGNMENT) */
         .invoice-paper { background: white; padding: 40px; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.1); border-radius: 16px; }
         .table-modern { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        /* Căn chỉnh header */
         .table-modern th { background: var(--text-dark); color: white; padding: 12px 15px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        /* Căn chỉnh cell mặc định */
         .table-modern td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; color: var(--primary); }
         .total-highlight { font-size: 24px; font-weight: 900; color: var(--accent-start); text-align: right; }
         .history-card { background: white; border: 1px solid #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border-radius: 16px; padding: 18px; margin-bottom: 15px; }
-        
+        .badge { font-size:10px; padding:4px 8px; border-radius:6px; font-weight:700; text-transform:uppercase; }
+        .badge-ck { background:#eff6ff; color:#3b82f6; }
+        .badge-cash { background:#f0fdf4; color:#15803d; }
+
         /* CALENDAR & WALLET */
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #f8fafc; padding: 10px; border-radius: 16px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
@@ -343,6 +342,7 @@
                 <button class="btn btn-pay" style="width: auto; background: white; color: var(--text-dark); border: 1px solid #ddd; box-shadow: none; font-size: 13px;" onclick="resetInvoice()">🔄 Làm mới</button>
                 <button class="btn btn-pay" style="width: auto; background: transparent; margin-left: auto; text-decoration: underline; color: var(--text-dark); border: none; box-shadow: none; font-size: 13px;" onclick="toggleSetup()">⚙️ Cấu hình giá</button>
             </div>
+            
             <div id="bill-setup-tab" class="card" style="display:none; height: auto;">
                 <h3 style="margin: 0 0 15px 0;">⚙️ Cấu hình giá giờ</h3>
                 <div id="fixed-setup">
@@ -369,6 +369,7 @@
                     </div>
                 </div>
             </div>
+            
             <div id="invoice-capture-area" class="card invoice-paper" style="height: auto; align-items: stretch; text-align: left;">
                 <div style="position: absolute; right: 20px; top: 20px; font-size: 40px; font-weight: 900; color: rgba(0,0,0,0.05); pointer-events: none;">INVOICE</div>
                 <div style="border-bottom: 3px solid var(--accent-start); padding-bottom: 20px; margin-bottom: 20px;">
@@ -645,7 +646,7 @@
     </div>
 <script>
         // --- CẤU HÌNH API ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbxYqAr3IYvxbBHMO8g0FB8TPdsTIPlizsuu9rzGZMB_E07Rdn6rQXsC1uWEM7uytNgcCA/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbwDh32AcdMxYpegRaS3YzyUJ0Am7mu95qwApsxSq9AQHMxdz_j8zCS78wFrTOd0jhppsg/exec"; 
         
         function showToast(msg, type='success') { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}" style="color:${type==='success'?'#10b981':'#ef4444'}"></i> <span>${msg}</span>`; c.appendChild(t); setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000); }
         function getLocalYMD(dateStr) { const d = parseDate(dateStr); const offset = d.getTimezoneOffset() * 60000; const localISOTime = (new Date(d - offset)).toISOString().slice(0, 10); return localISOTime; }
@@ -811,7 +812,7 @@
                 let iconClass = 'fa-box'; if(groupName.includes('Nước')) iconClass = 'fa-wine-bottle'; if(groupName.includes('Trà')) iconClass = 'fa-mug-hot'; if(groupName.includes('Cầu')) iconClass = 'fa-feather-alt';
                 header.innerHTML = `<i class="fas ${iconClass}"></i> ${groupName}`; grid.appendChild(header);
                 const groupContainer = document.createElement('div'); groupContainer.className = 'grid';
-                products.filter(p => p.group === groupName).forEach(p => {
+                filtered.filter(p => p.group === groupName).forEach(p => {
                     const card = document.createElement('div'); card.className = 'card'; card.setAttribute('data-group', p.group); 
                     card.onclick = function(e) { addToCart(p.id); runFlyingEffect(e, p.icon); };
                     card.innerHTML = `<div class="card-content"><div class="card-icon">${p.icon || '📦'}</div><div class="card-name" title="${p.name}">${p.name}</div></div><div class="card-price">${formatMoney(p.price)}</div>`;
@@ -1273,341 +1274,27 @@
             document.getElementById("username").addEventListener("keypress", function(event) { if (event.key === "Enter") { event.preventDefault(); document.getElementById("password").focus(); } });
             const savedUser = localStorage.getItem('bd_current_user');
             if (savedUser) { currentUser = JSON.parse(savedUser); loginSuccess(); } else { document.getElementById("username").focus(); }
-            products = defaultProducts; 
+            
+            // --- FIX: KHÔI PHỤC ICON MẤT ---
+            products = JSON.parse(localStorage.getItem('bd_pro_debt_v7')) || defaultProducts;
+            
+            // Chạy qua từng món, nếu thiếu icon thì lấy từ mặc định hoặc gán icon thùng hàng
+            products.forEach(p => {
+                if(!p.icon) {
+                   const def = defaultProducts.find(d => d.id == p.id || d.name === p.name);
+                   p.icon = def ? def.icon : '📦';
+                }
+            });
+            // Lưu lại danh sách đã sửa
             localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products));
+
             loadUsersForLogin(); renderPOS(); renderReport();
             
-            // New Bill Logic Init
-            const today = new Date();
-            const y = today.getFullYear();
-            const m = today.getMonth() + 1;
-            document.getElementById('monthSelector').value = m;
-            document.getElementById('dateFrom').value = `${y}-${String(m).padStart(2,'0')}-01`;
-            document.getElementById('dateTo').value = `${y}-${String(m).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+            // BILL INIT
+            const today = new Date(); const y = today.getFullYear(); const m = today.getMonth() + 1;
+            document.getElementById('monthSelector').value = m; document.getElementById('dateFrom').value = `${y}-${String(m).padStart(2,'0')}-01`; document.getElementById('dateTo').value = `${y}-${String(m).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
         };
         setInterval(syncData, 30000); 
-
-        // INVOICE & HISTORY LOGIC - UPDATED 
-        function toggleSetup() {
-            const el = document.getElementById('bill-setup-tab');
-            el.style.display = el.style.display === 'none' ? 'block' : 'none';
-        }
-
-        function timeToMins(t) { 
-            if(!t) return 0; 
-            const c = t.toLowerCase().replace('h',':').split(':'); 
-            return (parseInt(c[0])||0)*60 + (parseInt(c[1])||0); 
-        }
-
-        function formatCurrencyInput(input) {
-            let value = input.value.replace(/\D/g, '');
-            if (value === '') return input.value = '';
-            input.value = parseInt(value).toLocaleString('en-US');
-        }
-
-        function resetInvoice() { 
-            if(confirm("Tạo hóa đơn mới?")) { 
-                document.getElementById('tableBody').innerHTML = ''; 
-                document.getElementById('custName').value = '';
-                addRow(); 
-                updateTotal(); 
-            } 
-        }
-
-        function addRow(data = null) {
-            const tr = document.createElement('tr');
-            const contentVal = data ? data.content : '';
-            const timeVal = data ? data.time : '';
-            const priceVal = data ? data.price : '';
-            tr.innerHTML = `
-                <td style="text-align:left"><input type="text" class="noi-dung-input" value="${contentVal}" placeholder="VD: Thứ 2..." style="border:none; border-bottom:1px solid #eee; width:100%" oninput="updateAllRows()"></td>
-                <td><input type="text" class="time-input" value="${timeVal}" placeholder="18:00-20:00" style="text-align:center; width:100%" oninput="calculateRow(this.closest('tr'))"></td>
-                <td><input type="number" class="buoi-input" value="0" style="text-align:center; width:100%" oninput="calculateRow(this.closest('tr'))"></td>
-                <td><input type="number" step="0.5" class="gio-thue-input" value="0" style="text-align:center; width:100%" oninput="calculateRow(this.closest('tr'), true)"></td>
-                <td><input type="text" class="gia-input" value="${priceVal}" style="text-align:center; width:100%" oninput="formatCurrencyInput(this); calculateRow(this.closest('tr'), true)"></td>
-                <td class="amount-cell" style="font-weight:bold; color:var(--accent-start); text-align:right">0</td>
-                <td class="no-print"><button onclick="this.closest('tr').remove(); updateTotal()" style="color:red;border:none;background:none;font-size:18px;">&times;</button></td>
-            `;
-            document.getElementById('tableBody').appendChild(tr);
-            if(data) calculateRow(tr); 
-        }
-
-        function calculateRow(row, isManual = false) {
-            const noiDung = row.querySelector('.noi-dung-input').value.toLowerCase();
-            const amountCell = row.querySelector('.amount-cell');
-            const buoiInput = row.querySelector('.buoi-input');
-            
-            if (noiDung.includes("pass")) { 
-                amountCell.innerText = "PASS"; 
-                buoiInput.value = 0; 
-                updateTotal(); return; 
-            }
-
-            const timeVal = row.querySelector('.time-input').value;
-            if (!isManual && timeVal.includes('-')) {
-                const p = timeVal.split('-');
-                const tS = timeToMins(p[0]), tE = timeToMins(p[1]);
-                if (tE > tS) row.querySelector('.gio-thue-input').value = ((tE - tS) / 60).toFixed(2);
-            }
-
-            const gioThue = parseFloat(row.querySelector('.gio-thue-input').value) || 0;
-            if (!isManual) {
-                const isWE = ["t7","cn","thứ 7","chủ nhật"].some(x => noiDung.includes(x));
-                let rate = 0;
-                if (isWE) rate = parseFloat(document.querySelector('.t-price-we').value);
-                else {
-                    const tCheck = timeVal.includes('-') ? timeToMins(timeVal.split('-')[0]) : 0;
-                    document.querySelectorAll('#fixed-setup div').forEach(d => {
-                        const inputs = d.querySelectorAll('input');
-                        if(inputs.length >= 3 && tCheck >= timeToMins(inputs[0].value) && tCheck < timeToMins(inputs[1].value)) rate = parseFloat(inputs[2].value);
-                    });
-                }
-                const currentPrice = row.querySelector('.gia-input').value.replace(/,/g, '');
-                if(!currentPrice || currentPrice == '0') {
-                    row.querySelector('.gia-input').value = Math.round(gioThue * rate).toLocaleString();
-                }
-            }
-            
-            const gia = parseInt(row.querySelector('.gia-input').value.replace(/,/g, '')) || 0;
-            const buoi = parseInt(buoiInput.value) || 0;
-            
-            if (noiDung.includes("off")) {
-                amountCell.innerHTML = `<span style="color:red">-${(gia * Math.abs(buoi)).toLocaleString()}</span>`;
-            } else if (["khác","nước","thuê vợt"].some(k => noiDung.includes(k))) {
-                if(!amountCell.querySelector('input')) amountCell.innerHTML = `<input type="text" oninput="formatCurrencyInput(this); updateTotal()" style="width:80px; text-align:right">`;
-            } else {
-                amountCell.innerText = (gia * buoi).toLocaleString();
-            }
-            updateTotal();
-        }
-
-        function updateTotal() {
-            let total = 0;
-            document.querySelectorAll('.amount-cell').forEach(td => {
-                const inp = td.querySelector('input');
-                if(inp) total += (parseInt(inp.value.replace(/,/g, ''))||0);
-                else {
-                    const txt = td.innerText.replace(/,/g, '').replace('PASS','0');
-                    if(!isNaN(parseInt(txt))) total += parseInt(txt);
-                }
-            });
-            document.getElementById('grandTotal').innerText = total.toLocaleString() + " VNĐ";
-            updateQR();
-        }
-
-        function updateAllRows() {
-            document.querySelectorAll('#tableBody tr').forEach(row => {
-                const txt = row.querySelector('.noi-dung-input').value;
-                const c = countDays(txt);
-                if(c > 0) row.querySelector('.buoi-input').value = c;
-                calculateRow(row);
-            });
-        }
-
-        const dayMap = { "thứ 2":1, "thứ 3":2, "thứ 4":3, "thứ 5":4, "thứ 6":5, "thứ 7":6, "chủ nhật":0, "t2":1, "t3":2, "t4":3, "t5":4, "t6":5, "t7":6, "cn":0 };
-        function countDays(txt) {
-            const s = new Date(document.getElementById('dateFrom').value), e = new Date(document.getElementById('dateTo').value);
-            if(isNaN(s) || isNaN(e)) return 0;
-            let targets = []; Object.keys(dayMap).forEach(k => { if(txt.toLowerCase().includes(k)) targets.push(dayMap[k]); });
-            if(!targets.length) return 0;
-            let c = 0, curr = new Date(s);
-            while(curr <= e) { if(targets.includes(curr.getDay())) c++; curr.setDate(curr.getDate()+1); }
-            return c;
-        }
-
-        function autoSetDateRange() {
-            const m = parseInt(document.getElementById('monthSelector').value);
-            const y = new Date().getFullYear(); 
-            const lastDay = new Date(y, m, 0).getDate(); 
-            document.getElementById('dateFrom').value = `${y}-${String(m).padStart(2,'0')}-01`;
-            document.getElementById('dateTo').value = `${y}-${String(m).padStart(2,'0')}-${String(lastDay).padStart(2,'0')}`;
-            updateAllRows();
-            updateQR();
-        }
-
-        function syncDateAndRows() { 
-            const d = new Date(document.getElementById('dateFrom').value); 
-            if(!isNaN(d)) document.getElementById('monthSelector').value = d.getMonth() + 1; 
-            updateAllRows(); 
-        }
-
-        function updateQR() {
-            const total = document.getElementById('grandTotal').innerText.replace(/\D/g, '');
-            const name = document.getElementById('custName').value || 'Khach';
-            const m = document.getElementById('monthSelector').value;
-            const info = encodeURIComponent(`${name} T${m}`);
-            document.getElementById('qrImg').src = `https://img.vietqr.io/image/acb-47776077-compact2.png?amount=${total}&addInfo=${info}&accountName=CLB%20Cau%20Long%20Bao%20Khang`;
-        }
-
-        function captureInvoice() {
-            const area = document.getElementById('invoice-capture-area');
-            html2canvas(area, { scale: 3, useCORS: true, allowTaint: true }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `HoaDon_BK_${document.getElementById('custName').value}.png`;
-                link.href = canvas.toDataURL();
-                link.click();
-            });
-        }
-
-        function fillCustomerOldData() {
-            const name = document.getElementById('custName').value;
-            if(!name) return;
-            const lastBill = historyBills.slice().reverse().find(b => b.customer === name);
-            if(lastBill) {
-                document.getElementById('tableBody').innerHTML = ''; 
-                if (lastBill.rowsDetail) {
-                    lastBill.rowsDetail.forEach(r => addRow(r));
-                } else if (lastBill.content) {
-                    const parts = lastBill.content.split(',');
-                    parts.forEach(p => {
-                        let txt = p.trim();
-                        let extractedTime = '';
-                        const timeMatch = txt.match(/(\d{1,2}(?:[:h]\d{2})?)\s*-\s*(\d{1,2}(?:[:h]\d{2})?)/);
-                        if(timeMatch) { extractedTime = timeMatch[0]; }
-                        addRow({ content: txt, time: extractedTime, price: '' });
-                    });
-                }
-                updateAllRows(); 
-            }
-        }
-
-        function updateCustDropdowns() {
-            const uniqueNames = [...new Set(historyBills.map(b => b.customer))].sort();
-            const dataListOptions = uniqueNames.map(n => `<option value="${n}">`).join('');
-            document.getElementById('custNameList').innerHTML = dataListOptions;
-        }
-
-        function saveToHistory() {
-            const cust = document.getElementById('custName').value;
-            const total = document.getElementById('grandTotal').innerText;
-            if(!cust) return alert("Chưa nhập tên khách!");
-            
-            let rowsDetail = [];
-            let contents = [];
-            document.querySelectorAll('#tableBody tr').forEach(r => { 
-                const content = r.querySelector('.noi-dung-input').value;
-                const time = r.querySelector('.time-input').value;
-                const price = r.querySelector('.gia-input').value;
-                const buoi = r.querySelector('.buoi-input').value;
-                const gioThue = r.querySelector('.gio-thue-input').value;
-
-                if(content) {
-                    contents.push(content);
-                    rowsDetail.push({ content, time, price, buoi, gioThue });
-                }
-            });
-
-            historyBills.push({ 
-                id: Date.now(), 
-                customer: cust, 
-                content: contents.join(', '), 
-                rowsDetail: rowsDetail, 
-                month: document.getElementById('monthSelector').value, 
-                total: total, 
-                payType: 'CK', 
-                dateSaved: new Date().toLocaleString(), 
-                checked: false 
-            });
-            localStorage.setItem('bk_bills_history_standalone', JSON.stringify(historyBills)); 
-            alert("Đã lưu!"); 
-            renderHistoryTable(); 
-            updateCustDropdowns();
-        }
-
-        function renderHistoryTable() {
-            const tbody = document.getElementById('history-table-body'); 
-            if(!tbody) return;
-            tbody.innerHTML = '';
-            
-            const m = document.getElementById('historyMonthFilter').value;
-            let total = 0;
-            const list = historyBills.filter(b => m === "ALL" || b.month == m).slice().reverse();
-            
-            list.forEach((b, idx) => {
-                total += parseInt(b.total.replace(/\D/g,'')) || 0;
-                const realIdx = historyBills.findIndex(x => x.id === b.id);
-                const tr = document.createElement('tr');
-                if(b.checked) tr.style.opacity = 0.5;
-
-                const typeColor = b.payType === 'TM' ? '#f59e0b' : '#4f46e5'; 
-                
-                let detailHtml = '';
-                if (b.rowsDetail && Array.isArray(b.rowsDetail)) {
-                    detailHtml = b.rowsDetail.map(r => 
-                        `<div style="border-bottom:1px dashed #eee; margin-bottom:2px; padding-bottom:2px;">
-                            <span style="font-weight:bold; color:#334155;">${r.content}</span><br>
-                            <span style="font-size:11px; color:#64748b;">
-                                <i class="far fa-clock"></i> ${r.time || 'N/A'} | 
-                                🏸 ${r.buoi || 0} buổi | 
-                                ⏳ ${r.gioThue || 0}h | 
-                                💲 ${r.price}
-                            </span>
-                        </div>`
-                    ).join('');
-                } else {
-                    detailHtml = b.content; 
-                }
-                
-                tr.innerHTML = `
-                    <td style="text-align: center; vertical-align: middle;">
-                        <input type="checkbox" ${b.checked?'checked':''} onchange="toggleCheck(${realIdx})" style="width:18px; height:18px; cursor:pointer;">
-                    </td>
-                    
-                    <td style="font-size:13px; color:#64748b; text-align: left; vertical-align: middle;">
-                        ${b.dateSaved}
-                    </td> 
-                    
-                    <td style="font-weight:700; color:var(--primary); text-align: left; vertical-align: middle;">
-                        ${b.customer}
-                    </td>
-                    
-                    <td style="text-align: left; vertical-align: middle;">
-                        <div style="font-size:13px; max-width:400px; overflow-y:auto; max-height:100px;">
-                            ${detailHtml}
-                        </div>
-                    </td>
-                    
-                    <td style="text-align: center; vertical-align: middle;">
-                        <select onchange="updateHistoryPayType(${realIdx}, this.value)" style="border:1px solid #e2e8f0; background:white; font-weight:700; color:${typeColor}; cursor:pointer; padding: 4px 8px; border-radius:8px; font-size:11px;">
-                            <option value="CK" ${b.payType==='CK'?'selected':''}>CK</option>
-                            <option value="TM" ${b.payType==='TM'?'selected':''}>TM</option>
-                        </select>
-                    </td>
-                    
-                    <td style="color:var(--primary); font-weight:800; text-align: right; font-size:14px; vertical-align: middle;">
-                        ${b.total}
-                    </td>
-                    
-                    <td style="text-align: center; vertical-align: middle;">
-                        <button onclick="delHistory(${realIdx})" style="color:#ef4444; border:none; background:#fef2f2; width:30px; height:30px; border-radius:8px; cursor:pointer;">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-            document.getElementById('history-grand-total').innerText = total.toLocaleString('vi-VN') + " đ";
-        }
-
-        function updateHistoryPayType(index, val) {
-            historyBills[index].payType = val;
-            localStorage.setItem('bk_bills_history_standalone', JSON.stringify(historyBills));
-            renderHistoryTable(); 
-        }
-
-        function toggleCheck(i) { 
-            historyBills[i].checked = !historyBills[i].checked; 
-            localStorage.setItem('bk_bills_history_standalone', JSON.stringify(historyBills)); 
-            renderHistoryTable(); 
-        }
-
-        function delHistory(i) { 
-            if(confirm("Xóa dòng này?")) { 
-                historyBills.splice(i,1); 
-                localStorage.setItem('bk_bills_history_standalone', JSON.stringify(historyBills)); 
-                renderHistoryTable(); updateCustDropdowns(); 
-            } 
-        }
     </script>
 </body>
 </html>
