@@ -516,9 +516,12 @@
         <div class="dashboard-scroll">
             <h2 style="color:var(--primary); margin-bottom:20px; font-weight:800; font-family:'Outfit'; font-size:28px">Quản Lý Menu</h2>
             <div class="pm-toolbar">
-                <input type="text" id="pm-search-input" class="pm-search" placeholder="🔍 Tìm kiếm món..." onkeyup="renderProductTable()">
-                <button class="btn-pay" onclick="openProductModal()" style="width:auto; padding:12px 24px; font-size:14px; background:var(--accent-gradient); box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);">+ Thêm Món Mới</button>
-            </div>
+    <input type="text" id="pm-search-input" class="pm-search" placeholder="🔍 Tìm kiếm món..." onkeyup="renderProductTable()">
+    <div style="display:flex; gap:10px">
+        <button class="btn-gray" onclick="forceResetIcons()" style="border:1px solid #cbd5e1; background:white;">↻ Nạp lại Icon</button>
+        <button class="btn-pay" onclick="openProductModal()" style="width:auto; padding:12px 24px; font-size:14px; background:var(--accent-gradient); box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);">+ Thêm Món Mới</button>
+    </div>
+</div>
             <div id="product-grid-container" class="product-manage-grid"></div>
             <div id="pm-empty" style="text-align:center; padding:50px; color:#94a3b8; font-style:italic; display:none; grid-column: 1/-1;">Không tìm thấy món nào</div>
         </div>
@@ -1296,6 +1299,37 @@
             document.getElementById('monthSelector').value = m; document.getElementById('dateFrom').value = `${y}-${String(m).padStart(2,'0')}-01`; document.getElementById('dateTo').value = `${y}-${String(m).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
         };
         setInterval(syncData, 30000); 
+// --- HÀM KHÔI PHỤC ICON (DÙNG KHI BỊ MẤT HÌNH) ---
+    function forceResetIcons() {
+        if(confirm("Bạn có muốn tự động điền lại Icon cho các món bị thiếu không?")) {
+            let count = 0;
+            // Duyệt qua tất cả món hiện có
+            products.forEach(p => {
+                // Tìm xem món này có trong danh sách gốc (defaultProducts) không
+                const def = defaultProducts.find(d => d.name === p.name || d.id == p.id);
+                
+                // Nếu tìm thấy trong gốc thì lấy icon gốc, không thì lấy hộp quà
+                if (def && def.icon) {
+                    p.icon = def.icon;
+                } else if (!p.icon || p.icon === "") {
+                    // Tự động đoán icon dựa trên nhóm
+                    if(p.group.includes("Nước")) p.icon = '🥤';
+                    else if(p.group.includes("Cầu")) p.icon = '🏸';
+                    else if(p.group.includes("Trà")) p.icon = '🧊';
+                    else p.icon = '📦';
+                }
+                count++;
+            });
+            
+            // Lưu lại vào bộ nhớ máy tính
+            localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products));
+            
+            // Vẽ lại giao diện
+            renderProductTable();
+            renderPOS();
+            showToast(`Đã khôi phục icon cho ${count} món!`, "success");
+        }
+    }
     </script>
 </body>
 </html>
