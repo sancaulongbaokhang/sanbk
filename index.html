@@ -261,7 +261,7 @@
             .product-list { overflow: visible; height: auto; padding-right: 0; }
             
             .bento-grid { grid-template-columns: repeat(2, 1fr); }
-            .span-1 { grid-column: span 1; } .span-2 { grid-column: span 2; } .span-4 { grid-column: span 2; }
+            .span-1 { grid-column: span 1; } .span-2 { grid-column: span 2; } .span-4 { grid-column: span 4; }
             
             .bill-panel { 
                 position: fixed; width: 100%; left: 0; bottom: 0; height: 85vh; 
@@ -1443,7 +1443,12 @@
             let maxRows = 0; Object.values(buckets).forEach(arr => maxRows = Math.max(maxRows, arr.length));
             let headerRow1 = [], headerRow2 = []; serviceProds.forEach(p => { headerRow1.push(p.name); headerRow1.push(""); headerRow2.push("SL"); headerRow2.push("CK"); });
             let dataRows = []; for(let i=0; i<maxRows; i++) { let row = []; serviceProds.forEach(p => { let data = buckets[p.name] && buckets[p.name][i]; if(data) { row.push(data.qty); row.push(data.ck ? "x" : ""); } else { row.push(""); row.push(""); } }); dataRows.push(row); }
-            const ws = XLSX.utils.aoa_to_sheet([headerRow1, headerRow2, ...dataRows]); ws['!merges'] = serviceProds.map((_, i) => ({ s: {r:0, c:i*2}, e: {r:0, c:i*2+1} })); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Dich_Vu"); XLSX.writeFile(wb, "Bao_Cao_Dich_Vu.xlsx");
+            const ws = XLSX.utils.aoa_to_sheet([headerRow1, headerRow2, ...dataRows]); ws['!merges'] = serviceProds.map((_, i) => ({ s: {r:0, c:i*2}, e: {r:0, c:i*2+1} })); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Dich_Vu"); 
+            
+            // --- CẬP NHẬT TÊN FILE KÈM NGÀY THÁNG ---
+            const now = new Date();
+            const dateStr = `${String(now.getDate()).padStart(2,'0')}_${String(now.getMonth()+1).padStart(2,'0')}_${now.getFullYear()}`;
+            XLSX.writeFile(wb, `Bao_Cao_Dich_Vu_${dateStr}.xlsx`);
         }
 
         function exportCourtReport() { 
@@ -1461,7 +1466,12 @@
             let finalRows = []; Object.keys(groupedData).forEach(date => { finalRows = finalRows.concat(groupedData[date]); }); 
             const ws = XLSX.utils.aoa_to_sheet([h1, h2, h3, ...finalRows]); 
             ws['!merges'] = [{s:{r:0,c:1}, e:{r:0,c:4}}, {s:{r:0,c:5}, e:{r:0,c:8}}, {s:{r:0,c:9}, e:{r:0,c:12}}, {s:{r:0,c:13}, e:{r:0,c:16}}, {s:{r:1,c:1}, e:{r:1,c:2}}, {s:{r:1,c:3}, e:{r:1,c:4}}, {s:{r:1,c:5}, e:{r:1,c:6}}, {s:{r:1,c:7}, e:{r:1,c:8}}, {s:{r:1,c:9}, e:{r:1,c:10}}, {s:{r:1,c:11}, e:{r:1,c:12}}, {s:{r:1,c:13}, e:{r:1,c:14}}, {s:{r:1,c:15}, e:{r:1,c:16}}]; 
-            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Tien_San"); XLSX.writeFile(wb, "Bao_Cao_Tien_San.xlsx"); 
+            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Tien_San"); 
+            
+            // --- CẬP NHẬT TÊN FILE KÈM NGÀY THÁNG ---
+            const now = new Date();
+            const dateStr = `${String(now.getDate()).padStart(2,'0')}_${String(now.getMonth()+1).padStart(2,'0')}_${now.getFullYear()}`;
+            XLSX.writeFile(wb, `Bao_Cao_Tien_San_${dateStr}.xlsx`); 
         }
 
         window.onload = function() { 
