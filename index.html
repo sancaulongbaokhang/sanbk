@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Quản Lý Sân - Bao Khang Sport (Final Pro)</title>
+    <title>Quản Lý Sân - Bao Khang Sport (Final Ultimate)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -89,7 +89,7 @@
         .btn-pay { width: 100%; padding: 16px; background: var(--accent-gradient); color: white; border: none; border-radius: 18px; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3); }
         .btn-debt { width: 100%; padding: 14px; background: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; font-weight: 600; border-radius: 18px; margin-top: 12px; cursor: pointer; }
 
-        /* NEW BUTTON STYLES FOR WALLET */
+        /* WALLET BUTTONS */
         .btn-green { background: var(--success); color:white; padding: 12px; border-radius: 14px; border:none; cursor:pointer; font-weight:700; transition:0.2s; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); display:flex; align-items:center; justify-content:center; gap:8px; }
         .btn-green:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(16, 185, 129, 0.3); }
         .btn-red { background: var(--danger); color:white; padding: 12px; border-radius: 14px; border:none; cursor:pointer; font-weight:700; transition:0.2s; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); display:flex; align-items:center; justify-content:center; gap:8px; }
@@ -108,13 +108,14 @@
         /* TABLE CSS (FIXED COLUMNS & ALIGNMENT) */
         .invoice-paper { background: white; padding: 40px; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.1); border-radius: 16px; }
         .table-modern { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        /* Căn chỉnh header */
         .table-modern th { background: var(--text-dark); color: white; padding: 12px 15px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        /* Căn chỉnh cell mặc định */
         .table-modern td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; color: var(--primary); }
         .total-highlight { font-size: 24px; font-weight: 900; color: var(--accent-start); text-align: right; }
         .history-card { background: white; border: 1px solid #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border-radius: 16px; padding: 18px; margin-bottom: 15px; }
-        
+        .badge { font-size:10px; padding:4px 8px; border-radius:6px; font-weight:700; text-transform:uppercase; }
+        .badge-ck { background:#eff6ff; color:#3b82f6; }
+        .badge-cash { background:#f0fdf4; color:#15803d; }
+
         /* CALENDAR & WALLET */
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #f8fafc; padding: 10px; border-radius: 16px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
@@ -343,6 +344,7 @@
                 <button class="btn btn-pay" style="width: auto; background: white; color: var(--text-dark); border: 1px solid #ddd; box-shadow: none; font-size: 13px;" onclick="resetInvoice()">🔄 Làm mới</button>
                 <button class="btn btn-pay" style="width: auto; background: transparent; margin-left: auto; text-decoration: underline; color: var(--text-dark); border: none; box-shadow: none; font-size: 13px;" onclick="toggleSetup()">⚙️ Cấu hình giá</button>
             </div>
+            
             <div id="bill-setup-tab" class="card" style="display:none; height: auto;">
                 <h3 style="margin: 0 0 15px 0;">⚙️ Cấu hình giá giờ</h3>
                 <div id="fixed-setup">
@@ -369,6 +371,7 @@
                     </div>
                 </div>
             </div>
+            
             <div id="invoice-capture-area" class="card invoice-paper" style="height: auto; align-items: stretch; text-align: left;">
                 <div style="position: absolute; right: 20px; top: 20px; font-size: 40px; font-weight: 900; color: rgba(0,0,0,0.05); pointer-events: none;">INVOICE</div>
                 <div style="border-bottom: 3px solid var(--accent-start); padding-bottom: 20px; margin-bottom: 20px;">
@@ -515,7 +518,10 @@
             <h2 style="color:var(--primary); margin-bottom:20px; font-weight:800; font-family:'Outfit'; font-size:28px">Quản Lý Menu</h2>
             <div class="pm-toolbar">
                 <input type="text" id="pm-search-input" class="pm-search" placeholder="🔍 Tìm kiếm món..." onkeyup="renderProductTable()">
-                <button class="btn-pay" onclick="openProductModal()" style="width:auto; padding:12px 24px; font-size:14px; background:var(--accent-gradient); box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);">+ Thêm Món Mới</button>
+                <div style="display:flex; gap:10px">
+                    <button class="btn-gray" onclick="forceResetIcons()" style="border:1px solid #cbd5e1; background:white;">↻ Nạp lại Icon</button>
+                    <button class="btn-pay" onclick="openProductModal()" style="width:auto; padding:12px 24px; font-size:14px; background:var(--accent-gradient); box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);">+ Thêm Món Mới</button>
+                </div>
             </div>
             <div id="product-grid-container" class="product-manage-grid"></div>
             <div id="pm-empty" style="text-align:center; padding:50px; color:#94a3b8; font-style:italic; display:none; grid-column: 1/-1;">Không tìm thấy món nào</div>
@@ -645,7 +651,7 @@
     </div>
 <script>
         // --- CẤU HÌNH API ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbx0Z-73X2w8iSv0PYP6zjUJmCpSo6zIg_DGTyOm_4Gn-96fieHCQLcI8FN7olDIeZc1Gw/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbwDh32AcdMxYpegRaS3YzyUJ0Am7mu95qwApsxSq9AQHMxdz_j8zCS78wFrTOd0jhppsg/exec"; 
         
         function showToast(msg, type='success') { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}" style="color:${type==='success'?'#10b981':'#ef4444'}"></i> <span>${msg}</span>`; c.appendChild(t); setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000); }
         function getLocalYMD(dateStr) { const d = parseDate(dateStr); const offset = d.getTimezoneOffset() * 60000; const localISOTime = (new Date(d - offset)).toISOString().slice(0, 10); return localISOTime; }
@@ -806,235 +812,6 @@
             const filtered = products.filter(p => p.name.toLowerCase().includes(term) || p.group.toLowerCase().includes(term));
             if (filtered.length === 0) { grid.innerHTML = '<div style="width:100%;text-align:center;color:#64748b;grid-column:span 3;margin-top:20px; font-style:italic">Không tìm thấy món</div>'; return; }
             const groups = [...new Set(filtered.map(p => p.group))].sort((a,b) => a.includes('Tiền Giờ') ? -1 : 1);
-            groups.forEach(groupName => {
-                const header = document.createElement('div'); header.className = 'section-header';
-                let iconClass = 'fa-box'; if(groupName.includes('Nước')) iconClass = 'fa-wine-bottle'; if(groupName.includes('Trà')) iconClass = 'fa-mug-hot'; if(groupName.includes('Cầu')) iconClass = 'fa-feather-alt';
-                header.innerHTML = `<i class="fas ${iconClass}"></i> ${groupName}`; grid.appendChild(header);
-                const groupContainer = document.createElement('div'); groupContainer.className = 'grid';
-                products.filter(p => p.group === groupName).forEach(p => {
-                    const card = document.createElement('div'); card.className = 'card'; card.setAttribute('data-group', p.group); 
-                    card.onclick = function(e) { addToCart(p.id); runFlyingEffect(e, p.icon); };
-                    card.innerHTML = `<div class="card-content"><div class="card-icon">${p.icon || '📦'}</div><div class="card-name" title="${p.name}">${p.name}</div></div><div class="card-price">${formatMoney(p.price)}</div>`;
-                    groupContainer.appendChild(card);
-                }); grid.appendChild(groupContainer);
-            });
-        }
-
-        async function syncProductData() {
-            if(API_URL.includes("THAY_LINK")) return;
-            try {
-                const response = await fetch(API_URL + "?action=get_products&t=" + new Date().getTime()); const serverProducts = await response.json();
-                if (serverProducts && serverProducts.length > 0) { products = serverProducts; localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products)); renderPOS(); renderProductTable(); } 
-            } catch (e) { console.error("Sync Menu Fail"); }
-        }
-
-        async function syncData() {
-            const dot = document.getElementById('sync-dot'); const text = document.getElementById('sync-text');
-            if(!dot) return; 
-            if(API_URL.includes("THAY_LINK")) { dot.style.background = 'gray'; text.innerText = "No API"; return; }
-            try {
-                dot.style.background = '#f59e0b'; 
-                const response = await fetch(API_URL + "?action=get_orders&t=" + new Date().getTime()); 
-                const serverOrders = await response.json();
-                if (serverOrders && Array.isArray(serverOrders)) {
-                    if (serverOrders.length > 0) {
-                        transactions = serverOrders;
-                        transactions.sort((a, b) => parseDate(a.time) - parseDate(b.time)); 
-                        localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions)); 
-                        renderDashboard(); renderReport(); 
-                    }
-                }
-                dot.style.background = '#10b981'; text.innerText = "Online"; 
-            } catch (e) { console.log(e); dot.style.background = '#ef4444'; text.innerText = "Offline"; }
-        }
-
-        async function pushOrderToSheet(order) {
-            transactions.push(order); localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions));
-            showToast("Thanh toán thành công!", "success");
-            try { runConfetti(); } catch(e){}
-            resetOrderState(); renderDashboard();
-            if(!API_URL.includes("THAY_LINK")) { try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: 'add_order', data: order }) }); } catch (e) { console.error("Send Order Fail"); } }
-        }
-
-        // --- USERS ---
-        let allUsers = JSON.parse(localStorage.getItem('bd_users_local')) || [];
-        if (allUsers.length === 0) {
-            allUsers.push({ username: 'admin', password: '123', name: 'Quản Lý (Gốc)', role: 'admin' });
-            localStorage.setItem('bd_users_local', JSON.stringify(allUsers));
-        }
-
-        async function loadUsersForLogin() {
-            renderUserTable(); 
-            if(API_URL.includes("THAY_LINK")) { document.getElementById('login-msg').innerText = "Đang dùng chế độ Offline (Local)"; return; }
-            document.getElementById('login-msg').innerText = "Đang đồng bộ User...";
-            try {
-                const response = await fetch(API_URL + "?action=get_users&t=" + new Date().getTime()); const data = await response.json();
-                if (Array.isArray(data) && data.length > 0) { allUsers = data; localStorage.setItem('bd_users_local', JSON.stringify(allUsers)); renderUserTable(); document.getElementById('login-msg').innerText = ""; }
-            } catch (e) { document.getElementById('login-msg').innerText = "Không kết nối được Server (Dùng Offline)"; }
-        }
-
-        async function saveUser() { 
-            const mode = document.getElementById('u-mode').value; 
-            const u = document.getElementById('u-username').value; 
-            const p = document.getElementById('u-password').value; 
-            const n = document.getElementById('u-name').value; 
-            const r = document.getElementById('u-role').value; 
-            if(!u || !p) return showToast("Thiếu thông tin!", "error"); 
-            if (mode === 'add') {
-                if(allUsers.find(x => x.username === u)) return showToast("User đã tồn tại!", "error");
-                allUsers.push({ username: u, password: p, name: n, role: r }); 
-            } else { 
-                const idx = allUsers.findIndex(user => user.username === u); if(idx !== -1) allUsers[idx] = { username: u, password: p, name: n, role: r }; 
-            } 
-            localStorage.setItem('bd_users_local', JSON.stringify(allUsers)); renderUserTable(); showToast("Đã lưu user (Local) - Đang đồng bộ..."); document.getElementById('user-modal').style.display = 'none'; 
-            if(!API_URL.includes("THAY_LINK")) { try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: mode==='add'?'add_user':'edit_user', username: u, password: p, name: n, role: r }) }); } catch (error) {} }
-        }
-        
-        async function deleteUser(username) { 
-            if(!confirm("Xóa user này?")) return; 
-            allUsers = allUsers.filter(user => user.username !== username); 
-            localStorage.setItem('bd_users_local', JSON.stringify(allUsers)); renderUserTable(); showToast("Đã xóa (Local) - Đang đồng bộ..."); 
-            if(!API_URL.includes("THAY_LINK")) { try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_user', username: username }) }); } catch(e) { } }
-        }
-
-        // --- LOGIN LOGIC ---
-        function login() {
-            const u = document.getElementById('username').value; const p = document.getElementById('password').value;
-            if(u==='admin' && p==='123') { currentUser = { username: 'admin', role: 'admin', name: 'Admin' }; loginSuccess(); return; }
-            const found = allUsers.find(user => user.username == u && user.password == p);
-            if(found) { currentUser = found; loginSuccess(); } else { document.getElementById('login-msg').innerText = "Sai thông tin đăng nhập!"; }
-        }
-
-        function loginSuccess() {
-            localStorage.setItem('bd_current_user', JSON.stringify(currentUser));
-            document.getElementById('login-screen').style.opacity = '0'; setTimeout(() => { document.getElementById('login-screen').style.display = 'none'; }, 300);
-            document.getElementById('user-display').innerHTML = currentUser.name;
-            document.getElementById('staff-name').innerText = `NV: ${currentUser.name}`;
-            if (currentUser.role === 'admin' || currentUser.username === 'admin') { 
-                roleConfig['admin'] = MENU_DEF.map(m => m.id); 
-                localStorage.setItem('bd_role_config', JSON.stringify(roleConfig)); 
-            }
-            applyRole(); syncData(); syncProductData(); renderPOS(); renderReport(); renderDebtTable(); renderDashboard();
-            updateCustDropdowns(); renderHistoryTable(); if(document.getElementById('tableBody').children.length === 0) addRow();
-        }
-
-        function applyRole() {
-            const role = (currentUser.role || '').toLowerCase().trim(); const username = (currentUser.username || '').toLowerCase().trim();
-            document.querySelectorAll('.menu-item').forEach(el => el.classList.add('hidden'));
-            let allowed = roleConfig[role] || DEFAULT_ROLES['staff'];
-            if (username === 'admin' || role === 'admin') { allowed = MENU_DEF.map(m => m.id); }
-            allowed.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('hidden'); });
-            const currentActive = document.querySelector('.main.active'); 
-            if(currentActive) {
-                const navId = 'nav-' + currentActive.id.replace('tab-', '');
-                if (!allowed.includes(navId)) showTab('pos');
-            } else { showTab('pos'); }
-        }
-
-        function showTab(tabName) {
-            document.querySelectorAll('.main').forEach(el => el.classList.remove('active'));
-            document.getElementById('tab-' + tabName).classList.add('active');
-            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-            const activeNav = document.getElementById('nav-' + tabName);
-            if(activeNav) activeNav.classList.add('active');
-            
-            if(tabName === 'products') renderProductTable();
-            if(tabName === 'calc') updateCalcOptions(); 
-            if(tabName === 'debt') renderDebtTable();
-            if(tabName === 'dashboard') renderDashboard();
-            if(tabName === 'reports') renderReport();
-            if(tabName === 'bill-export') updateAllRows();
-            if(tabName === 'history-collection') renderHistoryTable();
-            
-            if(tabName === 'wallet') {
-                document.getElementById('m-date1').value = getTodayStr();
-                document.getElementById('m-date2').value = getTodayStr();
-                updateWalletSelects(); renderCal(); recalcWallet();
-            }
-        }
-
-        function logout() { localStorage.removeItem('bd_current_user'); location.reload(); }
-        
-        function openRoleSettings() {
-            const container = document.getElementById('menu-permissions-list'); container.innerHTML = '';
-            const currentStaffPerms = roleConfig['staff'] || [];
-            MENU_DEF.forEach(item => {
-                const isChecked = currentStaffPerms.includes(item.id);
-                const div = document.createElement('div'); div.style.marginBottom = '8px'; div.style.display = 'flex'; div.style.alignItems = 'center'; div.style.gap = '10px';
-                div.innerHTML = `<input type="checkbox" id="perm-${item.id}" value="${item.id}" ${isChecked ? 'checked' : ''} style="width:18px; height:18px; cursor:pointer;"><label for="perm-${item.id}" style="cursor:pointer; font-size:14px; font-weight:600; color:var(--primary);">${item.name}</label>`;
-                container.appendChild(div);
-            });
-            document.getElementById('role-settings-modal').style.display = 'flex';
-        }
-
-        function saveRoleSettings() {
-            const checkedBoxes = document.querySelectorAll('#menu-permissions-list input[type="checkbox"]:checked');
-            const newPerms = Array.from(checkedBoxes).map(cb => cb.value);
-            roleConfig['staff'] = newPerms; roleConfig['admin'] = MENU_DEF.map(m => m.id); 
-            localStorage.setItem('bd_role_config', JSON.stringify(roleConfig));
-            document.getElementById('role-settings-modal').style.display = 'none'; showToast("Đã lưu cấu hình phân quyền!");
-            if (currentUser && currentUser.role === 'staff') { applyRole(); showToast("Đã cập nhật giao diện mới!"); }
-        }
-
-        // --- PRODUCTS & UI ---
-        function renderUserTable() { document.querySelector('#user-table tbody').innerHTML = allUsers.map(u => `<tr><td>${u.username}</td><td><b>${u.name}</b></td><td><span style="padding:4px 8px; background:#f1f5f9; color:#64748b; border-radius:8px; font-size:11px; font-weight:bold">${u.role}</span></td><td><button class="qty-btn" onclick="openUserModal(false, '${u.username}')" style="color:var(--primary)"><i class="fas fa-edit"></i></button>${u.username!=='admin'?`<button class="qty-btn" onclick="deleteUser('${u.username}')" style="color:#ef4444"><i class="fas fa-trash"></i></button>`:''}</td></tr>`).join(''); }
-        function openUserModal(isNew, uEdit) { const modal=document.getElementById('user-modal'); modal.style.display='flex'; const uIn=document.getElementById('u-username'); if(isNew) { document.getElementById('u-mode').value='add'; uIn.value=""; uIn.disabled=false; document.getElementById('u-password').value=""; document.getElementById('u-name').value=""; } else { const user=allUsers.find(u=>u.username===uEdit); document.getElementById('u-mode').value='edit'; uIn.value=user.username; uIn.disabled=true; document.getElementById('u-password').value=user.password; document.getElementById('u-name').value=user.name; document.getElementById('u-role').value=user.role; } }
-        // --- UPDATED RENDER PRODUCT TABLE (CARD STYLE) ---
-        function renderProductTable() {
-            const container = document.getElementById('product-grid-container');
-            const searchTerm = document.getElementById('pm-search-input') ? document.getElementById('pm-search-input').value.toLowerCase() : '';
-            const emptyMsg = document.getElementById('pm-empty');
-            
-            if (!container) return;
-            container.innerHTML = '';
-
-            // Lọc sản phẩm theo từ khóa tìm kiếm
-            const filtered = products.filter(p => 
-                p.name.toLowerCase().includes(searchTerm) || 
-                p.group.toLowerCase().includes(searchTerm)
-            );
-
-            if (filtered.length === 0) {
-                if(emptyMsg) emptyMsg.style.display = 'block';
-                return;
-            } else {
-                if(emptyMsg) emptyMsg.style.display = 'none';
-            }
-
-            // Sắp xếp theo nhóm để dễ nhìn
-            const sortedList = filtered.sort((a,b) => a.group.localeCompare(b.group));
-
-            container.innerHTML = sortedList.map(p => {
-                // Xác định icon nếu chưa có
-                let icon = p.icon || '📦';
-                // Highlight màu nền nhóm (tuỳ chọn cho đẹp)
-                return `
-                <div class="pm-card">
-                    <div class="pm-icon">${icon}</div>
-                    <div class="pm-name">${p.name}</div>
-                    <div class="pm-group">${p.group}</div>
-                    <div class="pm-price">${formatMoney(p.price)}</div>
-                    <div class="pm-actions">
-                        <button class="pm-btn pm-btn-edit" onclick="editProduct('${p.id}')">
-                            <i class="fas fa-edit"></i> Sửa
-                        </button>
-                        <button class="pm-btn pm-btn-del" onclick="deleteProduct('${p.id}')">
-                            <i class="fas fa-trash"></i> Xóa
-                        </button>
-                    </div>
-                </div>
-                `;
-            }).join('');
-        }
-        function openProductModal() { document.getElementById('prod-id').value = ''; document.getElementById('prod-name').value = ''; document.getElementById('prod-price').value = ''; document.getElementById('product-modal').style.display = 'flex'; }
-        function editProduct(id) { const p = products.find(x => String(x.id) === String(id)); if(p) { document.getElementById('prod-id').value = p.id; document.getElementById('prod-name').value = p.name; document.getElementById('prod-price').value = p.price; document.getElementById('prod-group').value = p.group; document.getElementById('product-modal').style.display = 'flex'; } }
-        function closeModal() { document.getElementById('product-modal').style.display = 'none'; }
-        async function saveProduct() { const id = document.getElementById('prod-id').value; const name = document.getElementById('prod-name').value.trim(); const price = Number(document.getElementById('prod-price').value); const group = document.getElementById('prod-group').value; if (!name) return showToast("Thiếu tên!", "error"); if(id) { const index = products.findIndex(p => String(p.id) === String(id)); if(index !== -1) products[index] = { ...products[index], name, price, group }; } else { products.push({ id: Date.now(), name, price, group, icon: '📦' }); } localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products)); closeModal(); renderProductTable(); renderPOS(); try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'save_all_products', products: products }) }); } catch(e) {} }
-        async function deleteProduct(id) { if(confirm("Xóa?")) { products = products.filter(p => String(p.id) !== String(id)); localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products)); renderProductTable(); renderPOS(); try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'save_all_products', products: products }) }); } catch(e){} } }
-
-        function renderPOS() {
-            const grid = document.getElementById('pos-grid'); grid.innerHTML = '';
-            const groups = [...new Set(products.map(p => p.group))].sort((a,b) => a.includes('Tiền Giờ') ? -1 : 1);
             groups.forEach(groupName => {
                 const header = document.createElement('div'); header.className = 'section-header';
                 let iconClass = 'fa-box'; if(groupName.includes('Nước')) iconClass = 'fa-wine-bottle'; if(groupName.includes('Trà')) iconClass = 'fa-mug-hot'; if(groupName.includes('Cầu')) iconClass = 'fa-feather-alt';
@@ -1273,17 +1050,25 @@
             document.getElementById("username").addEventListener("keypress", function(event) { if (event.key === "Enter") { event.preventDefault(); document.getElementById("password").focus(); } });
             const savedUser = localStorage.getItem('bd_current_user');
             if (savedUser) { currentUser = JSON.parse(savedUser); loginSuccess(); } else { document.getElementById("username").focus(); }
-            products = defaultProducts; 
+            
+            // --- FIX: KHÔI PHỤC ICON MẤT ---
+            products = JSON.parse(localStorage.getItem('bd_pro_debt_v7')) || defaultProducts;
+            
+            // Chạy qua từng món, nếu thiếu icon thì lấy từ mặc định hoặc gán icon thùng hàng
+            products.forEach(p => {
+                if(!p.icon) {
+                   const def = defaultProducts.find(d => d.id == p.id || d.name === p.name);
+                   p.icon = def ? def.icon : '📦';
+                }
+            });
+            // Lưu lại danh sách đã sửa
             localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products));
+
             loadUsersForLogin(); renderPOS(); renderReport();
             
-            // New Bill Logic Init
-            const today = new Date();
-            const y = today.getFullYear();
-            const m = today.getMonth() + 1;
-            document.getElementById('monthSelector').value = m;
-            document.getElementById('dateFrom').value = `${y}-${String(m).padStart(2,'0')}-01`;
-            document.getElementById('dateTo').value = `${y}-${String(m).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+            // BILL INIT
+            const today = new Date(); const y = today.getFullYear(); const m = today.getMonth() + 1;
+            document.getElementById('monthSelector').value = m; document.getElementById('dateFrom').value = `${y}-${String(m).padStart(2,'0')}-01`; document.getElementById('dateTo').value = `${y}-${String(m).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
         };
         setInterval(syncData, 30000); 
 
@@ -1607,6 +1392,29 @@
                 localStorage.setItem('bk_bills_history_standalone', JSON.stringify(historyBills)); 
                 renderHistoryTable(); updateCustDropdowns(); 
             } 
+        }
+        
+        // --- HÀM MỚI: TỰ ĐỘNG KHÔI PHỤC ICON ---
+        function forceResetIcons() {
+            if(confirm("Bạn có muốn tự động điền lại Icon cho các món bị thiếu không?")) {
+                let count = 0;
+                products.forEach(p => {
+                    const def = defaultProducts.find(d => d.name === p.name || d.id == p.id);
+                    if (def && def.icon) {
+                        p.icon = def.icon;
+                    } else if (!p.icon || p.icon === "") {
+                        if(p.group.includes("Nước")) p.icon = '🥤';
+                        else if(p.group.includes("Cầu")) p.icon = '🏸';
+                        else if(p.group.includes("Trà")) p.icon = '🧊';
+                        else p.icon = '📦';
+                    }
+                    count++;
+                });
+                localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products));
+                renderProductTable();
+                renderPOS();
+                showToast(`Đã khôi phục icon cho ${count} món!`, "success");
+            }
         }
     </script>
 </body>
