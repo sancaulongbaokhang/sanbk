@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Quản Lý Sân - Bao Khang Sport (Final Ultimate)</title>
+    <title>Quản Lý Sân - Bao Khang Sport (Final Fixed)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -89,15 +89,6 @@
         .btn-pay { width: 100%; padding: 16px; background: var(--accent-gradient); color: white; border: none; border-radius: 18px; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3); }
         .btn-debt { width: 100%; padding: 14px; background: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; font-weight: 600; border-radius: 18px; margin-top: 12px; cursor: pointer; }
 
-        /* WALLET BUTTONS */
-        .btn-green { background: var(--success); color:white; padding: 12px; border-radius: 14px; border:none; cursor:pointer; font-weight:700; transition:0.2s; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); display:flex; align-items:center; justify-content:center; gap:8px; }
-        .btn-green:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(16, 185, 129, 0.3); }
-        .btn-red { background: var(--danger); color:white; padding: 12px; border-radius: 14px; border:none; cursor:pointer; font-weight:700; transition:0.2s; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); display:flex; align-items:center; justify-content:center; gap:8px; }
-        .btn-red:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(239, 68, 68, 0.3); }
-        .btn-gray { background: #f1f5f9; color: var(--primary); padding: 10px 15px; border-radius: 12px; border: 1px solid #e2e8f0; cursor:pointer; font-weight:600; transition:0.2s; }
-        .btn-blue { background: var(--accent-start); color:white; padding: 12px; border-radius: 14px; border:none; cursor:pointer; font-weight:700; transition:0.2s; }
-        .btn-sm { width: 32px; height: 32px; padding:0; border-radius: 8px; display:inline-flex; align-items:center; justify-content:center; font-size:12px; }
-
         /* BENTO DASHBOARD */
         .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding-bottom: 20px; }
         .bento-card { background: white; border-radius: 24px; padding: 24px; box-shadow: var(--card-shadow); border: 1px solid white; display: flex; flex-direction: column; }
@@ -105,22 +96,22 @@
         .bento-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 15px; }
         .bi-blue { background: #eff6ff; color: #3b82f6; }
 
-        /* TABLE CSS (FIXED COLUMNS & ALIGNMENT) */
+        /* TABLE CSS (FIXED COLUMNS) */
         .invoice-paper { background: white; padding: 40px; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.1); border-radius: 16px; }
         .table-modern { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        .table-modern th { background: var(--text-dark); color: white; padding: 12px 15px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .table-modern td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; color: var(--primary); }
+        .table-modern th { background: var(--text-dark); color: white; padding: 12px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        .table-modern td { padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: center; font-weight: 600; }
         .total-highlight { font-size: 24px; font-weight: 900; color: var(--accent-start); text-align: right; }
+        
         .history-card { background: white; border: 1px solid #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border-radius: 16px; padding: 18px; margin-bottom: 15px; }
         .badge { font-size:10px; padding:4px 8px; border-radius:6px; font-weight:700; text-transform:uppercase; }
         .badge-ck { background:#eff6ff; color:#3b82f6; }
         .badge-cash { background:#f0fdf4; color:#15803d; }
 
         /* CALENDAR & WALLET */
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #f8fafc; padding: 10px; border-radius: 16px; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
-        .day-cell { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; min-height: 100px; padding: 10px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; transition: 0.2s; }
-        .day-cell:hover { border-color: var(--accent-start); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .day-cell { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; min-height: 100px; padding: 10px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; }
         .day-cell.today { border: 2px solid var(--accent-start); background: #eef2ff; }
         .day-cell.finalized { opacity: 0.6; filter: grayscale(1); }
         .day-num { font-weight: 800; font-size: 18px; color: #cbd5e1; }
@@ -147,11 +138,12 @@
         .pm-btn-edit { background: #eff6ff; color: #4f46e5; }
         .pm-btn-del { background: #fef2f2; color: #ef4444; }
 
-        /* DEBT DETAILS (FIXED) */
-        #debt-table th:nth-child(1) { width: 25%; text-align: left; }
-        #debt-table th:nth-child(2) { width: 40%; text-align: left; }
-        #debt-table th:nth-child(3) { width: 20%; text-align: right; }
-        #debt-table th:nth-child(4) { width: 15%; text-align: center; }
+        /* DEBT TABLE (FIXED COLUMNS & DETAILS) */
+        #debt-table th:nth-child(1) { width: 25%; } /* Khách & Ngày */
+        #debt-table th:nth-child(2) { width: 40%; } /* Chi tiết */
+        #debt-table th:nth-child(3) { width: 20%; text-align: right; } /* Tổng tiền */
+        #debt-table th:nth-child(4) { width: 15%; text-align: center; } /* Xử lý */
+
         .debt-detail-list { text-align: left; font-size: 13px; background: #f8fafc; padding: 10px; border-radius: 12px; border: 1px solid #e2e8f0; }
         .debt-detail-item { display: flex; justify-content: space-between; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dashed #cbd5e1; }
         .debt-detail-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
@@ -189,7 +181,8 @@
     </style>
 </head>
 <body>
-<div id="toast-container"></div>
+
+    <div id="toast-container"></div>
 
     <div id="login-screen">
         <div class="login-box">
@@ -274,59 +267,53 @@
     <div id="tab-wallet" class="main">
         <div class="dashboard-scroll">
             <h1 style="margin: 0 0 30px 0; text-align: center;">🏸 QUẢN LÝ SÂN & VÍ</h1>
-            <div class="card no-hover" style="height: auto; text-align: left; display: block; align-items: stretch; padding:25px;">
+            <div class="card no-hover" style="height: auto; text-align: left; display: block; align-items: stretch;">
                 <div class="calendar-header">
-                    <button class="btn-gray" onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i> Trước</button>
-                    <h2 id="month-display" style="margin:0; font-size:20px; color:var(--primary);">---</h2>
-                    <button class="btn-gray" onclick="changeMonth(1)">Sau <i class="fas fa-chevron-right"></i></button>
+                    <button class="btn-gray" onclick="changeMonth(-1)">◀ Trước</button>
+                    <h2 id="month-display" style="margin:0">---</h2>
+                    <button class="btn-gray" onclick="changeMonth(1)">Sau ▶</button>
                 </div>
                 <div class="calendar-grid" id="calendar-grid"></div>
-                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
                     <div><div style="font-size: 12px; color: var(--primary-light);">TỔNG CK</div><div id="total-ck" style="font-size: 24px; font-weight: 800; color: var(--accent-start);">0 đ</div></div>
-                    <div><div style="font-size: 12px; color: var(--primary-light);">TỔNG TIỀN MẶT</div><div id="total-tm" style="font-size: 24px; font-weight: 800; color: #d97706;">0 đ</div></div>
-                    <button class="btn-red" onclick="globalWithdraw()"><i class="fas fa-lock"></i> RÚT TIỀN & KHÓA SỔ</button>
+                    <div><div style="font-size: 12px; color: var(--primary-light);">TỔNG TM</div><div id="total-tm" style="font-size: 24px; font-weight: 800; color: #d97706;">0 đ</div></div>
+                    <button class="btn-red" onclick="globalWithdraw()">♻️ RÚT TIỀN & KHÓA</button>
                 </div>
             </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top:20px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div class="card no-hover" style="border-left: 5px solid var(--success); height: auto; text-align: left; display: block; align-items: stretch;">
-                    <h3 style="color: var(--success); margin-top:0;"><i class="fas fa-arrow-down"></i> Nạp Tiền</h3>
-                    <div style="display:flex; flex-direction:column; gap:10px;">
-                        <input type="date" id="m-date1" class="login-input" style="background:#f8fafc; color:black; border:1px solid #e2e8f0; margin:0;">
-                        <input type="text" id="m-name" placeholder="Tên khách hàng..." class="login-input" style="background:#f8fafc; color:black; border:1px solid #e2e8f0; margin:0;">
-                        <input type="text" id="m-amt" placeholder="Số tiền nạp..." oninput="fmt(this)" class="login-input" style="background:#f8fafc; color:black; border:1px solid #e2e8f0; margin:0;">
-                        <button class="btn-green" style="width:100%" onclick="addMoney()">XÁC NHẬN NẠP</button>
-                    </div>
+                    <h3 style="color: var(--success); margin-top:0;">📥 Nạp Tiền</h3>
+                    <input type="date" id="m-date1" class="login-input" style="background:#f1f5f9; color:black;">
+                    <input type="text" id="m-name" placeholder="Tên khách hàng" class="login-input" style="background:#f1f5f9; color:black;">
+                    <input type="text" id="m-amt" placeholder="Số tiền nạp" oninput="fmt(this)" class="login-input" style="background:#f1f5f9; color:black;">
+                    <button class="btn-green" style="width:100%" onclick="addMoney()">Xác nhận Nạp</button>
                 </div>
                 <div class="card no-hover" style="border-left: 5px solid var(--danger); height: auto; text-align: left; display: block; align-items: stretch;">
-                    <h3 style="color: var(--danger); margin-top:0;"><i class="fas fa-arrow-up"></i> Trừ Tiền</h3>
-                    <div style="display:flex; flex-direction:column; gap:10px;">
-                        <input type="date" id="m-date2" class="login-input" style="background:#f8fafc; color:black; border:1px solid #e2e8f0; margin:0;">
-                        <select id="m-select" class="login-input" style="background:#f8fafc; color:black; border:1px solid #e2e8f0; margin:0;"></select>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="text" id="fee-pitch" placeholder="Tiền sân" oninput="fmt(this)" class="login-input" style="background:#f8fafc; color:black; border:1px solid #e2e8f0; margin:0;">
-                            <input type="text" id="fee-water" placeholder="Tiền nước" oninput="fmt(this)" class="login-input" style="background:#f8fafc; color:black; border:1px solid #e2e8f0; margin:0;">
-                        </div>
-                        <button class="btn-red" style="width:100%" onclick="subMoney()">XÁC NHẬN TRỪ</button>
+                    <h3 style="color: var(--danger); margin-top:0;">📤 Trừ Tiền</h3>
+                    <input type="date" id="m-date2" class="login-input" style="background:#f1f5f9; color:black;">
+                    <select id="m-select" class="login-input" style="background:#f1f5f9; color:black;"></select>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="fee-pitch" placeholder="Tiền sân" oninput="fmt(this)" class="login-input" style="background:#f1f5f9; color:black;">
+                        <input type="text" id="fee-water" placeholder="Tiền nước" oninput="fmt(this)" class="login-input" style="background:#f1f5f9; color:black;">
                     </div>
+                    <button class="btn-red" style="width:100%" onclick="subMoney()">Xác nhận Trừ</button>
                 </div>
             </div>
-            <div class="card no-hover" style="height: auto; text-align: left; display: block; align-items: stretch; margin-top:20px;">
-                <h3 style="margin-top:0;">📋 Danh sách Khách Hàng</h3>
+            <div class="card no-hover" style="height: auto; text-align: left; display: block; align-items: stretch;">
+                <h3 style="margin-top:0;">📋 Danh sách Khách</h3>
                 <div style="max-height: 300px; overflow-y: auto;">
                     <table class="tbl-wallet">
-                        <thead><tr><th>Tên</th><th>Số dư ví</th><th style="width:50px; text-align:center;">Xóa</th></tr></thead>
+                        <thead><tr><th>Tên</th><th>Số dư ví</th><th>Xóa</th></tr></thead>
                         <tbody id="member-list"></tbody>
                     </table>
                 </div>
             </div>
-            <div class="card no-hover" style="height: auto; text-align: left; display: block; align-items: stretch; margin-top:20px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h3 style="margin:0;">📜 Lịch sử Giao Dịch</h3>
-                    <select id="log-filter" onchange="renderLogs()" style="width: 200px; padding:8px; border-radius:10px; border:1px solid #e2e8f0;"></select>
-                </div>
+            <div class="card no-hover" style="height: auto; text-align: left; display: block; align-items: stretch;">
+                <h3 style="margin-top:0;">📜 Lịch sử Giao Dịch</h3>
+                <select id="log-filter" onchange="renderLogs()" style="width: 200px; margin-bottom: 15px; padding:10px; border-radius:10px;"></select>
                 <div style="max-height: 400px; overflow-y: auto;">
                     <table class="tbl-wallet">
-                        <thead><tr><th>Ngày</th><th>Tên</th><th>Loại</th><th>Số tiền</th><th>Số dư</th><th>Ghi chú</th><th style="width:80px; text-align:center;">Sửa</th></tr></thead>
+                        <thead><tr><th>Ngày</th><th>Tên</th><th>Loại</th><th>Số tiền</th><th>Số dư</th><th>Ghi chú</th><th>Sửa</th></tr></thead>
                         <tbody id="log-list"></tbody>
                     </table>
                 </div>
@@ -431,11 +418,11 @@
                         <thead>
                             <tr>
                                 <th style="width: 50px; text-align: center;">Chọn</th>
-                                <th style="width: 140px; text-align: left;">Thời gian</th>
-                                <th style="width: 150px; text-align: left;">Khách hàng</th>
-                                <th style="text-align: left;">Chi tiết hóa đơn</th>
+                                <th style="width: 140px;">Thời gian</th>
+                                <th style="width: 150px;">Khách hàng</th>
+                                <th>Chi tiết hóa đơn</th>
                                 <th style="width: 100px; text-align: center;">Loại TT</th>
-                                <th style="width: 150px; text-align: right;">Số tiền</th>
+                                <th style="width: 120px; text-align: right;">Tổng tiền</th>
                                 <th style="width: 60px; text-align: center;">Xóa</th>
                             </tr>
                         </thead>
@@ -480,10 +467,10 @@
                 <table id="debt-table" class="table-modern">
                     <thead>
                         <tr>
-                            <th style="width: 25%; text-align: left;">Khách hàng & Ngày</th>
-                            <th style="width: 40%; text-align: left;">Chi tiết nợ (Cụ thể)</th>
-                            <th style="width: 20%; text-align: right;">Tổng nợ</th>
-                            <th style="width: 15%; text-align: center;">Xử lý</th>
+                            <th>Khách hàng & Ngày</th>
+                            <th>Chi tiết nợ (Cụ thể)</th>
+                            <th style="text-align: right;">Tổng nợ</th>
+                            <th style="text-align: center;">Xử lý</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -518,10 +505,7 @@
             <h2 style="color:var(--primary); margin-bottom:20px; font-weight:800; font-family:'Outfit'; font-size:28px">Quản Lý Menu</h2>
             <div class="pm-toolbar">
                 <input type="text" id="pm-search-input" class="pm-search" placeholder="🔍 Tìm kiếm món..." onkeyup="renderProductTable()">
-                <div style="display:flex; gap:10px">
-                    <button class="btn-gray" onclick="forceResetIcons()" style="border:1px solid #cbd5e1; background:white;">↻ Nạp lại Icon</button>
-                    <button class="btn-pay" onclick="openProductModal()" style="width:auto; padding:12px 24px; font-size:14px; background:var(--accent-gradient); box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);">+ Thêm Món Mới</button>
-                </div>
+                <button class="btn-pay" onclick="openProductModal()" style="width:auto; padding:12px 24px; font-size:14px; background:var(--accent-gradient); box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);">+ Thêm Món Mới</button>
             </div>
             <div id="product-grid-container" class="product-manage-grid"></div>
             <div id="pm-empty" style="text-align:center; padding:50px; color:#94a3b8; font-style:italic; display:none; grid-column: 1/-1;">Không tìm thấy món nào</div>
@@ -631,27 +615,26 @@
 
     <div id="modal-edit-wallet" class="modal">
         <div class="modal-content">
-            <h3 style="color:var(--primary); margin-top:0;">Sửa Giao Dịch</h3>
-            <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
-                <input type="hidden" id="e-id-w">
-                <input type="date" id="e-date-w" class="login-input" style="color:black; background:#f8fafc; border:1px solid #e2e8f0; margin:0;">
-                <input type="text" id="e-name-w" disabled class="login-input" style="background: #e2e8f0; color:black; border:1px solid #e2e8f0; margin:0;">
-                <select id="e-type-w" class="login-input" style="color:black; background:#f8fafc; border:1px solid #e2e8f0; margin:0;">
-                    <option value="NẠP">Nạp tiền</option>
-                    <option value="TRỪ">Trừ tiền</option>
-                </select>
-                <input type="text" id="e-amt-w" oninput="fmt(this)" class="login-input" style="color:black; background:#f8fafc; border:1px solid #e2e8f0; margin:0;">
-                <input type="text" id="e-note-w" placeholder="Ghi chú" class="login-input" style="color:black; background:#f8fafc; border:1px solid #e2e8f0; margin:0;">
-            </div>
+            <h3 style="color:var(--primary)">Sửa Giao Dịch</h3>
+            <input type="hidden" id="e-id-w">
+            <input type="date" id="e-date-w" class="login-input" style="color:black; background:#f1f5f9">
+            <input type="text" id="e-name-w" disabled class="login-input" style="background: #e2e8f0; color:black">
+            <select id="e-type-w" class="login-input" style="color:black; background:#f1f5f9">
+                <option value="NẠP">Nạp tiền</option>
+                <option value="TRỪ">Trừ tiền</option>
+            </select>
+            <input type="text" id="e-amt-w" oninput="fmt(this)" class="login-input" style="color:black; background:#f1f5f9">
+            <input type="text" id="e-note-w" placeholder="Ghi chú" class="login-input" style="color:black; background:#f1f5f9">
             <div style="display: flex; gap: 10px;">
                 <button class="btn-green" style="flex:1" onclick="saveEditWallet()">Lưu</button>
                 <button class="btn-gray" style="flex:1" onclick="document.getElementById('modal-edit-wallet').style.display='none'">Hủy</button>
             </div>
         </div>
     </div>
-<script>
+
+    <script>
         // --- CẤU HÌNH API ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbwDh32AcdMxYpegRaS3YzyUJ0Am7mu95qwApsxSq9AQHMxdz_j8zCS78wFrTOd0jhppsg/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbzXDXsQMuPrQ4XoCG7II0ZGuW-UANe_IF17_-U9a2-CVqCCKsWiYYFtT6Dm-_mr3bT4TQ/exec"; 
         
         function showToast(msg, type='success') { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}" style="color:${type==='success'?'#10b981':'#ef4444'}"></i> <span>${msg}</span>`; c.appendChild(t); setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000); }
         function getLocalYMD(dateStr) { const d = parseDate(dateStr); const offset = d.getTimezoneOffset() * 60000; const localISOTime = (new Date(d - offset)).toISOString().slice(0, 10); return localISOTime; }
@@ -784,22 +767,40 @@
             const filter = document.getElementById('chart-filter').value; 
             const today = getLocalYMD(new Date().toISOString());
             const todayTrans = transactions.filter(t => getLocalYMD(t.time) === today);
+            
             const totalToday = todayTrans.reduce((sum, t) => sum + (t.total || 0), 0);
             document.getElementById('dash-today').innerText = formatMoney(totalToday);
             document.getElementById('dash-orders').innerText = todayTrans.length;
             document.getElementById('fun-msg').innerText = totalToday > 0 ? "Hôm nay đang có doanh thu rất tốt!" : "Chúc một ngày kinh doanh hiệu quả!";
+
             let categories = [], seriesData = [];
             if (filter === 'today') { categories = Array.from({length: 24}, (_, i) => `${i}h`); seriesData = new Array(24).fill(0); todayTrans.forEach(t => { seriesData[parseDate(t.time).getHours()] += t.total; }); }
             else if (filter === 'week') { for(let i=6; i>=0; i--) { const d = new Date(); d.setDate(d.getDate() - i); categories.push(d.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit'})); const iso = getLocalYMD(d.toISOString()); seriesData.push(transactions.filter(t => getLocalYMD(t.time) === iso).reduce((s,t) => s+t.total, 0)); } }
             else if (filter === 'month') { const now = new Date(); const days = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate(); for(let i=1; i<=days; i++) { categories.push(i); const iso = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`; seriesData.push(transactions.filter(t => getLocalYMD(t.time) === iso).reduce((s,t) => s+t.total, 0)); } }
+
             document.getElementById('chart-revenue').innerHTML = '';
-            new ApexCharts(document.querySelector("#chart-revenue"), { series: [{ name: 'Doanh thu', data: seriesData }], chart: { type: 'area', height: 280, toolbar: { show: false }, fontFamily: 'Plus Jakarta Sans' }, dataLabels: { enabled: false }, stroke: { curve: 'smooth', width: 3 }, xaxis: { categories: categories, labels: { style: { colors: '#94a3b8' } }, axisBorder:{show:false}, axisTicks:{show:false} }, yaxis: { labels: { style: { colors: '#94a3b8' }, formatter: val => val >= 1000000 ? (val/1000000).toFixed(1) + 'M' : val >= 1000 ? (val/1000).toFixed(0) + 'k' : val } }, tooltip: { y: { formatter: val => formatMoney(val) } }, colors: ['#4f46e5'], fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.6, opacityTo: 0.05, stops: [0, 95, 100] } }, grid: { borderColor: '#f1f5f9', strokeDashArray: 4 } }).render();
+            new ApexCharts(document.querySelector("#chart-revenue"), { 
+                series: [{ name: 'Doanh thu', data: seriesData }], 
+                chart: { type: 'area', height: 280, toolbar: { show: false }, fontFamily: 'Plus Jakarta Sans' }, 
+                dataLabels: { enabled: false }, stroke: { curve: 'smooth', width: 3 }, 
+                xaxis: { categories: categories, labels: { style: { colors: '#94a3b8' } }, axisBorder:{show:false}, axisTicks:{show:false} }, 
+                yaxis: { labels: { style: { colors: '#94a3b8' }, formatter: val => val >= 1000000 ? (val/1000000).toFixed(1) + 'M' : val >= 1000 ? (val/1000).toFixed(0) + 'k' : val } },
+                tooltip: { y: { formatter: val => formatMoney(val) } }, colors: ['#4f46e5'], 
+                fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.6, opacityTo: 0.05, stops: [0, 95, 100] } },
+                grid: { borderColor: '#f1f5f9', strokeDashArray: 4 }
+            }).render();
+
             const itemCounts = {}; transactions.forEach(t => { if(t.cartDetails) t.cartDetails.forEach(i => { if(!i.group.includes('Tiền Giờ') && !i.name.includes('Thuê')) itemCounts[i.name] = (itemCounts[i.name] || 0) + i.qty; }); });
             const sortedItems = Object.entries(itemCounts).sort((a,b) => b[1] - a[1]).slice(0, 5);
             document.getElementById('mini-top-list').innerHTML = sortedItems.map((item, index) => `<div style="display:flex; justify-content:space-between; margin-bottom:12px; align-items:center; border-bottom:1px solid #f8fafc; padding-bottom:8px"><div style="display:flex; gap:10px; align-items:center"><div style="font-weight:800; color:#cbd5e1; font-size:12px">#${index+1}</div><div style="font-weight:600; color:var(--primary); font-size:13px">${item[0]}</div></div><div style="font-weight:700; color:#4f46e5; background:#eff6ff; padding:2px 8px; border-radius:6px; font-size:12px">${item[1]}</div></div>`).join('');
+
             const catData = {}; transactions.forEach(t => { if (t.cartDetails) t.cartDetails.forEach(item => { const g = item.group.includes('Tiền Giờ') ? 'Tiền Sân' : 'Dịch Vụ'; catData[g] = (catData[g] || 0) + (item.price * item.qty); }); });
             document.getElementById('chart-category').innerHTML = '';
-            new ApexCharts(document.querySelector("#chart-category"), { series: Object.values(catData), labels: Object.keys(catData), chart: { type: 'donut', height: 250, fontFamily: 'Plus Jakarta Sans' }, colors: ['#4f46e5', '#10b981', '#f59e0b'], legend: { position: 'bottom' }, plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: 'Tổng', formatter: () => '' } } } } } }).render();
+            new ApexCharts(document.querySelector("#chart-category"), { 
+                series: Object.values(catData), labels: Object.keys(catData), 
+                chart: { type: 'donut', height: 250, fontFamily: 'Plus Jakarta Sans' }, colors: ['#4f46e5', '#10b981', '#f59e0b'], legend: { position: 'bottom' },
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: 'Tổng', formatter: () => '' } } } } }
+            }).render();
         }
         function updateRevenueChart() { renderDashboard(); }
 
@@ -811,7 +812,238 @@
             grid.innerHTML = '';
             const filtered = products.filter(p => p.name.toLowerCase().includes(term) || p.group.toLowerCase().includes(term));
             if (filtered.length === 0) { grid.innerHTML = '<div style="width:100%;text-align:center;color:#64748b;grid-column:span 3;margin-top:20px; font-style:italic">Không tìm thấy món</div>'; return; }
+            
             const groups = [...new Set(filtered.map(p => p.group))].sort((a,b) => a.includes('Tiền Giờ') ? -1 : 1);
+            groups.forEach(groupName => {
+                const header = document.createElement('div'); header.className = 'section-header';
+                let iconClass = 'fa-box'; if(groupName.includes('Nước')) iconClass = 'fa-wine-bottle'; if(groupName.includes('Trà')) iconClass = 'fa-mug-hot'; if(groupName.includes('Cầu')) iconClass = 'fa-feather-alt';
+                header.innerHTML = `<i class="fas ${iconClass}"></i> ${groupName}`; grid.appendChild(header);
+                
+                const groupContainer = document.createElement('div'); groupContainer.className = 'grid';
+                filtered.filter(p => p.group === groupName).forEach(p => {
+                    const card = document.createElement('div'); card.className = 'card'; card.setAttribute('data-group', p.group); 
+                    card.onclick = function(e) { addToCart(p.id); runFlyingEffect(e, p.icon); };
+                    card.innerHTML = `<div class="card-content"><div class="card-icon">${p.icon || '📦'}</div><div class="card-name" title="${p.name}">${p.name}</div></div><div class="card-price">${formatMoney(p.price)}</div>`;
+                    groupContainer.appendChild(card);
+                }); grid.appendChild(groupContainer);
+            });
+        }
+
+        async function syncProductData() {
+            if(API_URL.includes("THAY_LINK")) return;
+            try {
+                const response = await fetch(API_URL + "?action=get_products&t=" + new Date().getTime()); const serverProducts = await response.json();
+                if (serverProducts && serverProducts.length > 0) { products = serverProducts; localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products)); renderPOS(); renderProductTable(); } 
+            } catch (e) { console.error("Sync Menu Fail"); }
+        }
+
+        async function syncData() {
+            const dot = document.getElementById('sync-dot'); const text = document.getElementById('sync-text');
+            if(!dot) return; 
+            if(API_URL.includes("THAY_LINK")) { dot.style.background = 'gray'; text.innerText = "No API"; return; }
+            try {
+                dot.style.background = '#f59e0b'; 
+                const response = await fetch(API_URL + "?action=get_orders&t=" + new Date().getTime()); 
+                const serverOrders = await response.json();
+                if (serverOrders && Array.isArray(serverOrders)) {
+                    if (serverOrders.length > 0) {
+                        transactions = serverOrders;
+                        transactions.sort((a, b) => parseDate(a.time) - parseDate(b.time)); 
+                        localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions)); 
+                        renderDashboard(); renderReport(); 
+                    }
+                }
+                dot.style.background = '#10b981'; text.innerText = "Online"; 
+            } catch (e) { console.log(e); dot.style.background = '#ef4444'; text.innerText = "Offline"; }
+        }
+
+        async function pushOrderToSheet(order) {
+            transactions.push(order); localStorage.setItem('bd_transactions_backup', JSON.stringify(transactions));
+            showToast("Thanh toán thành công!", "success");
+            try { runConfetti(); } catch(e){}
+            resetOrderState(); renderDashboard();
+            if(!API_URL.includes("THAY_LINK")) { try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: 'add_order', data: order }) }); } catch (e) { console.error("Send Order Fail"); } }
+        }
+
+        // --- USERS ---
+        let allUsers = JSON.parse(localStorage.getItem('bd_users_local')) || [];
+        if (allUsers.length === 0) {
+            allUsers.push({ username: 'admin', password: '123', name: 'Quản Lý (Gốc)', role: 'admin' });
+            localStorage.setItem('bd_users_local', JSON.stringify(allUsers));
+        }
+
+        async function loadUsersForLogin() {
+            renderUserTable(); 
+            if(API_URL.includes("THAY_LINK")) { document.getElementById('login-msg').innerText = "Đang dùng chế độ Offline (Local)"; return; }
+            document.getElementById('login-msg').innerText = "Đang đồng bộ User...";
+            try {
+                const response = await fetch(API_URL + "?action=get_users&t=" + new Date().getTime()); const data = await response.json();
+                if (Array.isArray(data) && data.length > 0) { allUsers = data; localStorage.setItem('bd_users_local', JSON.stringify(allUsers)); renderUserTable(); document.getElementById('login-msg').innerText = ""; }
+            } catch (e) { document.getElementById('login-msg').innerText = "Không kết nối được Server (Dùng Offline)"; }
+        }
+
+        async function saveUser() { 
+            const mode = document.getElementById('u-mode').value; 
+            const u = document.getElementById('u-username').value; 
+            const p = document.getElementById('u-password').value; 
+            const n = document.getElementById('u-name').value; 
+            const r = document.getElementById('u-role').value; 
+            if(!u || !p) return showToast("Thiếu thông tin!", "error"); 
+            if (mode === 'add') {
+                if(allUsers.find(x => x.username === u)) return showToast("User đã tồn tại!", "error");
+                allUsers.push({ username: u, password: p, name: n, role: r }); 
+            } else { 
+                const idx = allUsers.findIndex(user => user.username === u); if(idx !== -1) allUsers[idx] = { username: u, password: p, name: n, role: r }; 
+            } 
+            localStorage.setItem('bd_users_local', JSON.stringify(allUsers)); renderUserTable(); showToast("Đã lưu user (Local) - Đang đồng bộ..."); document.getElementById('user-modal').style.display = 'none'; 
+            if(!API_URL.includes("THAY_LINK")) { try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: mode==='add'?'add_user':'edit_user', username: u, password: p, name: n, role: r }) }); } catch (error) {} }
+        }
+        
+        async function deleteUser(username) { 
+            if(!confirm("Xóa user này?")) return; 
+            allUsers = allUsers.filter(user => user.username !== username); 
+            localStorage.setItem('bd_users_local', JSON.stringify(allUsers)); renderUserTable(); showToast("Đã xóa (Local) - Đang đồng bộ..."); 
+            if(!API_URL.includes("THAY_LINK")) { try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_user', username: username }) }); } catch(e) { } }
+        }
+
+        // --- LOGIN LOGIC ---
+        function login() {
+            const u = document.getElementById('username').value; const p = document.getElementById('password').value;
+            if(u==='admin' && p==='123') { currentUser = { username: 'admin', role: 'admin', name: 'Admin' }; loginSuccess(); return; }
+            const found = allUsers.find(user => user.username == u && user.password == p);
+            if(found) { currentUser = found; loginSuccess(); } else { document.getElementById('login-msg').innerText = "Sai thông tin đăng nhập!"; }
+        }
+
+        function loginSuccess() {
+            localStorage.setItem('bd_current_user', JSON.stringify(currentUser));
+            document.getElementById('login-screen').style.opacity = '0'; setTimeout(() => { document.getElementById('login-screen').style.display = 'none'; }, 300);
+            document.getElementById('user-display').innerHTML = currentUser.name;
+            document.getElementById('staff-name').innerText = `NV: ${currentUser.name}`;
+            if (currentUser.role === 'admin' || currentUser.username === 'admin') { 
+                roleConfig['admin'] = MENU_DEF.map(m => m.id); 
+                localStorage.setItem('bd_role_config', JSON.stringify(roleConfig)); 
+            }
+            applyRole(); syncData(); syncProductData(); renderPOS(); renderReport(); renderDebtTable(); renderDashboard();
+            updateCustDropdowns(); renderHistoryTable(); if(document.getElementById('tableBody').children.length === 0) addRow();
+        }
+
+        function applyRole() {
+            const role = (currentUser.role || '').toLowerCase().trim(); const username = (currentUser.username || '').toLowerCase().trim();
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.add('hidden'));
+            let allowed = roleConfig[role] || DEFAULT_ROLES['staff'];
+            if (username === 'admin' || role === 'admin') { allowed = MENU_DEF.map(m => m.id); }
+            allowed.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('hidden'); });
+            const currentActive = document.querySelector('.main.active'); 
+            if(currentActive) {
+                const navId = 'nav-' + currentActive.id.replace('tab-', '');
+                if (!allowed.includes(navId)) showTab('pos');
+            } else { showTab('pos'); }
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.main').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            const activeNav = document.getElementById('nav-' + tabName);
+            if(activeNav) activeNav.classList.add('active');
+            
+            if(tabName === 'products') renderProductTable();
+            if(tabName === 'calc') updateCalcOptions(); 
+            if(tabName === 'debt') renderDebtTable();
+            if(tabName === 'dashboard') renderDashboard();
+            if(tabName === 'reports') renderReport();
+            if(tabName === 'bill-export') updateAllRows();
+            if(tabName === 'history-collection') renderHistoryTable();
+            
+            if(tabName === 'wallet') {
+                document.getElementById('m-date1').value = getTodayStr();
+                document.getElementById('m-date2').value = getTodayStr();
+                updateWalletSelects(); renderCal(); recalcWallet();
+            }
+        }
+
+        function logout() { localStorage.removeItem('bd_current_user'); location.reload(); }
+        
+        function openRoleSettings() {
+            const container = document.getElementById('menu-permissions-list'); container.innerHTML = '';
+            const currentStaffPerms = roleConfig['staff'] || [];
+            MENU_DEF.forEach(item => {
+                const isChecked = currentStaffPerms.includes(item.id);
+                const div = document.createElement('div'); div.style.marginBottom = '8px'; div.style.display = 'flex'; div.style.alignItems = 'center'; div.style.gap = '10px';
+                div.innerHTML = `<input type="checkbox" id="perm-${item.id}" value="${item.id}" ${isChecked ? 'checked' : ''} style="width:18px; height:18px; cursor:pointer;"><label for="perm-${item.id}" style="cursor:pointer; font-size:14px; font-weight:600; color:var(--primary);">${item.name}</label>`;
+                container.appendChild(div);
+            });
+            document.getElementById('role-settings-modal').style.display = 'flex';
+        }
+
+        function saveRoleSettings() {
+            const checkedBoxes = document.querySelectorAll('#menu-permissions-list input[type="checkbox"]:checked');
+            const newPerms = Array.from(checkedBoxes).map(cb => cb.value);
+            roleConfig['staff'] = newPerms; roleConfig['admin'] = MENU_DEF.map(m => m.id); 
+            localStorage.setItem('bd_role_config', JSON.stringify(roleConfig));
+            document.getElementById('role-settings-modal').style.display = 'none'; showToast("Đã lưu cấu hình phân quyền!");
+            if (currentUser && currentUser.role === 'staff') { applyRole(); showToast("Đã cập nhật giao diện mới!"); }
+        }
+
+        // --- PRODUCTS & UI ---
+        function renderUserTable() { document.querySelector('#user-table tbody').innerHTML = allUsers.map(u => `<tr><td>${u.username}</td><td><b>${u.name}</b></td><td><span style="padding:4px 8px; background:#f1f5f9; color:#64748b; border-radius:8px; font-size:11px; font-weight:bold">${u.role}</span></td><td><button class="qty-btn" onclick="openUserModal(false, '${u.username}')" style="color:var(--primary)"><i class="fas fa-edit"></i></button>${u.username!=='admin'?`<button class="qty-btn" onclick="deleteUser('${u.username}')" style="color:#ef4444"><i class="fas fa-trash"></i></button>`:''}</td></tr>`).join(''); }
+        function openUserModal(isNew, uEdit) { const modal=document.getElementById('user-modal'); modal.style.display='flex'; const uIn=document.getElementById('u-username'); if(isNew) { document.getElementById('u-mode').value='add'; uIn.value=""; uIn.disabled=false; document.getElementById('u-password').value=""; document.getElementById('u-name').value=""; } else { const user=allUsers.find(u=>u.username===uEdit); document.getElementById('u-mode').value='edit'; uIn.value=user.username; uIn.disabled=true; document.getElementById('u-password').value=user.password; document.getElementById('u-name').value=user.name; document.getElementById('u-role').value=user.role; } }
+        // --- UPDATED RENDER PRODUCT TABLE (CARD STYLE) ---
+        function renderProductTable() {
+            const container = document.getElementById('product-grid-container');
+            const searchTerm = document.getElementById('pm-search-input') ? document.getElementById('pm-search-input').value.toLowerCase() : '';
+            const emptyMsg = document.getElementById('pm-empty');
+            
+            if (!container) return;
+            container.innerHTML = '';
+
+            // Lọc sản phẩm theo từ khóa tìm kiếm
+            const filtered = products.filter(p => 
+                p.name.toLowerCase().includes(searchTerm) || 
+                p.group.toLowerCase().includes(searchTerm)
+            );
+
+            if (filtered.length === 0) {
+                if(emptyMsg) emptyMsg.style.display = 'block';
+                return;
+            } else {
+                if(emptyMsg) emptyMsg.style.display = 'none';
+            }
+
+            // Sắp xếp theo nhóm để dễ nhìn
+            const sortedList = filtered.sort((a,b) => a.group.localeCompare(b.group));
+
+            container.innerHTML = sortedList.map(p => {
+                // Xác định icon nếu chưa có
+                let icon = p.icon || '📦';
+                // Highlight màu nền nhóm (tuỳ chọn cho đẹp)
+                return `
+                <div class="pm-card">
+                    <div class="pm-icon">${icon}</div>
+                    <div class="pm-name">${p.name}</div>
+                    <div class="pm-group">${p.group}</div>
+                    <div class="pm-price">${formatMoney(p.price)}</div>
+                    <div class="pm-actions">
+                        <button class="pm-btn pm-btn-edit" onclick="editProduct('${p.id}')">
+                            <i class="fas fa-edit"></i> Sửa
+                        </button>
+                        <button class="pm-btn pm-btn-del" onclick="deleteProduct('${p.id}')">
+                            <i class="fas fa-trash"></i> Xóa
+                        </button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+        function openProductModal() { document.getElementById('prod-id').value = ''; document.getElementById('prod-name').value = ''; document.getElementById('prod-price').value = ''; document.getElementById('product-modal').style.display = 'flex'; }
+        function editProduct(id) { const p = products.find(x => String(x.id) === String(id)); if(p) { document.getElementById('prod-id').value = p.id; document.getElementById('prod-name').value = p.name; document.getElementById('prod-price').value = p.price; document.getElementById('prod-group').value = p.group; document.getElementById('product-modal').style.display = 'flex'; } }
+        function closeModal() { document.getElementById('product-modal').style.display = 'none'; }
+        async function saveProduct() { const id = document.getElementById('prod-id').value; const name = document.getElementById('prod-name').value.trim(); const price = Number(document.getElementById('prod-price').value); const group = document.getElementById('prod-group').value; if (!name) return showToast("Thiếu tên!", "error"); if(id) { const index = products.findIndex(p => String(p.id) === String(id)); if(index !== -1) products[index] = { ...products[index], name, price, group }; } else { products.push({ id: Date.now(), name, price, group, icon: '📦' }); } localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products)); closeModal(); renderProductTable(); renderPOS(); try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'save_all_products', products: products }) }); } catch(e) {} }
+        async function deleteProduct(id) { if(confirm("Xóa?")) { products = products.filter(p => String(p.id) !== String(id)); localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products)); renderProductTable(); renderPOS(); try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'save_all_products', products: products }) }); } catch(e){} } }
+
+        function renderPOS() {
+            const grid = document.getElementById('pos-grid'); grid.innerHTML = '';
+            const groups = [...new Set(products.map(p => p.group))].sort((a,b) => a.includes('Tiền Giờ') ? -1 : 1);
             groups.forEach(groupName => {
                 const header = document.createElement('div'); header.className = 'section-header';
                 let iconClass = 'fa-box'; if(groupName.includes('Nước')) iconClass = 'fa-wine-bottle'; if(groupName.includes('Trà')) iconClass = 'fa-mug-hot'; if(groupName.includes('Cầu')) iconClass = 'fa-feather-alt';
@@ -1033,11 +1265,11 @@
         function calcCalendarTotal() { let ck = 0, tm = 0; Object.values(dbCal).forEach(d => { if(!d.isFinal) d.rows.forEach(r => { if(r.ck) ck += num(r.amt); if(r.tm) tm += num(r.amt); }); }); document.getElementById('total-ck').innerText = moneyFmt(ck); document.getElementById('total-tm').innerText = moneyFmt(tm); }
         function globalWithdraw() { if(confirm("Xác nhận chốt sổ toàn bộ?")) { Object.values(dbCal).forEach(d => { if(d.rows.length > 0) d.isFinal = true; }); localStorage.setItem('bk_cal_v11', JSON.stringify(dbCal)); renderCal(); } }
         function changeMonth(d) { viewDate.setMonth(viewDate.getMonth() + d); renderCal(); }
-        function renderWalletMembers() { document.getElementById('member-list').innerHTML = customers.map((c, i) => `<tr><td><b>${c.name}</b></td><td style="color:${c.bal < 0 ? 'red' : 'green'}; font-weight:bold;">${moneyFmt(c.bal)}</td><td style="text-align:center;"><button class="btn-sm" style="background:#fef2f2; color:#ef4444; border:none; cursor:pointer;" onclick="delWalletMem(${i})"><i class="fas fa-trash"></i></button></td></tr>`).join(''); }
+        function renderWalletMembers() { document.getElementById('member-list').innerHTML = customers.map((c, i) => `<tr><td><b>${c.name}</b></td><td style="color:${c.bal < 0 ? 'red' : 'green'}; font-weight:bold;">${moneyFmt(c.bal)}</td><td><button class="btn-red" style="padding:5px 10px; font-size:12px;" onclick="delWalletMem(${i})">X</button></td></tr>`).join(''); }
         function addMoney() { const n = document.getElementById('m-name').value.trim(); const a = num(document.getElementById('m-amt').value); if(!n) return alert("Nhập tên!"); let c = customers.find(x => x.name === n); if(!c) { c = { name: n, bal: 0 }; customers.push(c); } walletLogs.push({ id: Date.now(), date: document.getElementById('m-date1').value, name: n, type: 'NẠP', amt: a, note: 'Nạp tiền' }); recalcWallet(); alert("Đã nạp!"); document.getElementById('m-amt').value = ''; }
         function subMoney() { const n = document.getElementById('m-select').value; const p = num(document.getElementById('fee-pitch').value); const w = num(document.getElementById('fee-water').value); if(!n) return alert("Chọn khách!"); walletLogs.push({ id: Date.now(), date: document.getElementById('m-date2').value, name: n, type: 'TRỪ', amt: p+w, note: `Sân: ${p}, Nước: ${w}` }); recalcWallet(); alert("Đã trừ!"); document.getElementById('fee-pitch').value = ''; document.getElementById('fee-water').value = ''; }
         function recalcWallet() { customers.forEach(c => c.bal = 0); walletLogs.sort((a,b) => a.id - b.id).forEach(l => { let c = customers.find(x => x.name === l.name); if(!c) { c = { name: l.name, bal: 0 }; customers.push(c); } if(l.type === 'NẠP') c.bal += l.amt; else c.bal -= l.amt; l.tempBal = c.bal; }); localStorage.setItem('bk_cust_v11', JSON.stringify(customers)); localStorage.setItem('bk_wallet_logs_v11', JSON.stringify(walletLogs)); renderWalletMembers(); renderLogs(); updateWalletSelects(); }
-        function renderLogs() { const f = document.getElementById('log-filter').value; let show = walletLogs.slice().reverse(); if(f !== 'ALL') show = show.filter(l => l.name === f); document.getElementById('log-list').innerHTML = show.slice(0, 50).map(l => `<tr><td>${l.date}</td><td><b>${l.name}</b></td><td style="color:${l.type==='NẠP'?'green':'red'}">${l.type}</td><td>${moneyFmt(l.amt)}</td><td style="font-weight:bold; color:blue">${moneyFmt(l.tempBal || 0)}</td><td>${l.note}</td><td style="text-align:center;"><button class="btn-sm" style="background:#eff6ff; color:#4f46e5; border:none; margin-right:5px; cursor:pointer;" onclick="editLog(${l.id})"><i class="fas fa-pen"></i></button><button class="btn-sm" style="background:#fef2f2; color:#ef4444; border:none; cursor:pointer;" onclick="delLog(${l.id})"><i class="fas fa-trash"></i></button></td></tr>`).join(''); }
+        function renderLogs() { const f = document.getElementById('log-filter').value; let show = walletLogs.slice().reverse(); if(f !== 'ALL') show = show.filter(l => l.name === f); document.getElementById('log-list').innerHTML = show.slice(0, 50).map(l => `<tr><td>${l.date}</td><td><b>${l.name}</b></td><td style="color:${l.type==='NẠP'?'green':'red'}">${l.type}</td><td>${moneyFmt(l.amt)}</td><td style="font-weight:bold; color:blue">${moneyFmt(l.tempBal || 0)}</td><td>${l.note}</td><td><button onclick="editLog(${l.id})" style="border:none; background:none; cursor:pointer">✏️</button><button onclick="delLog(${l.id})" style="border:none; background:none; cursor:pointer; color:red">✕</button></td></tr>`).join(''); }
         function updateWalletSelects() { const opts = '<option value="">-- Chọn khách --</option>' + customers.map(c => `<option value="${c.name}">${c.name}</option>`).join(''); document.getElementById('m-select').innerHTML = opts; document.getElementById('log-filter').innerHTML = '<option value="ALL">Tất cả</option>' + customers.map(c => `<option value="${c.name}">${c.name}</option>`).join(''); }
         function delWalletMem(i) { if(confirm("Xóa khách này?")) { customers.splice(i,1); localStorage.setItem('bk_cust_v11', JSON.stringify(customers)); renderWalletMembers(); updateWalletSelects(); } }
         function delLog(id) { if(confirm("Xóa giao dịch này?")) { walletLogs = walletLogs.filter(l => l.id !== id); recalcWallet(); } }
@@ -1050,21 +1282,7 @@
             document.getElementById("username").addEventListener("keypress", function(event) { if (event.key === "Enter") { event.preventDefault(); document.getElementById("password").focus(); } });
             const savedUser = localStorage.getItem('bd_current_user');
             if (savedUser) { currentUser = JSON.parse(savedUser); loginSuccess(); } else { document.getElementById("username").focus(); }
-            
-            // --- FIX: KHÔI PHỤC ICON MẤT ---
-            products = JSON.parse(localStorage.getItem('bd_pro_debt_v7')) || defaultProducts;
-            
-            // Chạy qua từng món, nếu thiếu icon thì lấy từ mặc định hoặc gán icon thùng hàng
-            products.forEach(p => {
-                if(!p.icon) {
-                   const def = defaultProducts.find(d => d.id == p.id || d.name === p.name);
-                   p.icon = def ? def.icon : '📦';
-                }
-            });
-            // Lưu lại danh sách đã sửa
-            localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products));
-
-            loadUsersForLogin(); renderPOS(); renderReport();
+            products = defaultProducts; localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products)); loadUsersForLogin(); renderPOS(); renderReport();
             
             // BILL INIT
             const today = new Date(); const y = today.getFullYear(); const m = today.getMonth() + 1;
@@ -1072,236 +1290,47 @@
         };
         setInterval(syncData, 30000); 
 
-        // INVOICE & HISTORY LOGIC - UPDATED 
-        function toggleSetup() {
-            const el = document.getElementById('bill-setup-tab');
-            el.style.display = el.style.display === 'none' ? 'block' : 'none';
-        }
-
-        function timeToMins(t) { 
-            if(!t) return 0; 
-            const c = t.toLowerCase().replace('h',':').split(':'); 
-            return (parseInt(c[0])||0)*60 + (parseInt(c[1])||0); 
-        }
-
-        function formatCurrencyInput(input) {
-            let value = input.value.replace(/\D/g, '');
-            if (value === '') return input.value = '';
-            input.value = parseInt(value).toLocaleString('en-US');
-        }
-
-        function resetInvoice() { 
-            if(confirm("Tạo hóa đơn mới?")) { 
-                document.getElementById('tableBody').innerHTML = ''; 
-                document.getElementById('custName').value = '';
-                addRow(); 
-                updateTotal(); 
-            } 
-        }
-
+        // INVOICE JS (ADDED MISSING)
+        function toggleSetup() { const el = document.getElementById('bill-setup-tab'); el.style.display = el.style.display === 'none' ? 'block' : 'none'; }
+        function timeToMins(t) { if(!t) return 0; const c = t.toLowerCase().replace('h',':').split(':'); return (parseInt(c[0])||0)*60 + (parseInt(c[1])||0); }
+        function formatCurrencyInput(input) { let value = input.value.replace(/\D/g, ''); if (value === '') return input.value = ''; input.value = parseInt(value).toLocaleString('en-US'); }
+        function resetInvoice() { if(confirm("Tạo hóa đơn mới?")) { document.getElementById('tableBody').innerHTML = ''; document.getElementById('custName').value = ''; addRow(); updateTotal(); } }
         function addRow(data = null) {
             const tr = document.createElement('tr');
-            const contentVal = data ? data.content : '';
-            const timeVal = data ? data.time : '';
-            const priceVal = data ? data.price : '';
-            tr.innerHTML = `
-                <td style="text-align:left"><input type="text" class="noi-dung-input" value="${contentVal}" placeholder="VD: Thứ 2..." style="border:none; border-bottom:1px solid #eee; width:100%" oninput="updateAllRows()"></td>
-                <td><input type="text" class="time-input" value="${timeVal}" placeholder="18:00-20:00" style="text-align:center; width:100%" oninput="calculateRow(this.closest('tr'))"></td>
-                <td><input type="number" class="buoi-input" value="0" style="text-align:center; width:100%" oninput="calculateRow(this.closest('tr'))"></td>
-                <td><input type="number" step="0.5" class="gio-thue-input" value="0" style="text-align:center; width:100%" oninput="calculateRow(this.closest('tr'), true)"></td>
-                <td><input type="text" class="gia-input" value="${priceVal}" style="text-align:center; width:100%" oninput="formatCurrencyInput(this); calculateRow(this.closest('tr'), true)"></td>
-                <td class="amount-cell" style="font-weight:bold; color:var(--accent-start); text-align:right">0</td>
-                <td class="no-print"><button onclick="this.closest('tr').remove(); updateTotal()" style="color:red;border:none;background:none;font-size:18px;">&times;</button></td>
-            `;
-            document.getElementById('tableBody').appendChild(tr);
-            if(data) calculateRow(tr); 
+            const contentVal = data ? data.content : ''; const timeVal = data ? data.time : ''; const priceVal = data ? data.price : '';
+            tr.innerHTML = `<td style="text-align:left"><input type="text" class="noi-dung-input" value="${contentVal}" placeholder="VD: Thứ 2..." style="border:none; border-bottom:1px solid #eee; width:100%" oninput="updateAllRows()"></td><td><input type="text" class="time-input" value="${timeVal}" placeholder="18:00-20:00" style="text-align:center; width:100%" oninput="calculateRow(this.closest('tr'))"></td><td><input type="number" class="buoi-input" value="0" style="text-align:center; width:100%" oninput="calculateRow(this.closest('tr'))"></td><td><input type="number" step="0.5" class="gio-thue-input" value="0" style="text-align:center; width:100%" oninput="calculateRow(this.closest('tr'), true)"></td><td><input type="text" class="gia-input" value="${priceVal}" style="text-align:center; width:100%" oninput="formatCurrencyInput(this); calculateRow(this.closest('tr'), true)"></td><td class="amount-cell" style="font-weight:bold; color:var(--accent-start); text-align:right">0</td><td class="no-print"><button onclick="this.closest('tr').remove(); updateTotal()" style="color:red;border:none;background:none;font-size:18px;">&times;</button></td>`;
+            document.getElementById('tableBody').appendChild(tr); if(data) calculateRow(tr); 
         }
-
         function calculateRow(row, isManual = false) {
-            const noiDung = row.querySelector('.noi-dung-input').value.toLowerCase();
-            const amountCell = row.querySelector('.amount-cell');
-            const buoiInput = row.querySelector('.buoi-input');
-            
-            if (noiDung.includes("pass")) { 
-                amountCell.innerText = "PASS"; 
-                buoiInput.value = 0; 
-                updateTotal(); return; 
-            }
-
-            const timeVal = row.querySelector('.time-input').value;
-            if (!isManual && timeVal.includes('-')) {
-                const p = timeVal.split('-');
-                const tS = timeToMins(p[0]), tE = timeToMins(p[1]);
-                if (tE > tS) row.querySelector('.gio-thue-input').value = ((tE - tS) / 60).toFixed(2);
-            }
-
+            const noiDung = row.querySelector('.noi-dung-input').value.toLowerCase(); const amountCell = row.querySelector('.amount-cell'); const buoiInput = row.querySelector('.buoi-input');
+            if (noiDung.includes("pass")) { amountCell.innerText = "PASS"; buoiInput.value = 0; updateTotal(); return; }
+            const timeVal = row.querySelector('.time-input').value; if (!isManual && timeVal.includes('-')) { const p = timeVal.split('-'); const tS = timeToMins(p[0]), tE = timeToMins(p[1]); if (tE > tS) row.querySelector('.gio-thue-input').value = ((tE - tS) / 60).toFixed(2); }
             const gioThue = parseFloat(row.querySelector('.gio-thue-input').value) || 0;
             if (!isManual) {
-                const isWE = ["t7","cn","thứ 7","chủ nhật"].some(x => noiDung.includes(x));
-                let rate = 0;
-                if (isWE) rate = parseFloat(document.querySelector('.t-price-we').value);
-                else {
-                    const tCheck = timeVal.includes('-') ? timeToMins(timeVal.split('-')[0]) : 0;
-                    document.querySelectorAll('#fixed-setup div').forEach(d => {
-                        const inputs = d.querySelectorAll('input');
-                        if(inputs.length >= 3 && tCheck >= timeToMins(inputs[0].value) && tCheck < timeToMins(inputs[1].value)) rate = parseFloat(inputs[2].value);
-                    });
-                }
-                const currentPrice = row.querySelector('.gia-input').value.replace(/,/g, '');
-                if(!currentPrice || currentPrice == '0') {
-                    row.querySelector('.gia-input').value = Math.round(gioThue * rate).toLocaleString();
-                }
+                const isWE = ["t7","cn","thứ 7","chủ nhật"].some(x => noiDung.includes(x)); let rate = 0;
+                if (isWE) rate = parseFloat(document.querySelector('.t-price-we').value); else { const tCheck = timeVal.includes('-') ? timeToMins(timeVal.split('-')[0]) : 0; document.querySelectorAll('#fixed-setup div').forEach(d => { const inputs = d.querySelectorAll('input'); if(inputs.length >= 3 && tCheck >= timeToMins(inputs[0].value) && tCheck < timeToMins(inputs[1].value)) rate = parseFloat(inputs[2].value); }); }
+                const currentPrice = row.querySelector('.gia-input').value.replace(/,/g, ''); if(!currentPrice || currentPrice == '0') { row.querySelector('.gia-input').value = Math.round(gioThue * rate).toLocaleString(); }
             }
-            
-            const gia = parseInt(row.querySelector('.gia-input').value.replace(/,/g, '')) || 0;
-            const buoi = parseInt(buoiInput.value) || 0;
-            
-            if (noiDung.includes("off")) {
-                amountCell.innerHTML = `<span style="color:red">-${(gia * Math.abs(buoi)).toLocaleString()}</span>`;
-            } else if (["khác","nước","thuê vợt"].some(k => noiDung.includes(k))) {
-                if(!amountCell.querySelector('input')) amountCell.innerHTML = `<input type="text" oninput="formatCurrencyInput(this); updateTotal()" style="width:80px; text-align:right">`;
-            } else {
-                amountCell.innerText = (gia * buoi).toLocaleString();
-            }
-            updateTotal();
+            const gia = parseInt(row.querySelector('.gia-input').value.replace(/,/g, '')) || 0; const buoi = parseInt(buoiInput.value) || 0;
+            if (noiDung.includes("off")) { amountCell.innerHTML = `<span style="color:red">-${(gia * Math.abs(buoi)).toLocaleString()}</span>`; } else if (["khác","nước","thuê vợt"].some(k => noiDung.includes(k))) { if(!amountCell.querySelector('input')) amountCell.innerHTML = `<input type="text" oninput="formatCurrencyInput(this); updateTotal()" style="width:80px; text-align:right">`; } else { amountCell.innerText = (gia * buoi).toLocaleString(); } updateTotal();
         }
-
-        function updateTotal() {
-            let total = 0;
-            document.querySelectorAll('.amount-cell').forEach(td => {
-                const inp = td.querySelector('input');
-                if(inp) total += (parseInt(inp.value.replace(/,/g, ''))||0);
-                else {
-                    const txt = td.innerText.replace(/,/g, '').replace('PASS','0');
-                    if(!isNaN(parseInt(txt))) total += parseInt(txt);
-                }
-            });
-            document.getElementById('grandTotal').innerText = total.toLocaleString() + " VNĐ";
-            updateQR();
-        }
-
-        function updateAllRows() {
-            document.querySelectorAll('#tableBody tr').forEach(row => {
-                const txt = row.querySelector('.noi-dung-input').value;
-                const c = countDays(txt);
-                if(c > 0) row.querySelector('.buoi-input').value = c;
-                calculateRow(row);
-            });
-        }
-
+        function updateTotal() { let total = 0; document.querySelectorAll('.amount-cell').forEach(td => { const inp = td.querySelector('input'); if(inp) total += (parseInt(inp.value.replace(/,/g, ''))||0); else { const txt = td.innerText.replace(/,/g, '').replace('PASS','0'); if(!isNaN(parseInt(txt))) total += parseInt(txt); } }); document.getElementById('grandTotal').innerText = total.toLocaleString() + " VNĐ"; updateQR(); }
+        function updateAllRows() { document.querySelectorAll('#tableBody tr').forEach(row => { const txt = row.querySelector('.noi-dung-input').value; const c = countDays(txt); if(c > 0) row.querySelector('.buoi-input').value = c; calculateRow(row); }); }
         const dayMap = { "thứ 2":1, "thứ 3":2, "thứ 4":3, "thứ 5":4, "thứ 6":5, "thứ 7":6, "chủ nhật":0, "t2":1, "t3":2, "t4":3, "t5":4, "t6":5, "t7":6, "cn":0 };
-        function countDays(txt) {
-            const s = new Date(document.getElementById('dateFrom').value), e = new Date(document.getElementById('dateTo').value);
-            if(isNaN(s) || isNaN(e)) return 0;
-            let targets = []; Object.keys(dayMap).forEach(k => { if(txt.toLowerCase().includes(k)) targets.push(dayMap[k]); });
-            if(!targets.length) return 0;
-            let c = 0, curr = new Date(s);
-            while(curr <= e) { if(targets.includes(curr.getDay())) c++; curr.setDate(curr.getDate()+1); }
-            return c;
-        }
-
-        function autoSetDateRange() {
-            const m = parseInt(document.getElementById('monthSelector').value);
-            const y = new Date().getFullYear(); 
-            const lastDay = new Date(y, m, 0).getDate(); 
-            document.getElementById('dateFrom').value = `${y}-${String(m).padStart(2,'0')}-01`;
-            document.getElementById('dateTo').value = `${y}-${String(m).padStart(2,'0')}-${String(lastDay).padStart(2,'0')}`;
-            updateAllRows();
-            updateQR();
-        }
-
-        function syncDateAndRows() { 
-            const d = new Date(document.getElementById('dateFrom').value); 
-            if(!isNaN(d)) document.getElementById('monthSelector').value = d.getMonth() + 1; 
-            updateAllRows(); 
-        }
-
-        function updateQR() {
-            const total = document.getElementById('grandTotal').innerText.replace(/\D/g, '');
-            const name = document.getElementById('custName').value || 'Khach';
-            const m = document.getElementById('monthSelector').value;
-            const info = encodeURIComponent(`${name} T${m}`);
-            document.getElementById('qrImg').src = `https://img.vietqr.io/image/acb-47776077-compact2.png?amount=${total}&addInfo=${info}&accountName=CLB%20Cau%20Long%20Bao%20Khang`;
-        }
-
-        function captureInvoice() {
-            const area = document.getElementById('invoice-capture-area');
-            html2canvas(area, { scale: 3, useCORS: true, allowTaint: true }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `HoaDon_BK_${document.getElementById('custName').value}.png`;
-                link.href = canvas.toDataURL();
-                link.click();
-            });
-        }
-
-        function fillCustomerOldData() {
-            const name = document.getElementById('custName').value;
-            if(!name) return;
-            const lastBill = historyBills.slice().reverse().find(b => b.customer === name);
-            if(lastBill) {
-                document.getElementById('tableBody').innerHTML = ''; 
-                if (lastBill.rowsDetail) {
-                    lastBill.rowsDetail.forEach(r => addRow(r));
-                } else if (lastBill.content) {
-                    const parts = lastBill.content.split(',');
-                    parts.forEach(p => {
-                        let txt = p.trim();
-                        let extractedTime = '';
-                        const timeMatch = txt.match(/(\d{1,2}(?:[:h]\d{2})?)\s*-\s*(\d{1,2}(?:[:h]\d{2})?)/);
-                        if(timeMatch) { extractedTime = timeMatch[0]; }
-                        addRow({ content: txt, time: extractedTime, price: '' });
-                    });
-                }
-                updateAllRows(); 
-            }
-        }
-
-        function updateCustDropdowns() {
-            const uniqueNames = [...new Set(historyBills.map(b => b.customer))].sort();
-            const dataListOptions = uniqueNames.map(n => `<option value="${n}">`).join('');
-            document.getElementById('custNameList').innerHTML = dataListOptions;
-        }
-
+        function countDays(txt) { const s = new Date(document.getElementById('dateFrom').value), e = new Date(document.getElementById('dateTo').value); if(isNaN(s) || isNaN(e)) return 0; let targets = []; Object.keys(dayMap).forEach(k => { if(txt.toLowerCase().includes(k)) targets.push(dayMap[k]); }); if(!targets.length) return 0; let c = 0, curr = new Date(s); while(curr <= e) { if(targets.includes(curr.getDay())) c++; curr.setDate(curr.getDate()+1); } return c; }
+        function autoSetDateRange() { const m = parseInt(document.getElementById('monthSelector').value); const y = new Date().getFullYear(); const lastDay = new Date(y, m, 0).getDate(); document.getElementById('dateFrom').value = `${y}-${String(m).padStart(2,'0')}-01`; document.getElementById('dateTo').value = `${y}-${String(m).padStart(2,'0')}-${String(lastDay).padStart(2,'0')}`; updateAllRows(); updateQR(); }
+        function syncDateAndRows() { const d = new Date(document.getElementById('dateFrom').value); if(!isNaN(d)) document.getElementById('monthSelector').value = d.getMonth() + 1; updateAllRows(); }
+        function updateQR() { const total = document.getElementById('grandTotal').innerText.replace(/\D/g, ''); const name = document.getElementById('custName').value || 'Khach'; const m = document.getElementById('monthSelector').value; const info = encodeURIComponent(`${name} T${m}`); document.getElementById('qrImg').src = `https://img.vietqr.io/image/acb-47776077-compact2.png?amount=${total}&addInfo=${info}&accountName=CLB%20Cau%20Long%20Bao%20Khang`; }
+        function captureInvoice() { const area = document.getElementById('invoice-capture-area'); html2canvas(area, { scale: 3, useCORS: true, allowTaint: true }).then(canvas => { const link = document.createElement('a'); link.download = `HoaDon_BK_${document.getElementById('custName').value}.png`; link.href = canvas.toDataURL(); link.click(); }); }
+        function fillCustomerOldData() { const name = document.getElementById('custName').value; if(!name) return; const lastBill = historyBills.slice().reverse().find(b => b.customer === name); if(lastBill) { document.getElementById('tableBody').innerHTML = ''; if (lastBill.rowsDetail) { lastBill.rowsDetail.forEach(r => addRow(r)); } else if (lastBill.content) { const parts = lastBill.content.split(','); parts.forEach(p => { let txt = p.trim(); let extractedTime = ''; const timeMatch = txt.match(/(\d{1,2}(?:[:h]\d{2})?)\s*-\s*(\d{1,2}(?:[:h]\d{2})?)/); if(timeMatch) { extractedTime = timeMatch[0]; } addRow({ content: txt, time: extractedTime, price: '' }); }); } updateAllRows(); } }
+        function updateCustDropdowns() { const uniqueNames = [...new Set(historyBills.map(b => b.customer))].sort(); const dataListOptions = uniqueNames.map(n => `<option value="${n}">`).join(''); document.getElementById('custNameList').innerHTML = dataListOptions; }
         function saveToHistory() {
-            const cust = document.getElementById('custName').value;
-            const total = document.getElementById('grandTotal').innerText;
-            if(!cust) return alert("Chưa nhập tên khách!");
-            
-            let rowsDetail = [];
-            let contents = [];
-            document.querySelectorAll('#tableBody tr').forEach(r => { 
-                const content = r.querySelector('.noi-dung-input').value;
-                const time = r.querySelector('.time-input').value;
-                const price = r.querySelector('.gia-input').value;
-                const buoi = r.querySelector('.buoi-input').value;
-                const gioThue = r.querySelector('.gio-thue-input').value;
-
-                if(content) {
-                    contents.push(content);
-                    rowsDetail.push({ content, time, price, buoi, gioThue });
-                }
-            });
-
-            historyBills.push({ 
-                id: Date.now(), 
-                customer: cust, 
-                content: contents.join(', '), 
-                rowsDetail: rowsDetail, 
-                month: document.getElementById('monthSelector').value, 
-                total: total, 
-                payType: 'CK', 
-                dateSaved: new Date().toLocaleString(), 
-                checked: false 
-            });
-            localStorage.setItem('bk_bills_history_standalone', JSON.stringify(historyBills)); 
-            alert("Đã lưu!"); 
-            renderHistoryTable(); 
-            updateCustDropdowns();
+            const cust = document.getElementById('custName').value; const total = document.getElementById('grandTotal').innerText; if(!cust) return alert("Chưa nhập tên khách!");
+            let rowsDetail = []; let contents = []; document.querySelectorAll('#tableBody tr').forEach(r => { const content = r.querySelector('.noi-dung-input').value; const time = r.querySelector('.time-input').value; const price = r.querySelector('.gia-input').value; if(content) { contents.push(content); rowsDetail.push({ content, time, price }); } });
+            historyBills.push({ id: Date.now(), customer: cust, content: contents.join(', '), rowsDetail: rowsDetail, month: document.getElementById('monthSelector').value, total: total, payType: 'CK', dateSaved: new Date().toLocaleString(), checked: false }); localStorage.setItem('bk_bills_history_standalone', JSON.stringify(historyBills)); alert("Đã lưu!"); renderHistoryTable(); updateCustDropdowns();
         }
-
         function renderHistoryTable() {
-            const tbody = document.getElementById('history-table-body'); 
-            if(!tbody) return;
+            const tbody = document.getElementById('history-table-body'); if(!tbody) return;
             tbody.innerHTML = '';
             
             const m = document.getElementById('historyMonthFilter').value;
@@ -1313,109 +1342,29 @@
                 const realIdx = historyBills.findIndex(x => x.id === b.id);
                 const tr = document.createElement('tr');
                 if(b.checked) tr.style.opacity = 0.5;
+                const typeColor = b.payType === 'TM' ? 'var(--accent-end)' : 'var(--accent-start)';
 
-                const typeColor = b.payType === 'TM' ? '#f59e0b' : '#4f46e5'; 
-                
-                let detailHtml = '';
-                if (b.rowsDetail && Array.isArray(b.rowsDetail)) {
-                    detailHtml = b.rowsDetail.map(r => 
-                        `<div style="border-bottom:1px dashed #eee; margin-bottom:2px; padding-bottom:2px;">
-                            <span style="font-weight:bold; color:#334155;">${r.content}</span><br>
-                            <span style="font-size:11px; color:#64748b;">
-                                <i class="far fa-clock"></i> ${r.time || 'N/A'} | 
-                                🏸 ${r.buoi || 0} buổi | 
-                                ⏳ ${r.gioThue || 0}h | 
-                                💲 ${r.price}
-                            </span>
-                        </div>`
-                    ).join('');
-                } else {
-                    detailHtml = b.content; 
-                }
-                
                 tr.innerHTML = `
-                    <td style="text-align: center; vertical-align: middle;">
-                        <input type="checkbox" ${b.checked?'checked':''} onchange="toggleCheck(${realIdx})" style="width:18px; height:18px; cursor:pointer;">
-                    </td>
-                    
-                    <td style="font-size:13px; color:#64748b; text-align: left; vertical-align: middle;">
-                        ${b.dateSaved}
-                    </td> 
-                    
-                    <td style="font-weight:700; color:var(--primary); text-align: left; vertical-align: middle;">
-                        ${b.customer}
-                    </td>
-                    
-                    <td style="text-align: left; vertical-align: middle;">
-                        <div style="font-size:13px; max-width:400px; overflow-y:auto; max-height:100px;">
-                            ${detailHtml}
-                        </div>
-                    </td>
-                    
-                    <td style="text-align: center; vertical-align: middle;">
+                    <td style="text-align: center;"><input type="checkbox" ${b.checked?'checked':''} onchange="toggleCheck(${realIdx})" style="width:18px; height:18px; cursor:pointer;"></td>
+                    <td style="font-size:13px; color:#64748b;">${b.dateSaved}</td> 
+                    <td style="font-weight:700; color:var(--primary);">${b.customer}</td>
+                    <td><div style="font-size:13px; max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${b.content}">${b.content}</div></td>
+                    <td style="text-align: center;">
                         <select onchange="updateHistoryPayType(${realIdx}, this.value)" style="border:1px solid #e2e8f0; background:white; font-weight:700; color:${typeColor}; cursor:pointer; padding: 4px 8px; border-radius:8px; font-size:11px;">
                             <option value="CK" ${b.payType==='CK'?'selected':''}>CK</option>
                             <option value="TM" ${b.payType==='TM'?'selected':''}>TM</option>
                         </select>
                     </td>
-                    
-                    <td style="color:var(--primary); font-weight:800; text-align: right; font-size:14px; vertical-align: middle;">
-                        ${b.total}
-                    </td>
-                    
-                    <td style="text-align: center; vertical-align: middle;">
-                        <button onclick="delHistory(${realIdx})" style="color:#ef4444; border:none; background:#fef2f2; width:30px; height:30px; border-radius:8px; cursor:pointer;">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
+                    <td style="color:var(--primary); font-weight:800; text-align: right; font-size:14px;">${b.total}</td>
+                    <td style="text-align: center;"><button onclick="delHistory(${realIdx})" style="color:#ef4444; border:none; background:#fef2f2; width:30px; height:30px; border-radius:8px; cursor:pointer;"><i class="fas fa-trash"></i></button></td>
                 `;
                 tbody.appendChild(tr);
             });
             document.getElementById('history-grand-total').innerText = total.toLocaleString('vi-VN') + " đ";
         }
-
-        function updateHistoryPayType(index, val) {
-            historyBills[index].payType = val;
-            localStorage.setItem('bk_bills_history_standalone', JSON.stringify(historyBills));
-            renderHistoryTable(); 
-        }
-
-        function toggleCheck(i) { 
-            historyBills[i].checked = !historyBills[i].checked; 
-            localStorage.setItem('bk_bills_history_standalone', JSON.stringify(historyBills)); 
-            renderHistoryTable(); 
-        }
-
-        function delHistory(i) { 
-            if(confirm("Xóa dòng này?")) { 
-                historyBills.splice(i,1); 
-                localStorage.setItem('bk_bills_history_standalone', JSON.stringify(historyBills)); 
-                renderHistoryTable(); updateCustDropdowns(); 
-            } 
-        }
-        
-        // --- HÀM MỚI: TỰ ĐỘNG KHÔI PHỤC ICON ---
-        function forceResetIcons() {
-            if(confirm("Bạn có muốn tự động điền lại Icon cho các món bị thiếu không?")) {
-                let count = 0;
-                products.forEach(p => {
-                    const def = defaultProducts.find(d => d.name === p.name || d.id == p.id);
-                    if (def && def.icon) {
-                        p.icon = def.icon;
-                    } else if (!p.icon || p.icon === "") {
-                        if(p.group.includes("Nước")) p.icon = '🥤';
-                        else if(p.group.includes("Cầu")) p.icon = '🏸';
-                        else if(p.group.includes("Trà")) p.icon = '🧊';
-                        else p.icon = '📦';
-                    }
-                    count++;
-                });
-                localStorage.setItem('bd_pro_debt_v7', JSON.stringify(products));
-                renderProductTable();
-                renderPOS();
-                showToast(`Đã khôi phục icon cho ${count} món!`, "success");
-            }
-        }
+        function updateHistoryPayType(index, val) { historyBills[index].payType = val; localStorage.setItem('bk_bills_history_standalone', JSON.stringify(historyBills)); renderHistoryTable(); }
+        function toggleCheck(i) { historyBills[i].checked = !historyBills[i].checked; localStorage.setItem('bk_bills_history_standalone', JSON.stringify(historyBills)); renderHistoryTable(); }
+        function delHistory(i) { if(confirm("Xóa dòng này?")) { historyBills.splice(i,1); localStorage.setItem('bk_bills_history_standalone', JSON.stringify(historyBills)); renderHistoryTable(); updateCustDropdowns(); } }
     </script>
 </body>
 </html>
